@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publications — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html">Research</a></li>
+      <li><a href="publications.html" class="active">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Publications</h1>
+    <p>* denotes equal contribution. See also <a href="https://scholar.google.com" target="_blank">Google Scholar</a>.</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="pub-filters">
+    <button class="filter-btn active" onclick="filterPubs('all', this)">All</button>
+    <button class="filter-btn" onclick="filterPubs('journal', this)">Journals</button>
+    <button class="filter-btn" onclick="filterPubs('conference', this)">Conferences</button>
+    <button class="filter-btn" onclick="filterPubs('preprint', this)">Preprints</button>
+  </div>
+
+  <!-- Publications list -->
+  <div id="pub-list">
+
+    <!-- 2026 -->
+    <div class="pub-year-group" data-year="2026">
+      <div class="pub-year">2026</div>
+
+      <div class="pub-item" data-type="preprint">
+        <div class="pub-title">Physics-Grounded Thermal Radiance Field Reconstruction for Building-Scale Thermal Bridge Detection</div>
+        <div class="pub-authors"><span class="me">Peng Luo</span>, Jingwei Zhu, et al.</div>
+        <div class="pub-venue">Preprint, 2026</div>
+        <div class="pub-links">
+          <a class="pub-link" href="#">arXiv</a>
+          <a class="pub-link" href="#">Project page</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2025 -->
+    <div class="pub-year-group" data-year="2025">
+      <div class="pub-year">2025</div>
+
+      <div class="pub-item" data-type="journal">
+        <div class="pub-title">Paper title — replace with your actual paper</div>
+        <div class="pub-authors"><span class="me">Peng Luo</span>, Co-author A, Co-author B</div>
+        <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing, 2025</div>
+        <div class="pub-links">
+          <a class="pub-link pdf" href="#">PDF</a>
+          <a class="pub-link" href="#">DOI</a>
+          <a class="pub-link" href="#">Code</a>
+        </div>
+      </div>
+
+      <div class="pub-item" data-type="conference">
+        <div class="pub-title">Conference paper title — replace with your actual paper</div>
+        <div class="pub-authors">Co-author A, <span class="me">Peng Luo</span>, Co-author B</div>
+        <div class="pub-venue">CVPR 2025</div>
+        <div class="pub-links">
+          <a class="pub-link pdf" href="#">PDF</a>
+          <a class="pub-link" href="#">Poster</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2024 -->
+    <div class="pub-year-group" data-year="2024">
+      <div class="pub-year">2024</div>
+
+      <div class="pub-item" data-type="journal">
+        <div class="pub-title">Journal paper title — replace with your actual paper</div>
+        <div class="pub-authors"><span class="me">Peng Luo</span>, Co-author C</div>
+        <div class="pub-venue">IEEE Transactions on Geoscience and Remote Sensing, 2024</div>
+        <div class="pub-links">
+          <a class="pub-link pdf" href="#">PDF</a>
+          <a class="pub-link" href="#">DOI</a>
+        </div>
+      </div>
+
+      <div class="pub-item" data-type="conference">
+        <div class="pub-title">Conference paper title — replace with your actual paper</div>
+        <div class="pub-authors"><span class="me">Peng Luo</span>, Co-author D, Co-author E</div>
+        <div class="pub-venue">ICCV 2024</div>
+        <div class="pub-links">
+          <a class="pub-link pdf" href="#">PDF</a>
+          <a class="pub-link" href="#">Code</a>
+          <a class="pub-link" href="#">Video</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- end #pub-list -->
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">East China Normal University &middot; <span id="year"></span></div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function filterPubs(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.pub-item').forEach(item => {
+      if (type === 'all' || item.dataset.type === type) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Hide year groups with no visible items
+    document.querySelectorAll('.pub-year-group').forEach(group => {
+      const visible = group.querySelectorAll('.pub-item:not([style*="none"])');
+      group.style.display = visible.length ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

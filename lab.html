@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html" class="active">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Lab</h1>
+    <p>We are a new research group at ECNU's School of Spatial Artificial Intelligence, starting August 2025. The lab focuses on photogrammetry, Gaussian splatting, and thermal sensing for built environment analysis.</p>
+  </div>
+
+  <!-- PI -->
+  <div class="section">
+    <div class="section-label">Principal Investigator</div>
+    <div style="display:flex; gap:1.25rem; align-items:center; padding:1rem 0;">
+      <div class="team-avatar">Photo</div>
+      <div>
+        <div class="team-name" style="font-size:15px;">Peng Luo</div>
+        <div class="team-role">Assistant Professor, ECNU</div>
+        <div style="font-size:13px; color:var(--text-faint); margin-top:0.25rem;">PhD, TUM · Postdoc, TUM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students -->
+  <div class="section">
+    <div class="section-label">Students</div>
+    <div class="team-grid">
+
+      <!-- Add students here. Example: -->
+      <div class="team-card">
+        <div class="team-avatar">Photo</div>
+        <div class="team-name">Student Name</div>
+        <div class="team-role">PhD Student · 2025–</div>
+      </div>
+
+      <!-- Placeholder to show how it looks with 2+ students -->
+      <div class="team-card" style="border-style:dashed; opacity:0.45;">
+        <div class="team-avatar">?</div>
+        <div class="team-name">Your name here</div>
+        <div class="team-role">Prospective PhD · 2025</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Openings -->
+  <div class="section">
+    <div class="section-label">Openings</div>
+    <div class="opening-box">
+      <h3>We are recruiting PhD students for Fall 2025 / Spring 2026</h3>
+      <p style="margin-bottom:0.75rem;">
+        We are looking for motivated students with a background in one or more of the following:
+      </p>
+      <ul style="margin-bottom:1rem;">
+        <li>Computer vision, 3D reconstruction, or neural rendering</li>
+        <li>Remote sensing, photogrammetry, or LiDAR processing</li>
+        <li>Thermal infrared sensing or building physics</li>
+        <li>Deep learning with PyTorch or JAX</li>
+      </ul>
+      <p>
+        To apply, please send your CV, transcripts, and a brief research statement to
+        <a href="mailto:your@email.com">your@email.com</a>.
+        Applications without these materials will not be considered.
+      </p>
+    </div>
+  </div>
+
+  <!-- Visiting / Collaborating -->
+  <div class="section">
+    <div class="section-label">Visitors &amp; Alumni</div>
+    <p style="font-size:14px; color:var(--text-muted);">
+      We welcome visiting researchers and students. If you are interested in a research visit, please get in touch.
+    </p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">East China Normal University &middot; <span id="year"></span></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peng Luo</title>
+  <meta name="description" content="Peng Luo — Assistant Professor at East China Normal University. Photogrammetry, 3D Gaussian Splatting, Thermal Infrared Sensing." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="research.html">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-photo">
+      <!-- Replace with: <img src="assets/photo.jpg" alt="Peng Luo"> -->
+      Photo<br>150×150
+    </div>
+    <div>
+      <div class="hero-name">Peng Luo</div>
+      <div class="hero-role">Assistant Professor</div>
+      <div class="hero-affil">School of Spatial Artificial Intelligence, East China Normal University</div>
+      <p class="hero-bio">
+        I work at the intersection of photogrammetry, 3D/2D Gaussian splatting, and thermal infrared sensing, with a focus on building-scale physics-grounded surface reconstruction and thermal anomaly detection. I completed my doctoral work at TUM and am joining ECNU as Assistant Professor in August 2025.
+      </p>
+      <div class="hero-links">
+        <a href="mailto:your@email.com">Email</a>
+        <a href="https://scholar.google.com" target="_blank">Google Scholar</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="assets/cv.pdf" target="_blank">CV (PDF)</a>
+        <a href="https://orcid.org/0000-0000-0000-0000" target="_blank">ORCID</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Research areas -->
+  <div class="section">
+    <div class="section-label">Research</div>
+    <div class="research-grid">
+      <div class="research-card">
+        <div class="rc-tag">3DGS / 2DGS</div>
+        <div class="rc-title">Surface Radiance Fields</div>
+        <div class="rc-desc">Physics-grounded Gaussian splatting for building-scale thermal surface reconstruction with anisotropic diffusion constraints.</div>
+      </div>
+      <div class="research-card">
+        <div class="rc-tag">Thermal IR</div>
+        <div class="rc-title">Thermal Bridge Detection</div>
+        <div class="rc-desc">Multi-view TIR and LiDAR fusion for anomaly/background radiance decomposition and energy diagnostics.</div>
+      </div>
+      <div class="research-card">
+        <div class="rc-tag">Photogrammetry</div>
+        <div class="rc-title">Point Cloud Analysis</div>
+        <div class="rc-desc">LiDAR-based geometry reconstruction with semantic and physical constraints at urban scale.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- News -->
+  <div class="section">
+    <div class="section-label">News</div>
+
+    <div class="news-item">
+      <div class="news-date">2026 / 03</div>
+      <div class="news-text">
+        <span class="badge badge-conf">NeurIPS 2026</span>
+        Paper on physics-grounded thermal radiance fields and thermal bridge detection submitted.
+      </div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">2025 / 08</div>
+      <div class="news-text">
+        <span class="badge badge-pos">Position</span>
+        Joining East China Normal University as Assistant Professor at the School of Spatial AI.
+      </div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">2025 / 04</div>
+      <div class="news-text">
+        Collaboration with MIT Architecture and Cambridge Digital Twin group on urban-scale 3D reconstruction.
+      </div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">2024 / 09</div>
+      <div class="news-text">
+        <span class="badge badge-award">Award</span>
+        <!-- Add award or paper acceptance here -->
+        New paper accepted. Update this entry with details.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Explore modules -->
+  <div class="section">
+    <div class="section-label">Explore</div>
+    <div class="explore-grid">
+      <a class="explore-card" href="research.html">
+        <div class="ec-title">Research</div>
+        <div class="ec-sub">Active projects and themes</div>
+      </a>
+      <a class="explore-card" href="publications.html">
+        <div class="ec-title">Publications</div>
+        <div class="ec-sub">Papers, preprints, proceedings</div>
+      </a>
+      <a class="explore-card" href="lab.html">
+        <div class="ec-title">Lab</div>
+        <div class="ec-sub">Team members &amp; openings</div>
+      </a>
+      <a class="explore-card" href="contact.html#collaborations">
+        <div class="ec-title">Collaborations</div>
+        <div class="ec-sub">TUM · KIT · MIT · WHU · Tongji</div>
+      </a>
+      <a class="explore-card" href="teaching.html">
+        <div class="ec-title">Teaching</div>
+        <div class="ec-sub">Courses and materials</div>
+      </a>
+      <a class="explore-card" href="contact.html">
+        <div class="ec-title">Contact</div>
+        <div class="ec-sub">Office · email · visiting</div>
+      </a>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">East China Normal University &middot; <span id="year"></span></div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

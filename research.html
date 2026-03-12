@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html" class="active">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Research</h1>
+    <p>My work addresses the fundamental question of how physical surface phenomena — particularly thermal emission and geometry — can be jointly reconstructed from multi-modal sensor data at building and urban scale.</p>
+  </div>
+
+  <!-- Project 1 -->
+  <div class="section">
+    <div class="section-label">Current Projects</div>
+
+    <div class="project-item">
+      <div>
+        <div class="proj-tag">2DGS · Thermal IR · LiDAR</div>
+        <div class="proj-title">Physics-Grounded Thermal Radiance Field Reconstruction</div>
+        <p class="proj-desc">
+          We propose a 2D Gaussian Splatting framework augmented with anisotropic adaptive diffusion constraints derived from the heat equation. By decomposing the radiance field into anomaly and background components, we enable precise thermal bridge localization via a TV-regularized Poisson inverse problem. Multi-view thermal infrared images and LiDAR point clouds serve as complementary inputs.
+        </p>
+        <p class="proj-collab">Collaborators: Jingwei Zhu · TUM · KIT (Boris Jutzi)</p>
+      </div>
+      <div class="proj-image">Figure / Teaser<br>coming soon</div>
+    </div>
+
+    <div class="project-item">
+      <div>
+        <div class="proj-tag">3DGS · Urban Scale</div>
+        <div class="proj-title">Urban-Scale 3D Reconstruction with Gaussian Splatting</div>
+        <p class="proj-desc">
+          Extending Gaussian splatting methods to city-scale datasets, with a focus on geometric fidelity, scalable rendering, and integration with semantic labels derived from LiDAR. Work developed in collaboration with the MIT Architecture group and Cambridge Digital Twin project.
+        </p>
+        <p class="proj-collab">Collaborators: MIT Architecture · Cambridge Digital Twin</p>
+      </div>
+      <div class="proj-image">Figure / Teaser<br>coming soon</div>
+    </div>
+
+    <div class="project-item">
+      <div>
+        <div class="proj-tag">Photogrammetry · Point Cloud</div>
+        <div class="proj-title">Semantic LiDAR Point Cloud Analysis</div>
+        <p class="proj-desc">
+          LiDAR-based geometry reconstruction combined with semantic segmentation and physical constraints. Developed in collaboration with WHU (Yang Bisheng) and Tongji (Tong Xiaohua) groups, with applications to building inspection and urban mapping.
+        </p>
+        <p class="proj-collab">Collaborators: WHU (Yang Bisheng) · Tongji (Tong Xiaohua)</p>
+      </div>
+      <div class="proj-image">Figure / Teaser<br>coming soon</div>
+    </div>
+
+  </div>
+
+  <!-- Past work -->
+  <div class="section">
+    <div class="section-label">Past Work</div>
+    <p style="font-size:14px; color:var(--text-muted); line-height:1.8;">
+      Doctoral research at TUM focused on photogrammetric reconstruction, dense matching, and multi-sensor fusion. See the <a href="publications.html">publications page</a> for a full list of papers.
+    </p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">East China Normal University &middot; <span id="year"></span></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
