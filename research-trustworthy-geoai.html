@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trustworthy GeoAI &amp; Uncertainty Quantification — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html" class="active">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <p class="back-link"><a href="research.html">&larr; All Research</a></p>
+    <h1>Trustworthy GeoAI &amp; Uncertainty Quantification</h1>
+    <div class="proj-tag">Explainable AI &middot; Uncertainty &middot; Visual Analytics</div>
+  </div>
+
+  <!-- Teaser -->
+  <div class="section">
+    <div class="proj-image-hero">Figure / Teaser<br>coming soon</div>
+  </div>
+
+  <!-- Overview -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="proj-body">
+      <p>
+        As GeoAI models grow in complexity, understanding when and why they fail becomes critical. This research line develops model-agnostic frameworks for quantifying uncertainty and ensuring interpretability in geospatial predictions.
+      </p>
+      <p>
+        GeoConformal prediction provides distribution-free, spatially calibrated prediction intervals for any spatial model. GeoXCP extends uncertainty quantification to the explanations produced by explainable AI methods. Complementary work uses visual analytics to help users understand predictability and uncertainty in population distributions and other spatial phenomena.
+      </p>
+    </div>
+  </div>
+
+  <!-- Key contributions -->
+  <div class="section">
+    <div class="section-label">Key Contributions</div>
+    <div class="proj-body">
+      <ul>
+        <li>GeoConformal prediction: model-agnostic spatial UQ framework (Annals of the AAG 2025)</li>
+        <li>GeoXCP: uncertainty quantification for spatial explainable AI (IJGIS 2025)</li>
+        <li>Visual analytics for understanding predictability and uncertainty in population distributions (IJGIS 2025, No.1 most read)</li>
+        <li>Quantifying uncertainty in spatial prediction for nonstationary processes (Annals of the AAG 2026)</li>
+        <li>Ethical spatial analysis: revealing endogenous bias through visual analytics</li>
+        <li>Ontological and explainable framework for decoding AI risks from news data</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Software -->
+  <div class="section">
+    <div class="section-label">Software</div>
+    <div class="proj-body">
+      <ul>
+        <li><strong>GeoCP</strong> &mdash; Python package (<code>geoconformal</code>) for model-agnostic uncertainty quantification of any spatial prediction model</li>
+        <li><strong>GeoXCP</strong> &mdash; Python package for uncertainty quantification of spatial explainable AI models</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Related publications -->
+  <div class="section">
+    <div class="section-label">Selected Publications</div>
+    <div class="proj-body">
+      <ul>
+        <li>P. Luo. Quantifying uncertainty in spatial prediction for nonstationary spatial processes. <em>Annals of the AAG</em>, 2026.</li>
+        <li>X. Lou, P. Luo* et al. GeoXCP: uncertainty quantification of spatial explanations in explainable AI. <em>IJGIS</em>, 2025.</li>
+        <li>X. Lou, P. Luo*, L. Meng. GeoConformal prediction. <em>Annals of the AAG</em>, 2025.</li>
+        <li>P. Luo et al. Understanding of the predictability and uncertainty in population distributions. <em>IJGIS</em>, 39(3), 2025.</li>
+        <li>X. Lou, P. Luo*. Towards the Uncertainty-aware Geospatial Artificial Intelligence. <em>ACM SIGSPATIAL GeoAI Workshop</em>, 2025.</li>
+      </ul>
+      <p>See the <a href="publications.html">publications page</a> for a full list.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">MIT Senseable City Lab &middot; <span id="year"></span></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

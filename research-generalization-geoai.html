@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transferable &amp; Scalable GeoAI — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html" class="active">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <p class="back-link"><a href="research.html">&larr; All Research</a></p>
+    <h1>Transferable &amp; Scalable GeoAI</h1>
+    <div class="proj-tag">LLMs &middot; Generalization &middot; Urban Computing</div>
+  </div>
+
+  <!-- Teaser -->
+  <div class="section">
+    <div class="proj-image-hero">Figure / Teaser<br>coming soon</div>
+  </div>
+
+  <!-- Overview -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="proj-body">
+      <p>
+        How can geospatial models transfer across regions, scales, and sensor modalities without extensive retraining? This research line tackles the generalization challenge in GeoAI through LLM-driven model discovery, graph-based community detection, and scalable urban analytics.
+      </p>
+      <p>
+        GeoEvolve uses multi-agent large language models to automate geospatial model development &mdash; enabling AI to self-evolve spatial models. Complementary work on overlapping community structure in urban mobility reveals how spatial communities explain movement patterns at scale. These methods have been applied to shared micromobility, logistics optimization, and urban land-use mapping.
+      </p>
+    </div>
+  </div>
+
+  <!-- Key contributions -->
+  <div class="section">
+    <div class="section-label">Key Contributions</div>
+    <div class="proj-body">
+      <ul>
+        <li>GeoEvolve: multi-agent LLMs for automated geospatial model discovery (ICLR 2026, under review)</li>
+        <li>Spatial overlapping of communities explains urban mobility (Nature Computational Science, under major revision)</li>
+        <li>Label propagation for detecting overlapping communities in shared micromobility (CEUS 2025)</li>
+        <li>Graph-based deep spatial regression for uncovering spatial process heterogeneity (ISPRS JPRS 2026)</li>
+        <li>GIMI: geographically generalizable image-to-image search engine (ICLR 2024 workshop)</li>
+        <li>Scalable urban logistics optimization with hybrid sparrow search algorithm</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Software -->
+  <div class="section">
+    <div class="section-label">Software</div>
+    <div class="proj-body">
+      <ul>
+        <li><strong>GeoEvolve</strong> &mdash; LLM-based automatic spatial model development</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Related publications -->
+  <div class="section">
+    <div class="section-label">Selected Publications</div>
+    <div class="proj-body">
+      <ul>
+        <li>P. Luo, X. Lou, Y. Zheng, Z. Zheng, S. Ermon. GeoEvolve: Automating Geospatial Model Discovery via Multi-Agent LLMs. <em>ICLR 2026</em> (under review).</li>
+        <li>P. Luo, D. Zhu, F. Duarte, S. Santi, C. Ratti. Spatial overlapping of communities explains urban mobility. <em>Nature Computational Science</em> (under major revision).</li>
+        <li>P. Luo et al. Modeling shared micromobility as a label propagation process. <em>CEUS</em>, 2025.</li>
+        <li>D. Zhu, S. Wang, P. Luo. Uncovering spatial process heterogeneity from graph-based deep spatial regression. <em>ISPRS JPRS</em>, 2026.</li>
+        <li>P. Luo, D. Zhu. Sensing overlapping geospatial communities from human movements. <em>ACM SIGSPATIAL GeoAI Workshop</em>, 2022.</li>
+      </ul>
+      <p>See the <a href="publications.html">publications page</a> for a full list.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">MIT Senseable City Lab &middot; <span id="year"></span></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

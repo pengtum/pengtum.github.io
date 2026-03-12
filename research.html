@@ -26,45 +26,42 @@
 
   <div class="page-header">
     <h1>Research</h1>
-    <p>My work addresses the fundamental question of how physical surface phenomena — particularly thermal emission and geometry — can be jointly reconstructed from multi-modal sensor data at building and urban scale.</p>
+    <p>My research develops methods at the intersection of GeoAI, spatial data science, and spatial statistics &mdash; with a focus on explainable, uncertainty-aware, and reproducible spatial analysis, and recent work on LLM-driven geospatial model discovery.</p>
   </div>
 
   <!-- Project 1 -->
   <div class="section">
     <div class="section-label">Current Projects</div>
 
-    <div class="project-item">
+    <div class="project-item" id="spatial-explicit">
       <div>
-        <div class="proj-tag">2DGS · Thermal IR · LiDAR</div>
-        <div class="proj-title">Physics-Grounded Thermal Radiance Field Reconstruction</div>
+        <div class="proj-tag">Spatial Modeling · Spatial Statistics</div>
+        <div class="proj-title"><a href="research-spatial-explicit.html">Spatial Explicit Modeling</a></div>
         <p class="proj-desc">
-          We propose a 2D Gaussian Splatting framework augmented with anisotropic adaptive diffusion constraints derived from the heat equation. By decomposing the radiance field into anomaly and background components, we enable precise thermal bridge localization via a TV-regularized Poisson inverse problem. Multi-view thermal infrared images and LiDAR point clouds serve as complementary inputs.
+          Developing spatial models that explicitly encode geographic structure &mdash; spatial heterogeneity, dependence, and interaction &mdash; into prediction and association analysis. Key methods include generalized spatial heterogeneity models, focal-feature regression kriging, and spatially stratified frameworks.
         </p>
-        <p class="proj-collab">Collaborators: Jingwei Zhu · TUM · KIT (Boris Jutzi)</p>
       </div>
       <div class="proj-image">Figure / Teaser<br>coming soon</div>
     </div>
 
-    <div class="project-item">
+    <div class="project-item" id="trustworthy-geoai">
       <div>
-        <div class="proj-tag">3DGS · Urban Scale</div>
-        <div class="proj-title">Urban-Scale 3D Reconstruction with Gaussian Splatting</div>
+        <div class="proj-tag">Explainable AI · Uncertainty</div>
+        <div class="proj-title"><a href="research-trustworthy-geoai.html">Trustworthy GeoAI &amp; Uncertainty Quantification</a></div>
         <p class="proj-desc">
-          Extending Gaussian splatting methods to city-scale datasets, with a focus on geometric fidelity, scalable rendering, and integration with semantic labels derived from LiDAR. Work developed in collaboration with the MIT Architecture group and Cambridge Digital Twin project.
+          Building reliable, interpretable, and uncertainty-aware geospatial AI. Core contributions include GeoConformal prediction for model-agnostic spatial UQ, GeoXCP for uncertainty quantification of spatial explanations, and visual analytics frameworks for understanding predictability in spatial data.
         </p>
-        <p class="proj-collab">Collaborators: MIT Architecture · Cambridge Digital Twin</p>
       </div>
       <div class="proj-image">Figure / Teaser<br>coming soon</div>
     </div>
 
-    <div class="project-item">
+    <div class="project-item" id="generalization-geoai">
       <div>
-        <div class="proj-tag">Photogrammetry · Point Cloud</div>
-        <div class="proj-title">Semantic LiDAR Point Cloud Analysis</div>
+        <div class="proj-tag">LLMs · Generalization · Urban Computing</div>
+        <div class="proj-title"><a href="research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a></div>
         <p class="proj-desc">
-          LiDAR-based geometry reconstruction combined with semantic segmentation and physical constraints. Developed in collaboration with WHU (Yang Bisheng) and Tongji (Tong Xiaohua) groups, with applications to building inspection and urban mapping.
+          LLM-driven geospatial model discovery, cross-domain transfer, and scalable urban analytics. Flagship work includes GeoEvolve (multi-agent LLMs for automated spatial model development) and graph-based methods for uncovering overlapping community structure in urban mobility.
         </p>
-        <p class="proj-collab">Collaborators: WHU (Yang Bisheng) · Tongji (Tong Xiaohua)</p>
       </div>
       <div class="proj-image">Figure / Teaser<br>coming soon</div>
     </div>
@@ -75,7 +72,7 @@
   <div class="section">
     <div class="section-label">Past Work</div>
     <p style="font-size:14px; color:var(--text-muted); line-height:1.8;">
-      Doctoral research at TUM focused on photogrammetric reconstruction, dense matching, and multi-sensor fusion. See the <a href="publications.html">publications page</a> for a full list of papers.
+      Doctoral research at TUM focused on spatial association modeling, spatial interpolation, and multi-sensor data fusion. Earlier work at PKU addressed population density modeling and remote sensing. See the <a href="publications.html">publications page</a> for a full list.
     </p>
   </div>
 
@@ -83,7 +80,7 @@
 
 <footer>
   <div class="footer-brand">Peng Luo</div>
-  <div class="footer-copy">East China Normal University &middot; <span id="year"></span></div>
+  <div class="footer-copy">MIT Senseable City Lab &middot; <span id="year"></span></div>
 </footer>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>

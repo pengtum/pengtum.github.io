@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spatial Explicit Modeling — Peng Luo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html" class="active">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="lab.html">Lab</a></li>
+      <li><a href="teaching.html">Teaching</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <p class="back-link"><a href="research.html">&larr; All Research</a></p>
+    <h1>Spatial Explicit Modeling</h1>
+    <div class="proj-tag">Spatial Modeling &middot; Spatial Statistics &middot; Spatial Heterogeneity</div>
+  </div>
+
+  <!-- Teaser -->
+  <div class="section">
+    <div class="proj-image-hero">Figure / Teaser<br>coming soon</div>
+  </div>
+
+  <!-- Overview -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="proj-body">
+      <p>
+        Geographic phenomena are shaped by spatial structure &mdash; heterogeneity, dependence, and interaction &mdash; yet many statistical and machine learning models treat observations as if they were spatially independent. This research line develops models that explicitly encode geographic structure into prediction and association analysis.
+      </p>
+      <p>
+        Core contributions include a generalized spatial heterogeneity model for non-stationary interpolation, focal-feature regression kriging that revisits the role of distance in spatial prediction, and methods for measuring univariate effects within interacting geographical patterns. These methods have been applied to soil moisture mapping, aerosol unmixing, traffic accident analysis, and continental-scale environmental assessment.
+      </p>
+    </div>
+  </div>
+
+  <!-- Key contributions -->
+  <div class="section">
+    <div class="section-label">Key Contributions</div>
+    <div class="proj-body">
+      <ul>
+        <li>Generalized spatial heterogeneity model for interpolation (IJGIS 2022, top-1 most read and top-2 most cited)</li>
+        <li>Focal-feature regression kriging (Geographical Analysis 2026)</li>
+        <li>Geographically optimal zones-based heterogeneity model for spatial determinants analysis</li>
+        <li>Measuring univariate effects in the interaction of geographical patterns (IJGIS 2025)</li>
+        <li>Spatio-temporal unmixing with heterogeneity model for MODIS aerosol identification</li>
+        <li>Book chapter: Spatial Stratified Modeling in International Encyclopedia of Geography (Wiley-AAG)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Software -->
+  <div class="section">
+    <div class="section-label">Software</div>
+    <div class="proj-body">
+      <ul>
+        <li><strong>GOZH</strong> &mdash; Quantifying spatial relationships between geographical variables</li>
+        <li><strong>GPI</strong> &mdash; Measuring spatially varying effects driven by interactions among spatial patterns</li>
+        <li><strong>LSEH</strong> &mdash; R package for quantifying interaction effects between geographical variables</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Related publications -->
+  <div class="section">
+    <div class="section-label">Selected Publications</div>
+    <div class="proj-body">
+      <ul>
+        <li>P. Luo, Y. Wu, Y. Song. Focal-feature regression kriging. <em>Geographical Analysis</em>, 2026.</li>
+        <li>P. Luo et al. A Generalized Spatial Heterogeneity Model for Interpolation. <em>IJGIS</em>, 37(3), 2022.</li>
+        <li>P. Luo et al. Identifying determinants of spatio-temporal disparities in soil moisture. <em>ISPRS JPRS</em>, 185, 2022.</li>
+        <li>P. Luo, Y. Li, Y. Song et al. Measuring univariate effects in the interaction of geographical patterns. <em>IJGIS</em>, 2025.</li>
+        <li>P. Luo. Spatial Stratified Modeling. <em>International Encyclopedia of Geography</em>, Wiley-AAG, 2025.</li>
+      </ul>
+      <p>See the <a href="publications.html">publications page</a> for a full list.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">MIT Senseable City Lab &middot; <span id="year"></span></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
