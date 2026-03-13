@@ -623,6 +623,128 @@ footer {
   color: var(--text-faint);
 }
 
+/* ── Visual Analytics cards ─────────────────────── */
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 1.25rem;
+}
+
+.viz-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text);
+}
+
+.viz-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-subtle);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.viz-card .rc-tag { margin-bottom: 0; }
+
+.viz-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0.5rem 0 0.35rem;
+  line-height: 1.35;
+}
+
+.viz-card-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 0.6rem;
+}
+
+.viz-card-action {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ── Viz modal overlay ─────────────────────────── */
+.viz-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2vh 2vw;
+}
+
+.viz-modal.active { display: flex; }
+
+.viz-modal-header {
+  width: min(96vw, 1400px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+
+.viz-modal-title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.viz-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.viz-modal-newtab {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.viz-modal-newtab:hover { color: var(--accent); text-decoration: none; }
+
+.viz-modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+.viz-modal-close:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.viz-modal-frame {
+  width: min(96vw, 1400px);
+  height: 88vh;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -635,4 +757,8 @@ footer {
   .team-grid { grid-template-columns: 1fr 1fr; }
   .nav-links { gap: 1rem; }
   .nav-links a { font-size: 12.5px; }
+  .viz-grid { grid-template-columns: 1fr; }
+  .viz-modal { padding: 0; }
+  .viz-modal-header { border-radius: 0; }
+  .viz-modal-frame { height: 80vh; border-radius: 0; }
 }

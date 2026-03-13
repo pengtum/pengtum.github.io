@@ -74,6 +74,52 @@
     </div>
   </div>
 
+  <!-- Visual Analytics Platform -->
+  <div class="section">
+    <div class="section-label">Visual Analytics Platform</div>
+    <div class="proj-body">
+      <p>Interactive tools for exploring spatial uncertainty, model explanations, and prediction reliability.</p>
+    </div>
+    <div class="viz-grid">
+      <div class="viz-card" role="button" tabindex="0" onclick="openViz('Conformal Prediction Explorer','https://spatialuncertaintyviz-production.up.railway.app/')">
+        <div class="rc-tag">Conformal Prediction</div>
+        <div class="viz-card-title">Conformal Prediction Explorer</div>
+        <div class="viz-card-desc">Spatial uncertainty quantification via conformal prediction with CSV upload and multiple methods.</div>
+        <div class="viz-card-action">Launch tool &rarr;</div>
+      </div>
+      <div class="viz-card" role="button" tabindex="0" onclick="openViz('GeoXCP: Geo-Calibrated Uncertainty','https://vezarachan.github.io/GeoXCPWeb/')">
+        <div class="rc-tag">GeoXCP &middot; SHAP</div>
+        <div class="viz-card-title">GeoXCP: Geo-Calibrated Uncertainty</div>
+        <div class="viz-card-desc">SHAP feature attributions wrapped in spatially-calibrated uncertainty bounds.</div>
+        <div class="viz-card-action">Launch tool &rarr;</div>
+      </div>
+      <div class="viz-card" role="button" tabindex="0" onclick="openViz('Spatial Lens','https://vezarachan.github.io/GeoXCPWeb/focus_radial.html')">
+        <div class="rc-tag">Focus + Context</div>
+        <div class="viz-card-title">Spatial Lens</div>
+        <div class="viz-card-desc">Radial focus+context visualization for local clusters of high uncertainty in SHAP attributions.</div>
+        <div class="viz-card-action">Launch tool &rarr;</div>
+      </div>
+      <div class="viz-card" role="button" tabindex="0" onclick="openViz('Bivariate Spatial Map','https://vezarachan.github.io/GeoXCPWeb/focus_radial.html')">
+        <div class="rc-tag">Bivariate Map</div>
+        <div class="viz-card-title">Bivariate Spatial Map with Radar Charts</div>
+        <div class="viz-card-desc">Bivariate choropleth encoding prediction value and uncertainty with per-point radar charts.</div>
+        <div class="viz-card-action">Launch tool &rarr;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Viz modal -->
+  <div class="viz-modal" id="vizModal">
+    <div class="viz-modal-header">
+      <span class="viz-modal-title" id="vizTitle"></span>
+      <div class="viz-modal-actions">
+        <a id="vizExtLink" href="#" target="_blank" rel="noopener" class="viz-modal-newtab">Open in new tab &#8599;</a>
+        <button class="viz-modal-close" aria-label="Close visualization" onclick="closeViz()">&times;</button>
+      </div>
+    </div>
+    <iframe id="vizFrame" class="viz-modal-frame" src="" title=""></iframe>
+  </div>
+
   <!-- Related publications -->
   <div class="section">
     <div class="section-label">Selected Publications</div>
@@ -95,6 +141,38 @@
   <div class="footer-brand">Peng Luo</div>
   <div class="footer-copy">MIT Senseable City Lab &middot; <span id="year"></span></div>
 </footer>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+function openViz(title, url) {
+  document.getElementById('vizTitle').textContent = title;
+  document.getElementById('vizExtLink').href = url;
+  var frame = document.getElementById('vizFrame');
+  frame.src = url;
+  frame.title = title;
+  document.getElementById('vizModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViz() {
+  document.getElementById('vizModal').classList.remove('active');
+  document.getElementById('vizFrame').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeViz();
+});
+
+document.getElementById('vizModal').addEventListener('click', function(e) {
+  if (e.target === this) closeViz();
+});
+
+document.querySelectorAll('.viz-card').forEach(function(card) {
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+  });
+});
+</script>
 </body>
 </html>
