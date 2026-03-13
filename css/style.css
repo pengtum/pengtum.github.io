@@ -81,6 +81,56 @@ nav {
 .nav-links a.active { color: var(--text); text-decoration: none; }
 .nav-links a.active { font-weight: 500; }
 
+/* ── Nav dropdown ───────────────────────────────── */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 240px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 110;
+  padding-top: 14px;
+}
+
+.nav-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: transparent;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+  display: block;
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 7px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  transition: background 0.1s;
+}
+
+.nav-dropdown-menu a:hover {
+  background: var(--bg-subtle);
+  color: var(--text);
+  text-decoration: none;
+}
+
 /* ── Page wrapper ────────────────────────────────── */
 .page {
   max-width: var(--max-w);
