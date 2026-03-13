@@ -37,11 +37,17 @@
   </div>
 
   <!-- Filters -->
-  <div class="pub-filters">
-    <button class="filter-btn active" onclick="filterPubs('all', this)">All</button>
-    <button class="filter-btn" onclick="filterPubs('journal', this)">Journals</button>
-    <button class="filter-btn" onclick="filterPubs('conference', this)">Conferences</button>
-    <button class="filter-btn" onclick="filterPubs('preprint', this)">Under Review</button>
+  <div class="pub-filters type-filters">
+    <button class="filter-btn active" onclick="filterByType('all', this)">All</button>
+    <button class="filter-btn" onclick="filterByType('journal', this)">Journals</button>
+    <button class="filter-btn" onclick="filterByType('conference', this)">Conferences</button>
+    <button class="filter-btn" onclick="filterByType('preprint', this)">Under Review</button>
+  </div>
+  <div class="pub-filters topic-filters">
+    <button class="filter-btn active" data-topic="all" onclick="filterByTopic('all', this)">All Topics</button>
+    <button class="filter-btn" data-topic="spatial" onclick="filterByTopic('spatial', this)">Spatial Explicit</button>
+    <button class="filter-btn" data-topic="trustworthy" onclick="filterByTopic('trustworthy', this)">Trustworthy GeoAI</button>
+    <button class="filter-btn" data-topic="transferable" onclick="filterByTopic('transferable', this)">Transferable GeoAI</button>
   </div>
 
   <!-- Publications list -->
@@ -52,57 +58,66 @@
       <div class="pub-year">2026</div>
 
       <!-- Under Review -->
-      <div class="pub-item" data-type="preprint">
+      <div class="pub-item" data-type="preprint" data-topic="transferable">
         <div class="pub-title">GeoEvolve: Automating Geospatial Model Discovery via Multi-Agent Large Language Models</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, X. Lou, Y. Zheng, Z. Zheng, S. Ermon</div>
         <div class="pub-venue"><em>ICLR 2026</em> (Under review)</div>
       </div>
 
-      <div class="pub-item" data-type="preprint">
+      <div class="pub-item" data-type="preprint" data-topic="transferable">
         <div class="pub-title">Spatial overlapping of communities explains urban mobility</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, D. Zhu, F. Duarte, S. Santi, C. Ratti</div>
         <div class="pub-venue"><em>Nature Computational Science</em> (Under major revision)</div>
       </div>
 
-      <div class="pub-item" data-type="preprint">
+      <div class="pub-item" data-type="preprint" data-topic="trustworthy">
         <div class="pub-title">Geospatial Local Interpretable Model-Agnostic Explanations</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Zhang, Z. Li</div>
         <div class="pub-venue"><em>Remote Sensing of Environment</em> (Under review)</div>
       </div>
 
-      <div class="pub-item" data-type="preprint">
+      <div class="pub-item" data-type="preprint" data-topic="spatial">
         <div class="pub-title">Pervasive impact of spatial dependence on predictability</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song, W. Li, L. Meng</div>
         <div class="pub-venue"><em>Geographical Analysis</em> (Under review)</div>
       </div>
 
-      <div class="pub-item" data-type="preprint">
+      <div class="pub-item" data-type="preprint" data-topic="transferable">
         <div class="pub-title">Multifold Health Gains from Addressing Urban Inequality across Major US Cities</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">W. Yap, Z. Yu, K. Jang, <span class="me">P. Luo</span>, F. Duarte, C. Ratti, F. Biljecki</div>
         <div class="pub-venue"><em>Nature Health</em> (Under review)</div>
       </div>
 
       <!-- 2026 Published -->
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Focal-feature regression kriging</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Wu, Y. Song</div>
         <div class="pub-venue">Geographical Analysis, 2026</div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial trustworthy">
         <div class="pub-title">Quantifying uncertainty in spatial prediction for nonstationary spatial processes</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span></div>
         <div class="pub-venue">Annals of the American Association of Geographers, 2026</div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">Toward Ethical Spatial Analysis: Revealing Endogenous Bias Through Visual Analytics</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">C. Chen, <span class="me">P. Luo</span>*, B. Zhao, Y. Feng, L. Meng</div>
         <div class="pub-venue">Journal of Geovisualization and Spatial Analysis, 2026</div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial transferable">
         <div class="pub-title">Uncovering spatial process heterogeneity from graph-based deep spatial regression</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">D. Zhu, S. Wang, <span class="me">P. Luo</span></div>
         <div class="pub-venue">ISPRS JPRS, 2026</div>
       </div>
@@ -113,8 +128,9 @@
     <div class="pub-year-group" data-year="2025">
       <div class="pub-year">2025</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Modeling shared micromobility as a label propagation process for detecting the overlapping communities</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, C. Song, D. Zhu, H. Li, F. Duarte</div>
         <div class="pub-venue">CEUS, 2025</div>
         <div class="pub-links">
@@ -122,8 +138,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">Understanding of the predictability and uncertainty in population distributions empowered by visual analytics</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, C. Chen, S. Gao, X. Zhang, M. Deng, Z. Yang, L. Meng</div>
         <div class="pub-venue">IJGIS, 39(3), pp.675-705, 2025</div>
         <div class="pub-links">
@@ -131,8 +148,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Measuring univariate effects in the interaction of geographical patterns</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Li, Y. Song, Z. Li, L. Meng</div>
         <div class="pub-venue">IJGIS, 2025</div>
         <div class="pub-links">
@@ -140,8 +158,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">GeoXCP: uncertainty quantification of spatial explanations in explainable AI</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*, Z. Li, S. Gao, L. Meng</div>
         <div class="pub-venue">IJGIS, 2025</div>
         <div class="pub-links">
@@ -149,8 +168,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">GeoConformal prediction: a model-agnostic framework of measuring the uncertainty of spatial prediction</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*, L. Meng</div>
         <div class="pub-venue">Annals of the AAG, 2025</div>
         <div class="pub-links">
@@ -158,8 +178,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Modeling hydrous mineral distribution on Mars with extremely sparse data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">L. Jiao, <span class="me">P. Luo</span>#, R. Huang, Y. Xu, Z. Ye, S. Liu, S. Liu, X. Tong</div>
         <div class="pub-venue">ISPRS JPRS, 222, pp.16-32, 2025</div>
         <div class="pub-links">
@@ -167,8 +188,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">A robust geographically optimal zones-based heterogeneity model for analyzing the spatial determinants of national traffic accidents</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">H. Luo, <span class="me">P. Luo</span>*, L. Meng</div>
         <div class="pub-venue">GIScience and Remote Sensing, 2025</div>
         <div class="pub-links">
@@ -176,8 +198,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Evaluation and spatial optimization model of urban medical resource distribution</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">Y. Yao, Y. Wang, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">TGIS, 2025</div>
         <div class="pub-links">
@@ -185,8 +208,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">A Unified Ontological and Explainable Framework for Decoding AI Risks from News Data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">C. Chen, <span class="me">P. Luo</span>*, H. Zhao, M. Wei, P. Zhang, Z. Liu, L. Meng</div>
         <div class="pub-venue">Scientific Reports, 15(1), p.25621, 2025</div>
         <div class="pub-links">
@@ -194,8 +218,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy transferable">
         <div class="pub-title">Explainable mapping of the irregular land use parcel with a data fusion deep learning model</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, R. Gao, ..., <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">IEEE TGRS, 2025</div>
         <div class="pub-links">
@@ -203,8 +228,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">An infographic framework of GeoAI ethics based on news data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">C. Chen, M. Wei, P. Zhang, <span class="me">P. Luo</span>, L. Meng</div>
         <div class="pub-venue">Cartography and Geographic Information Science, 2025</div>
         <div class="pub-links">
@@ -212,8 +238,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Dynamic Multi-Depot Logistics Optimization</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Q. Guan, Y. Fan, Y. Wang, L. Liang, <span class="me">P. Luo</span>, Y. Yao</div>
         <div class="pub-venue">IJGIS, 2025</div>
         <div class="pub-links">
@@ -221,8 +248,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Discovering core forms of urban morphology linked to urban functions with explainable graph neural network</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">D. Chen, Y. Feng, X. Li, M. Qu, <span class="me">P. Luo</span>, L. Meng</div>
         <div class="pub-venue">CEUS, 2025</div>
         <div class="pub-links">
@@ -230,20 +258,23 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Species Habitat Mapping Based on Semantic Segmentation of Multiband Images</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">L. Wang, H. Tan, <span class="me">P. Luo</span>, L. Meng, T. Fei</div>
         <div class="pub-venue">Scientific Reports, 2025</div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="trustworthy">
         <div class="pub-title">Towards the Uncertainty-aware Geospatial Artificial Intelligence</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">ACM SIGSPATIAL Workshop on AI for Geographic Knowledge Discovery, 2025</div>
       </div>
 
-      <div class="pub-item" data-type="book">
+      <div class="pub-item" data-type="book" data-topic="spatial">
         <div class="pub-title">Spatial Stratified Modeling</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span></div>
         <div class="pub-venue">International Encyclopedia of Geography, Wiley-AAG, 2025</div>
       </div>
@@ -254,8 +285,9 @@
     <div class="pub-year-group" data-year="2024">
       <div class="pub-year">2024</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">A spatio-temporal unmixing with heterogeneity model for the identification of remotely sensed MODIS aerosols</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">L. Yang, <span class="me">P. Luo</span>#, Z. Zhang, Y. Song, K. Ren, C. Zhang, J. Awange, P.M. Atkinson, L. Meng</div>
         <div class="pub-venue">JAG, 132, p.104068, 2024</div>
         <div class="pub-links">
@@ -263,8 +295,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">AED location selection considering myocardial infarction risk</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">Y. Yao, L. Shao, ..., <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">TGIS, 2024</div>
         <div class="pub-links">
@@ -272,8 +305,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Geographical Scenario Knowledge Informed Graph Structure Attention for Image Segmentation</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">H. Zhao, <span class="me">P. Luo</span>, W. Cui, C. Xia, X. Xu</div>
         <div class="pub-venue">IEEE TGRS, 2024</div>
         <div class="pub-links">
@@ -281,8 +315,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial trustworthy">
         <div class="pub-title">An explainable spatial interpolation method considering spatial stratified heterogeneity</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">S. Cheng, W. Zhang, <span class="me">P. Luo</span>, L. Wang, F. Lu</div>
         <div class="pub-venue">IJGIS, 2024</div>
         <div class="pub-links">
@@ -290,8 +325,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">A multimodal data fusion model for accurate and interpretable urban land use mapping</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">X. Yan, Z. Jiang, <span class="me">P. Luo</span>, H. Wu, A. Dong, F. Mao, Z. Wang, H. Liu, Y. Yao</div>
         <div class="pub-venue">JAG, 129, p.103805, 2024</div>
         <div class="pub-links">
@@ -299,8 +335,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">A hyper-knowledge graph system for research on AI ethics cases</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">C. Chen, Y. Feng, M. Wei, Z. Liu, <span class="me">P. Luo</span>, S. Wang, L. Meng</div>
         <div class="pub-venue">Heliyon, 10(7), 2024</div>
         <div class="pub-links">
@@ -308,8 +345,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Predicting the locations of missing persons in China</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">A. Dong, Y. Zhang, Z. Guo, <span class="me">P. Luo</span>, Y. Yao, J. He, Q. Zhu, Y. Jiang, K. Xiong, Q. Guan</div>
         <div class="pub-venue">IJDE, 17:1, 2024</div>
         <div class="pub-links">
@@ -317,8 +355,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="trustworthy">
         <div class="pub-title">Unveiling public perception of AI ethics: an exploration on Wikipedia data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">M. Wei, Y. Feng, C. Chen, <span class="me">P. Luo</span>, C. Zuo, L. Meng</div>
         <div class="pub-venue">EPJ Data Science, 13(1), p.26, 2024</div>
         <div class="pub-links">
@@ -326,14 +365,16 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="trustworthy">
         <div class="pub-title">Uncertainty-aware geospatial visual analytics</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">Abstracts of the ICA, 10:1-2, 2024</div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="transferable">
         <div class="pub-title">GIMI: A Geographical Generalizable Image-To-Image Search Engine</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">H. Li, J. Wang, B. Teuscher, <span class="me">P. Luo</span>, M. Werner, G. Mai, D. Hong</div>
         <div class="pub-venue">ICLR 2024 Workshop, 2024</div>
       </div>
@@ -344,8 +385,9 @@
     <div class="pub-year-group" data-year="2023">
       <div class="pub-year">2023</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial trustworthy">
         <div class="pub-title">A locally explained stratified heterogeneity model for examining wetland disparity</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">Y. Li, <span class="me">P. Luo</span>#, Y. Song, L. Zhang, Y. Qu, Z. Hou</div>
         <div class="pub-venue">IJDE, 16(2), pp.4533-4552, 2023</div>
         <div class="pub-links">
@@ -353,8 +395,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Extracting the pickpocketing information implied in the built environment</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, A. Dong, Z. Liu, Z. Guo, J. Cheng, Q. Guan, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">Cities, 2023</div>
         <div class="pub-links">
@@ -362,8 +405,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">A site selection framework for urban power substation at micro-scale</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, C. Feng, ..., <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">TGIS (Cover Paper), 2023</div>
         <div class="pub-links">
@@ -371,8 +415,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Predicting mobile users' next location using the semantically enriched geo-embedding model</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, Z. Guo, C. Dou, M. Jia, Y. Hong, Q. Guan, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">CEUS, 2023</div>
         <div class="pub-links">
@@ -380,8 +425,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Fast urban logistics optimization based on hybrid sparrow search algorithm</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, S. Lei, Z. Guo, Y. Li, S. Ren, Z. Liu, Q. Guan, <span class="me">P. Luo</span>*</div>
         <div class="pub-venue">IJGIS, 2023</div>
         <div class="pub-links">
@@ -389,8 +435,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial trustworthy">
         <div class="pub-title">GeoComplexity explains spatial errors</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors">Z. Zhang, Y. Song, <span class="me">P. Luo</span></div>
         <div class="pub-venue">IJGIS, 2023</div>
         <div class="pub-links">
@@ -398,8 +445,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Towards resilience effectiveness: Assessing its patterns and determinants</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">T. Cheng, Y. Zhao, Y. Song, L. Ma, Z. Zhang, <span class="me">P. Luo</span>, P. Gao, M. Zhang, C. Zhao</div>
         <div class="pub-venue">Journal of Cleaner Production, 429, p.139596, 2023</div>
         <div class="pub-links">
@@ -407,8 +455,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Spatial disparities of factors affecting air pollutant emissions</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">Z. Zhang, Y. Song, <span class="me">P. Luo</span>, P. Wu</div>
         <div class="pub-venue">JAG, 117:103221, 2023</div>
         <div class="pub-links">
@@ -416,14 +465,16 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="spatial">
         <div class="pub-title">Revisiting the role of distance for spatial prediction</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song, L. Meng</div>
         <div class="pub-venue">Abstracts of the ICA, 3, p.187, 2023</div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="spatial trustworthy">
         <div class="pub-title">Explainable spatial heterogeneity model for association analysis</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Li</div>
         <div class="pub-venue">30th International Conference of Geoinformatics, 2023</div>
       </div>
@@ -434,8 +485,9 @@
     <div class="pub-year-group" data-year="2022">
       <div class="pub-year">2022</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">A Generalized Spatial Heterogeneity Model for Interpolation</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song, D. Zhu, J. Cheng, L. Meng</div>
         <div class="pub-venue">IJGIS, 37(3), 634-659, 2022</div>
         <div class="pub-links">
@@ -443,8 +495,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Identifying determinants of spatio-temporal disparities in soil moisture of the Northern Hemisphere</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song, X. Huang, H. Ma, J. Liu, Y. Yao, L. Meng</div>
         <div class="pub-venue">ISPRS JPRS, 185, pp.111-128, 2022</div>
         <div class="pub-links">
@@ -452,8 +505,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Classifying land-use patterns by integrating time-series electricity data and high-spatial resolution remote sensing imagery</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">Y. Yao, X. Yan, <span class="me">P. Luo</span>*, Y. Liang, S. Ren, Y. Hu, J. Han, Q. Guan</div>
         <div class="pub-venue">JAG, 106, p.102664, 2022</div>
         <div class="pub-links">
@@ -461,8 +515,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Early Detection of Suspicious Behaviors for Safe Residence from Movement Trajectory Data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">J. Cheng, X. Zhang, X. Chen, M. Ren, J. Huang, <span class="me">P. Luo</span></div>
         <div class="pub-venue">ISPRS IJGI, 11(9), p.478, 2022</div>
         <div class="pub-links">
@@ -470,8 +525,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">An unsupervised approach for semantic place annotation</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">J. Cheng, X. Zhang, <span class="me">P. Luo</span>, J. Huang, J. Huang</div>
         <div class="pub-venue">Information Sciences, 607, 1311-1327, 2022</div>
         <div class="pub-links">
@@ -479,8 +535,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="transferable">
         <div class="pub-title">Sensing overlapping geospatial communities from human movements using graph affiliation generation models</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, D. Zhu</div>
         <div class="pub-venue">ACM SIGSPATIAL Workshop on AI for Geographic Knowledge Discovery, pp.1-9, 2022</div>
       </div>
@@ -491,8 +548,9 @@
     <div class="pub-year-group" data-year="2021">
       <div class="pub-year">2021</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Spatial disparities in trade-offs: economic and environmental impacts of road infrastructure on continental level</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song, P. Wu</div>
         <div class="pub-venue">GIScience and Remote Sensing, 58(5), pp.756-775, 2021</div>
         <div class="pub-links">
@@ -500,8 +558,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="transferable">
         <div class="pub-title">Transferability of convolutional neural network models for identifying damaged buildings due to earthquake</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
         <div class="pub-authors">W. Yang, X. Zhang, <span class="me">P. Luo</span></div>
         <div class="pub-venue">Remote Sensing, 13(3), p.504, 2021</div>
         <div class="pub-links">
@@ -509,8 +568,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="spatial">
         <div class="pub-title">A spatial second-order non-stationary interpolation method for large area mapping</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, Y. Song</div>
         <div class="pub-venue">Abstracts of the ICA, 3, p.187, 2021</div>
       </div>
@@ -521,8 +581,9 @@
     <div class="pub-year-group" data-year="2020">
       <div class="pub-year">2020</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Random forest model for the estimation of fractional vegetation coverage based on a UAV-ground co-sampling strategy</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors">J. Cheng, X. Zhang, M. Sun, <span class="me">P. Luo</span>, W. Yang</div>
         <div class="pub-venue">Beijing Da Xue Xue Bao, 56(1), pp.143-154, 2020</div>
         <div class="pub-links">
@@ -536,8 +597,9 @@
     <div class="pub-year-group" data-year="2019">
       <div class="pub-year">2019</div>
 
-      <div class="pub-item" data-type="journal">
+      <div class="pub-item" data-type="journal" data-topic="spatial">
         <div class="pub-title">Modeling population density using a new index derived from multi-sensor image data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, X. Zhang, J. Cheng, Q. Sun</div>
         <div class="pub-venue">Remote Sensing, 11(22), p.2620, 2019</div>
         <div class="pub-links">
@@ -545,8 +607,9 @@
         </div>
       </div>
 
-      <div class="pub-item" data-type="conference">
+      <div class="pub-item" data-type="conference" data-topic="spatial">
         <div class="pub-title">Gridded population density estimation based on multi-source remote sensing data and POI data</div>
+        <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span></div>
         <div class="pub-authors"><span class="me">P. Luo</span>, X. Zhang</div>
         <div class="pub-venue">Joint EOEC-GiT4NDM 2019 Conference, 2019</div>
       </div>
@@ -565,23 +628,47 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  function filterPubs(type, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  var activeType = 'all';
+  var activeTopic = 'all';
 
-    document.querySelectorAll('.pub-item').forEach(item => {
-      if (type === 'all' || item.dataset.type === type) {
-        item.style.display = '';
-      } else {
-        item.style.display = 'none';
-      }
+  function filterByType(type, btn) {
+    activeType = type;
+    document.querySelectorAll('.type-filters .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function filterByTopic(topic, btn) {
+    activeTopic = topic;
+    document.querySelectorAll('.topic-filters .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    document.querySelectorAll('.pub-item').forEach(function(item) {
+      var typeMatch = activeType === 'all' || item.dataset.type === activeType;
+      var topicMatch = activeTopic === 'all' || (item.dataset.topic && item.dataset.topic.split(' ').indexOf(activeTopic) !== -1);
+      item.style.display = (typeMatch && topicMatch) ? '' : 'none';
     });
 
-    // Hide year groups with no visible items
-    document.querySelectorAll('.pub-year-group').forEach(group => {
-      const visible = group.querySelectorAll('.pub-item:not([style*="none"])');
+    document.querySelectorAll('.pub-year-group').forEach(function(group) {
+      var visible = group.querySelectorAll('.pub-item:not([style*="none"])');
       group.style.display = visible.length ? '' : 'none';
     });
+  }
+
+  // URL parameter pre-filtering
+  var params = new URLSearchParams(window.location.search);
+  var urlTopic = params.get('topic');
+  if (urlTopic) {
+    var btn = document.querySelector('.topic-filters .filter-btn[data-topic="' + urlTopic + '"]');
+    if (btn) {
+      document.querySelectorAll('.topic-filters .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeTopic = urlTopic;
+      applyFilters();
+    }
   }
 </script>
 </body>
