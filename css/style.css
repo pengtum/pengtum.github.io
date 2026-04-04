@@ -310,6 +310,7 @@ nav {
 .badge-award { background: #e8f9ee; color: #186130; }
 .badge-pos { background: #e8f0f9; color: #2d5a8e; }
 .badge-news { background: #f3e8f9; color: #5a2d8e; }
+.badge-pub { background: #e2f6f0; color: #0a6b4f; }
 
 /* ── Explore cards ───────────────────────────────── */
 .explore-grid {
