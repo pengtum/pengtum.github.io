@@ -312,6 +312,33 @@ nav {
 .badge-news { background: #f3e8f9; color: #5a2d8e; }
 .badge-pub { background: #e2f6f0; color: #0a6b4f; }
 
+/* ── News toggle ─────────────────────────────────── */
+#news-older {
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+#news-older.news-collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+.news-toggle {
+  display: block;
+  margin: 1rem auto 0;
+  background: none;
+  border: 1px solid var(--mid);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 6px 18px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.news-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ── Explore cards ───────────────────────────────── */
 .explore-grid {
   display: grid;
