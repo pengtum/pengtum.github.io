@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / local
+.claude/settings.local.json
+.claude/settings.local.json
