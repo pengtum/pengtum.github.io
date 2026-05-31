@@ -953,3 +953,43 @@ footer {
   70%  { box-shadow: 0 0 0 7px rgba(46,139,79,0); }
   100% { box-shadow: 0 0 0 0 rgba(46,139,79,0); }
 }
+
+/* ── Opportunities page ─────────────────────────── */
+.opp-iowa-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 2.5rem;
+}
+.opp-iowa-logo {
+  height: 64px;
+  width: auto;
+  flex-shrink: 0;
+}
+.opp-pdf-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 1.25rem;
+  background: #fdeaea;
+  border: 1px solid #f3c9c2;
+  border-left: 3px solid #c0392b;
+  border-radius: 10px;
+  color: var(--text);
+  transition: filter 0.15s, transform 0.15s;
+}
+.opp-pdf-card:hover { filter: brightness(0.98); transform: translateY(-1px); text-decoration: none; }
+.opp-pdf-icon {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: #c0392b;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.opp-pdf-body { display: flex; flex-direction: column; gap: 2px; }
+.opp-pdf-body strong { font-size: 14px; color: #8f2c20; }
+.opp-pdf-body span { font-size: 12.5px; color: var(--text-muted); }
