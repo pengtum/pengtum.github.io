@@ -921,3 +921,35 @@ footer {
   .pub-item { flex-direction: column; gap: 10px; }
   .pub-links { max-width: none; justify-content: flex-start; }
 }
+
+/* ── Homepage hiring banner ─────────────────────── */
+.hiring-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.1rem;
+  padding: 10px 16px;
+  background: #eef6ee;
+  border: 1px solid #cfe6cf;
+  border-left: 3px solid #2e8b4f;
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.hiring-banner:hover { background: #e6f2e6; text-decoration: none; }
+.hiring-banner strong { color: #1f6b39; font-weight: 600; }
+.hiring-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2e8b4f;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(46,139,79,0.5);
+  animation: hiringPulse 2s infinite;
+}
+@keyframes hiringPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(46,139,79,0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(46,139,79,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,139,79,0); }
+}
