@@ -492,8 +492,8 @@ nav {
 .selpub-note strong { color: var(--text); font-weight: 700; }
 .selpub-list { display: flex; flex-direction: column; gap: 0.85rem; }
 .selpub-item { font-size: 13.5px; line-height: 1.65; color: var(--text-muted); }
-.selpub-item .me { color: var(--text); font-weight: 700; }
-.selpub-item em { font-style: italic; }
+.selpub-item .me { color: var(--text); font-weight: 700; background: rgba(45, 90, 142, 0.15); border-radius: 4px; padding: 0 4px; }
+.selpub-item em { font-style: italic; font-weight: 600; }
 .selpub-doi {
   font-size: 11px;
   padding: 1px 7px;
