@@ -4,7 +4,7 @@
     {
       "name": "site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8080", "-d", "/tmp/site-preview"],
+      "runtimeArgs": ["-m", "http.server", "8080", "-d", "/Users/peng/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology(2)/罗鹏的重要材料/pengtum.github.io"],
       "port": 8080
     }
   ]
