@@ -907,6 +907,62 @@ footer {
   background: #fff;
 }
 
+/* ── Visual stories (inline animations) ─────────── */
+.story-card {
+  margin-top: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.story-media { position: relative; background: #fff; }
+.story-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #fff;
+}
+.story-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 6px;
+}
+.story-btn {
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.story-btn:hover { color: var(--text); border-color: var(--border-hover); }
+.story-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.story-caption {
+  padding: 1rem 1.2rem 1.1rem;
+  border-top: 1px solid var(--border);
+}
+.story-title {
+  font-size: 14.5px;
+  font-weight: 500;
+  margin: 0.5rem 0 0.35rem;
+  line-height: 1.4;
+}
+.story-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0 0 0.6rem;
+}
+.story-links { font-size: 12.5px; font-weight: 500; }
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -923,6 +979,9 @@ footer {
   .viz-modal { padding: 0; }
   .viz-modal-header { border-radius: 0; }
   .viz-modal-frame { height: 80vh; border-radius: 0; }
+  .story-caption { padding: 0.9rem 1rem 1rem; }
+  .story-controls { right: 6px; bottom: 6px; }
+  .story-btn { padding: 5px 8px; font-size: 11px; }
 }
 
 /* ── Publications: featured (selected) + star ── */

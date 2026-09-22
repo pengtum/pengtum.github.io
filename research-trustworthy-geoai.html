@@ -131,6 +131,35 @@
     </div>
   </div>
 
+  <!-- Visual Stories -->
+  <div class="section" id="visual-stories">
+    <div class="section-label">Visual Stories</div>
+    <div class="proj-body">
+      <p>Short animations that turn model explanations into a visual narrative.</p>
+    </div>
+    <figure class="story-card">
+      <div class="story-media">
+        <video class="story-video" id="storyNtl" muted loop playsinline preload="metadata"
+               poster="assets/viz/popmunich-ntl-shap-poster.jpg"
+               aria-label="Animation: SHAP values for night-time light, first shown as a dependence plot, then flying to their true locations on the Munich 100 m population grid">
+          <source src="assets/viz/popmunich-ntl-shap.mp4" type="video/mp4">
+        </video>
+        <div class="story-controls">
+          <button class="story-btn" type="button" data-story-toggle="storyNtl">Pause</button>
+          <button class="story-btn" type="button" data-story-full="storyNtl">Full screen</button>
+        </div>
+      </div>
+      <figcaption class="story-caption">
+        <span class="rc-tag">Explainable GeoAI &middot; SHAP</span>
+        <div class="story-title">Where does night-time light matter for population?</div>
+        <p class="story-desc">Each dot is one 100&nbsp;m grid cell in Munich. The dots start as a SHAP dependence plot&mdash;almost everywhere, night-time light adds little and the model leans on built form instead&mdash;then fly to their true locations, revealing that the strong negative contributions are not scattered at random but concentrate in specific parts of the city.</p>
+        <div class="story-links">
+          <a href="https://doi.org/10.1080/13658816.2024.2427870" target="_blank" rel="noopener">Read the paper (IJGIS, 2025) &rarr;</a>
+        </div>
+      </figcaption>
+    </figure>
+  </div>
+
   <!-- Viz modal -->
   <div class="viz-modal" id="vizModal">
     <div class="viz-modal-header">
@@ -239,6 +268,63 @@ document.querySelectorAll('.viz-card').forEach(function(card) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
   });
 });
+
+// Visual stories: play only while on screen, honour reduced motion, pause + full-screen controls
+(function() {
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.story-video').forEach(function(video) {
+    var toggle = document.querySelector('[data-story-toggle="' + video.id + '"]');
+    var full = document.querySelector('[data-story-full="' + video.id + '"]');
+    var userPaused = reduceMotion;
+    var visible = false;
+
+    function sync() {
+      if (!toggle) return;
+      var label = video.paused ? 'Play' : 'Pause';
+      toggle.textContent = label;
+      toggle.setAttribute('aria-label', label + ' animation');
+    }
+    function play() {
+      var p = video.play();
+      if (p && p.catch) p.catch(sync);
+    }
+
+    // Any play means the viewer wants motion; a pause while on screen is a deliberate choice.
+    video.addEventListener('play', function() { userPaused = false; sync(); });
+    video.addEventListener('pause', function() { if (visible) userPaused = true; sync(); });
+
+    if (toggle) toggle.addEventListener('click', function() {
+      if (video.paused) { userPaused = false; play(); }
+      else { userPaused = true; video.pause(); }
+    });
+
+    if (full) full.addEventListener('click', function() {
+      if (video.requestFullscreen) video.requestFullscreen();
+      else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    });
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(function(evt) {
+      document.addEventListener(evt, function() {
+        var fs = document.fullscreenElement || document.webkitFullscreenElement;
+        video.controls = (fs === video);
+      });
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          visible = entry.isIntersecting;
+          if (visible) { if (!userPaused) play(); }
+          else video.pause();
+        });
+      }, { threshold: 0.25 }).observe(video);
+    } else {
+      visible = true;
+      if (!userPaused) play();
+    }
+    sync();
+  });
+})();
 </script>
 </body>
 </html>
