@@ -486,6 +486,7 @@ nav {
 .pub-link.pdf  { background: #fdeaea; color: #c0392b; }
 .pub-link.code { background: #f0e8f9; color: #6b3fa0; }
 .pub-link.project { background: #e9f6ee; color: #1a6b3d; }
+.pub-link.arxiv { background: #fdeaea; color: #b31b1b; }
 
 /* ── Selected publications (homepage) ───────────── */
 .selpub-note { font-size: 12.5px; color: var(--text-faint); margin-bottom: 1rem; }
