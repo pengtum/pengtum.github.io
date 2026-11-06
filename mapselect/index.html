@@ -1,0 +1,389 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body style="margin:0"><title>mapselect</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a survey sheet. A working map opens the page, then each section is one instrument: explain, plan, check, use. */
+:root{
+  --paper:#eef2ee;--sheet:#fbfcf9;--ink:#10261f;--ink2:#4a5d55;--ink3:#74857d;--line:#d2dbd4;--wash:#e3e9e3;
+  --sel:#c0176b;--ref:#2a78d6;--vio:#4a3aa7;--org:#d9562a;--grn:#1a9c6e;--miss:#cb181d;--band:#c9d2cb;
+  --relief-a:#f4f6f0;--relief-b:#bcc7b4;--contour:#8f9d8d;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;--body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0e1613;--sheet:#15201c;--ink:#e8efeb;--ink2:#a9b9b1;--ink3:#7f9088;--line:#2c3a34;--wash:#1e2b26;
+  --sel:#f0609f;--ref:#5a9bea;--vio:#9c91ee;--org:#e8794e;--grn:#35bd8c;--miss:#f0635f;--band:#35443d;
+  --relief-a:#17231e;--relief-b:#3b4d41;--contour:#5a6d60;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1613;--sheet:#15201c;--ink:#e8efeb;--ink2:#a9b9b1;--ink3:#7f9088;--line:#2c3a34;--wash:#1e2b26;
+  --sel:#f0609f;--ref:#5a9bea;--vio:#9c91ee;--org:#e8794e;--grn:#35bd8c;--miss:#f0635f;--band:#35443d;
+  --relief-a:#17231e;--relief-b:#3b4d41;--contour:#5a6d60;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:6px 22px;align-items:baseline;flex-wrap:wrap;padding-block:9px}
+nav b{font:700 23px/1 var(--display);letter-spacing:.01em;margin-right:auto}
+nav a{color:var(--ink2);text-decoration:none;font:600 17px/1.2 var(--display);letter-spacing:.03em}
+nav a:hover,nav a:focus-visible{color:var(--sel)}
+h1{font:600 clamp(40px,6.2vw,74px)/.98 var(--display);margin:0;letter-spacing:-.005em;text-wrap:balance;max-width:17ch}
+h2{font:600 clamp(30px,4vw,44px)/1.04 var(--display);margin:0;text-wrap:balance}
+h3{font:600 23px/1.15 var(--display);margin:0;letter-spacing:.005em}
+p{margin:0;max-width:66ch}
+.lede{font-size:20px;line-height:1.45;color:var(--ink2);max-width:58ch}
+header.hero{padding-block:44px 26px}
+header.hero .wrap{display:grid;gap:18px}
+section{padding-block:54px;border-top:1px solid var(--line)}
+section>.wrap{display:grid;gap:24px}
+.head{display:grid;gap:10px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}
+.grid2.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:16px;min-width:0;display:grid;gap:12px;align-content:start}
+.cap{font-size:14.5px;line-height:1.4;color:var(--ink2)}
+.src{font-size:13px;line-height:1.35;color:var(--ink3)}
+.lab{font:600 15px/1.1 var(--display);letter-spacing:.05em;text-transform:uppercase;color:var(--ink2)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px 18px}
+label.c{display:grid;gap:4px;font-size:14.5px;color:var(--ink2)}
+label.c output{font:500 14px var(--mono);color:var(--ink);float:right}
+input[type=range]{width:100%;accent-color:var(--sel);margin:0}
+select,input[type=number]{font:400 15.5px var(--body);color:var(--ink);background:var(--sheet);border:1px solid var(--ink3);border-radius:3px;padding:5px 7px;width:100%;min-width:0}
+input[type=number]{font-family:var(--mono);font-size:14.5px}
+button{font:600 16px/1 var(--display);letter-spacing:.03em;color:var(--sheet);background:var(--ink);border:1px solid var(--ink);border-radius:3px;padding:9px 13px;cursor:pointer}
+button.alt{background:transparent;color:var(--ink)}
+button:hover{background:var(--sel);border-color:var(--sel);color:#fff}
+:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:2px;background:var(--wash)}
+svg{display:block;width:100%;overflow:visible}
+svg text{font-family:var(--body);fill:var(--ink2);font-size:13px}
+svg .num{font-family:var(--mono);font-size:12.5px;fill:var(--ink)}
+svg .gl{stroke:var(--line);stroke-width:1}
+svg .ax{stroke:var(--ink3);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:baseline}
+.legend i.o{background:transparent;border:1.5px solid var(--ink2)}
+.legend i.l{width:16px;height:3px;border-radius:2px;vertical-align:middle}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.stat b{display:block;font:600 34px/1 var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;line-height:1.3;color:var(--ink2);display:block;margin-top:3px}
+.note{border-left:3px solid var(--sel);padding:2px 0 2px 12px;font-size:15.5px;color:var(--ink2);max-width:72ch}
+pre{margin:0;overflow-x:auto;background:var(--wash);border-radius:3px;padding:12px 14px;font:400 13.5px/1.55 var(--mono);color:var(--ink)}
+code{font:400 .88em var(--mono)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th{font:600 15px/1.15 var(--display);letter-spacing:.03em;text-align:left;color:var(--ink2);border-bottom:1px solid var(--ink3);padding:5px 10px 5px 0;vertical-align:bottom}
+td{border-bottom:1px solid var(--line);padding:5px 10px 5px 0;vertical-align:top}
+td.n,th.n{text-align:right;font-family:var(--mono);font-size:13.5px}
+details summary{cursor:pointer;font-size:14px;color:var(--ink2)}
+details[open] summary{margin-bottom:6px}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--sheet);font-size:13.5px;line-height:1.35;padding:6px 8px;border-radius:3px;max-width:260px}
+.swapdot{cursor:pointer}
+.swapdot:hover circle{stroke-width:3}
+.swapdot circle,.swapdot{transition:transform .35s ease}
+footer{padding-block:30px;border-top:1px solid var(--line);font-size:14px;color:var(--ink3)}
+@media (prefers-reduced-motion:reduce){.swapdot,.swapdot circle{transition:none}}
+@media (max-width:820px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}section{padding-block:40px}}
+</style>
+
+<nav><div class="wrap"><b>mapselect</b><a href="#lab">Try it</a><a href="#swap">How it works</a><a href="#plan">Plan an audit</a><a href="#evidence">Evidence</a><a href="#use">Use it</a></div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>Map uncertainty can fail at the places a map selects.</h1>
+<p class="lede">Machine-learning maps help choose where carbon is credited and where aid goes. Intervals that hold on average can be too narrow or needlessly wide at exactly those places. mapselect calibrates each selected place only on audited places the same rule would have selected.</p>
+</div></header>
+
+<section id="lab" style="border-top:0;padding-top:0"><div class="wrap">
+<div class="grid2">
+ <div class="panel">
+  <canvas id="map" aria-label="Synthetic map with audited places, candidates, selected places and the reference set"></canvas>
+  <div class="legend"><span><i class="o"></i>Audited</span><span><i style="background:var(--ink3)"></i>Candidate</span><span><i style="background:var(--sel)"></i>Selected</span><span><i style="background:var(--ref)"></i>Reference set</span></div>
+  <div class="controls">
+   <label class="c" for="rule">Selection rule<select id="rule"><option value="top">Highest predicted</option><option value="bottom">Lowest predicted</option><option value="quota">Highest in each of 5 regions</option><option value="budget">Budget: value per travel cost</option></select></label>
+   <label class="c" for="share"><span>Share selected <output id="shareO"></output></span><input id="share" type="range" min="1" max="20" step="1" value="5"></label>
+   <label class="c" for="audit"><span>Audited places <output id="auditO"></output></span><input id="audit" type="range" min="40" max="800" step="10" value="600"></label>
+   <label class="c" for="growth"><span>Errors grow with value <output id="growthO"></output></span><input id="growth" type="range" min="0" max="100" step="5" value="60"></label>
+   <label class="c" for="score">Error scale<select id="score"><option value="raw">One width for all places</option><option value="scaled">Width scaled by modelled spread</option></select></label>
+  </div>
+  <div class="btns"><button id="redraw" class="alt">Draw another audit</button><button id="run">Run 400 more audits</button><span class="cap" id="runs" aria-live="polite"></span></div>
+ </div>
+ <div class="panel">
+  <h3>Do intervals cover the truth 90% of the time?</h3>
+  <div id="bars"></div>
+  <div class="stats"><div class="stat"><b id="sInf"></b><span>of JOMI intervals are infinite, counted as covering</span></div><div class="stat"><b id="sR"></b><span>audited places in a typical reference set</span></div><div class="stat"><b id="sW"></b><span>JOMI half-width against split CP (finite only)</span></div></div>
+  <h3>Selected places in this audit</h3>
+  <div id="errs"></div>
+  <div class="legend"><span><i class="l" style="background:var(--band);height:10px"></i>Split CP interval</span><span><i class="l" style="background:var(--ref)"></i>JOMI interval</span><span><i style="background:var(--ink2)"></i>Error, inside split CP</span><span><i style="background:var(--miss)"></i>Error, outside split CP</span></div>
+  <p class="src">Simulated in your browser on a synthetic map of 1,500 places. A teaching model: the settings change the answer, and these numbers are not results from real data.</p>
+ </div>
+</div>
+</div></section>
+
+<section id="swap"><div class="wrap">
+<div class="head"><h2>Which audited places count?</h2><p class="lede">Ask one question of each audited place: if it swapped places with a selected one, would the rule still select that slot? The places that pass are the reference set, and they are the fair comparison, because they went through the same rule.</p></div>
+<div class="panel">
+ <div class="controls" style="max-width:520px"><label class="c" for="swapK"><span>Places the rule selects <output id="swapKO"></output></span><input id="swapK" type="range" min="1" max="6" value="3"></label></div>
+ <div id="swapPlot"></div>
+ <p id="swapText" class="note" aria-live="polite"></p>
+ <div class="legend"><span><i style="background:var(--sel)"></i>Selected candidate</span><span><i style="background:var(--ink3)"></i>Other candidate</span><span><i style="background:var(--ref)"></i>Audited, in the reference set</span><span><i class="o"></i>Audited, not in it</span></div>
+ <p class="cap">Click any audited place to try the swap. For this rule the answer has a closed form: an audited place passes if its predicted value beats the first candidate left out. mapselect has closed forms for quotas, budgets and publication masks too, so no swap is ever rerun.</p>
+</div>
+</div></section>
+
+<section id="plan"><div class="wrap">
+<div class="head"><h2>Plan the audit before visiting a single plot</h2><p class="lede">Reference sets depend only on ranks, so their size follows from counts you already know. Change the numbers and the audit updates.</p></div>
+<div class="grid2">
+ <div class="panel">
+  <div class="controls">
+   <label class="c" for="pPop">Places in the population<input id="pPop" type="number" min="100" max="100000000" value="6000"></label>
+   <label class="c" for="pK">Places the rule selects<input id="pK" type="number" min="1" value="30"></label>
+   <label class="c" for="pProb">Chance of finite intervals<select id="pProb"><option value="0.5">0.5</option><option value="0.9" selected>0.9</option><option value="0.99">0.99</option></select></label>
+  </div>
+  <div id="planPlot"></div>
+  <div class="legend" id="planLegend"></div>
+ </div>
+ <div class="panel">
+  <h3>Audit needed</h3>
+  <div class="stats" id="planStats"></div>
+  <p class="note">Targeting works because audited places below the rule's cutoff never enter a reference set. It suits a new audit that must come before the decision. If you can audit after selecting, measure the selected places or sample among them: this selection effect does not arise there. An existing inventory cannot be redrawn.</p>
+  <h3>Coverage floor in one region</h3>
+  <div class="controls">
+   <label class="c" for="fM">Selected places in the region<input id="fM" type="number" min="1" value="3"></label>
+   <label class="c" for="fT">Floor wanted<input id="fT" type="number" min="0" max="0.89" step="0.01" value="0.8"></label>
+  </div>
+  <div class="stats"><div class="stat"><b id="fN"></b><span>audited places, for 3,000 candidates or your population if larger</span></div></div>
+  <p class="cap">A floor is what an audit can guarantee, computed with SC-GeoCCP's penalty of 0.95. Observed coverage is often well above it, and a region can still fall short of 0.90.</p>
+ </div>
+</div>
+</div></section>
+
+<section id="evidence"><div class="wrap">
+<div class="head"><h2>What happened on real data</h2><p class="lede">From the manuscript's stored results. Maps were fitted separately and audits drawn at random 100 times per setting or map.</p></div>
+<div class="grid2 even">
+ <div class="panel">
+  <h3>Coverage of the selected 5%</h3>
+  <div class="controls" style="grid-template-columns:minmax(0,1fr)"><label class="c" for="covM">Compare JOMI with<select id="covM"></select></label></div>
+  <div id="covPlot"></div>
+  <div class="legend"><span><i style="background:var(--ref)"></i>JOMI</span><span><i style="background:var(--org)"></i><span id="covLab"></span></span><span><i class="l" style="background:var(--ink3)"></i>Target 0.90</span></div>
+  <p class="src">Infinite intervals count as covering; CAMELS has 28% for JOMI. * CDC PLACES outcomes are model outputs, not measurements. Normalized CP and fixed bins come close without a guarantee.</p>
+  <details><summary>Table</summary><div class="tw" id="covTab"></div></details>
+ </div>
+ <div class="panel">
+  <h3>Carbon credits: declared and realized risk</h3>
+  <div class="controls" style="grid-template-columns:minmax(0,1fr)"><label class="c" for="riskM">Map<select id="riskM"></select></label></div>
+  <div id="riskPlot"></div>
+  <div class="legend"><span><i class="l" style="background:var(--org)"></i>Survey-calibrated</span><span><i class="l" style="background:var(--ink3)"></i>Map error layer</span><span><i class="l" style="background:var(--ref)"></i>Selection-aware</span></div>
+  <p class="src">FIA plots, highest 1%, audit share 0.5, 20 maps × 100 audits, deduction applied at every declared risk. The selection-aware estimate is an asymptotic result. Plots are scattered, and credits here are on standing biomass, not on change against a baseline.</p>
+ </div>
+ <div class="panel">
+  <h3>Regional floors in 23 African countries</h3>
+  <div id="floorPlot"></div>
+  <div class="legend"><span><i style="background:var(--vio)"></i>Country, SC-GeoCCP</span><span><i class="l" style="background:var(--ink3)"></i>Coverage = floor</span></div>
+  <p class="src">DHS, poorest villages under a 5% country quota; country summaries only. Every country is above its floor, and Côte d'Ivoire is lowest at 0.80.</p>
+  <details><summary>Table</summary><div class="tw" id="floorTab"></div></details>
+ </div>
+ <div class="panel">
+  <h3>A 30-plot project under different audits</h3>
+  <div class="tw" id="armTab"></div>
+  <p class="src">6,000 non-training FIA plots; site-attribute maps and ESA CCI, 20 maps × 100 audits. Risk is VCS over-crediting: selection-aware with the deduction always applied, survey-calibrated under the VCS rule; 1/3 is declared. Credit is selection-aware over the true total.</p>
+ </div>
+</div>
+<div class="grid2 even">
+ <div class="panel">
+  <h3>Thresholds on one laptop core</h3>
+  <div id="benchPlot"></div>
+  <div class="legend"><span><i class="l" style="background:var(--ref)"></i>Budget</span><span><i class="l" style="background:var(--vio)"></i>Quota</span><span><i class="l" style="background:var(--grn)"></i>Top-K</span><span><i class="l" style="background:var(--org)"></i>Budget, per-unit loop (est.)</span><span><i class="l" style="background:var(--ink3)"></i>Budget, literal swaps (est.)</span></div>
+  <p class="src">Synthetic keys and scores; audit = candidates/10, selected = candidates/100. The per-unit loop is not charged for its precomputation, and it is as fast or faster below 10⁵ candidates. Top-K already had closed forms.</p>
+ </div>
+ <div class="panel">
+  <h3>SC-GeoCCP, seconds per selected place</h3>
+  <div id="lpPlot"></div>
+  <div class="legend"><span><i class="l" style="background:var(--ref)"></i>Active set, warm start</span><span><i class="l" style="background:var(--vio)"></i>Full dual</span><span><i class="l" style="background:var(--org)"></i>Sparse primal</span><span><i class="l" style="background:var(--ink3)"></i>Earlier dense code</span></div>
+  <p class="src">Synthetic, 60 basis functions, one reference set per size. Up to about 10³ reference places there is little to gain; at 10⁵ the first, cold unit takes 4.2 s and no full rule was run.</p>
+ </div>
+</div>
+</div></section>
+
+<section id="use"><div class="wrap">
+<div class="head"><h2>Use it</h2><p class="lede">Python, with numpy and scipy only. Rule, reference set, interval.</p></div>
+<div class="grid2">
+ <div class="panel">
+  <pre id="code">pip install .     # from the package folder; not yet on PyPI
+
+import numpy as np
+import mapselect as ms
+
+# mu: the map; audited, candidates: a random split of one population
+# y is known at the audited places only
+sel = ms.top_k(mu[audited], mu[candidates], K=30)
+scores = np.abs(y[audited] - mu[audited]) / sigma[audited]
+q = ms.jomi(scores, sel, alpha=0.1)       # +inf if too few audited places pass
+J = candidates[sel.selected]
+lower, upper = mu[J] - q * sigma[J], mu[J] + q * sigma[J]
+
+ms.plan.n_for_finite(m=3000, K=30)        # audit size, before any outcome
+ms.plan.n_budget_for_finite(300, K=30)    # the same, inside the top 300 places</pre>
+  <div class="btns"><button id="copy" class="alt">Copy code</button><span class="cap" id="copied" aria-live="polite"></span></div>
+ </div>
+ <div class="panel">
+  <div class="tw"><table><thead><tr><th>Question</th><th>Function</th><th>Guarantee</th></tr></thead><tbody>
+   <tr><td>Interval at each selected place</td><td><code>jomi</code></td><td>Coverage ≥ 1 − α among selected, on average over audits</td></tr>
+   <tr><td>Project total</td><td><code>exact_lower_total</code></td><td>Finite sample, needs a known outcome floor</td></tr>
+   <tr><td></td><td><code>selection_aware_total</code></td><td>Asymptotic</td></tr>
+   <tr><td>Which places to fund</td><td><code>cfbh</code></td><td>False discovery rate ≤ q</td></tr>
+   <tr><td>Coverage in a region</td><td><code>sc_geoccp</code></td><td>Theorem floors, which may be vacuous</td></tr>
+   <tr><td>Audit size</td><td><code>plan.*</code></td><td>Uses no outcomes</td></tr>
+  </tbody></table></div>
+  <p class="note">The guarantees need a random audit of one finite population or of a stratum fixed in advance, a separately fitted map, and a rule that uses covariates alone. Rules that read audited outcomes, audits that are not random and transfer to unsampled regions fall outside them.</p>
+ </div>
+</div>
+</div></section>
+
+<footer><div class="wrap">mapselect 0.1.0, MIT licence. Methods follow Jin and Ren's joint Mondrian conformal inference. Manuscript in preparation; results here have not been peer reviewed.</div></footer>
+<div id="tip" hidden></div>
+
+<script>
+"use strict";
+const DATA={"cov":[{"s":"DHS wealth","m":"Split CP","c":0.9817,"i":0.0},{"s":"DHS wealth, no imagery","m":"Split CP","c":0.9782,"i":0.0},{"s":"FIA biomass","m":"Split CP","c":0.3471,"i":0.0},{"s":"CAMELS runoff","m":"Split CP","c":0.413,"i":0.0},{"s":"County vote share","m":"Split CP","c":0.7519,"i":0.0},{"s":"Seattle house price","m":"Split CP","c":0.7429,"i":0.0},{"s":"ERA5 temperature","m":"Split CP","c":0.8012,"i":0.0},{"s":"Stroke*","m":"Split CP","c":0.7103,"i":0.0},{"s":"Diabetes*","m":"Split CP","c":0.7443,"i":0.0},{"s":"High blood pressure*","m":"Split CP","c":0.836,"i":0.0},{"s":"Obesity*","m":"Split CP","c":0.932,"i":0.0},{"s":"DHS wealth","m":"Normalized CP","c":0.9401,"i":0.0},{"s":"DHS wealth, no imagery","m":"Normalized CP","c":0.9245,"i":0.0},{"s":"FIA biomass","m":"Normalized CP","c":0.8519,"i":0.0},{"s":"CAMELS runoff","m":"Normalized CP","c":0.823,"i":0.0},{"s":"County vote share","m":"Normalized CP","c":0.8906,"i":0.0},{"s":"Seattle house price","m":"Normalized CP","c":0.9133,"i":0.0},{"s":"ERA5 temperature","m":"Normalized CP","c":0.9043,"i":0.0},{"s":"Stroke*","m":"Normalized CP","c":0.9154,"i":0.0},{"s":"Diabetes*","m":"Normalized CP","c":0.9263,"i":0.0},{"s":"High blood pressure*","m":"Normalized CP","c":0.9543,"i":0.0},{"s":"Obesity*","m":"Normalized CP","c":0.9069,"i":0.0},{"s":"DHS wealth","m":"GeoCP","c":0.9762,"i":0.0},{"s":"DHS wealth, no imagery","m":"GeoCP","c":0.9729,"i":0.0},{"s":"FIA biomass","m":"GeoCP","c":0.6298,"i":0.0},{"s":"CAMELS runoff","m":"GeoCP","c":0.758,"i":0.0},{"s":"County vote share","m":"GeoCP","c":0.7438,"i":0.0},{"s":"Seattle house price","m":"GeoCP","c":0.7644,"i":0.0},{"s":"ERA5 temperature","m":"GeoCP","c":0.8855,"i":0.0},{"s":"Stroke*","m":"GeoCP","c":0.7246,"i":0.0},{"s":"Diabetes*","m":"GeoCP","c":0.7554,"i":0.0},{"s":"High blood pressure*","m":"GeoCP","c":0.8343,"i":0.0},{"s":"Obesity*","m":"GeoCP","c":0.9094,"i":0.0},{"s":"DHS wealth","m":"LSCP","c":0.9695,"i":0.0},{"s":"DHS wealth, no imagery","m":"LSCP","c":0.9651,"i":0.0},{"s":"FIA biomass","m":"LSCP","c":0.6413,"i":0.0},{"s":"CAMELS runoff","m":"LSCP","c":0.771,"i":0.0},{"s":"County vote share","m":"LSCP","c":0.7381,"i":0.0},{"s":"Seattle house price","m":"LSCP","c":0.7487,"i":0.0},{"s":"ERA5 temperature","m":"LSCP","c":0.8686,"i":0.0},{"s":"Stroke*","m":"LSCP","c":0.722,"i":0.0},{"s":"Diabetes*","m":"LSCP","c":0.7531,"i":0.0},{"s":"High blood pressure*","m":"LSCP","c":0.8366,"i":0.0},{"s":"Obesity*","m":"LSCP","c":0.864,"i":0.0},{"s":"DHS wealth","m":"RLCP","c":0.9797,"i":0.0},{"s":"DHS wealth, no imagery","m":"RLCP","c":0.9755,"i":0.0},{"s":"FIA biomass","m":"RLCP","c":0.5944,"i":0.0},{"s":"CAMELS runoff","m":"RLCP","c":0.504,"i":0.0},{"s":"County vote share","m":"RLCP","c":0.7509,"i":0.0},{"s":"Seattle house price","m":"RLCP","c":0.7469,"i":0.0},{"s":"ERA5 temperature","m":"RLCP","c":0.85,"i":0.0},{"s":"Stroke*","m":"RLCP","c":0.7117,"i":0.001},{"s":"Diabetes*","m":"RLCP","c":0.7449,"i":0.001},{"s":"High blood pressure*","m":"RLCP","c":0.8357,"i":0.0},{"s":"Obesity*","m":"RLCP","c":0.932,"i":0.0},{"s":"DHS wealth","m":"Regression kriging","c":0.9792,"i":0.0},{"s":"DHS wealth, no imagery","m":"Regression kriging","c":0.9791,"i":0.0},{"s":"FIA biomass","m":"Regression kriging","c":0.5048,"i":0.0},{"s":"CAMELS runoff","m":"Regression kriging","c":0.512,"i":0.0},{"s":"County vote share","m":"Regression kriging","c":0.8115,"i":0.0},{"s":"Seattle house price","m":"Regression kriging","c":0.7771,"i":0.0},{"s":"ERA5 temperature","m":"Regression kriging","c":0.8478,"i":0.0},{"s":"Stroke*","m":"Regression kriging","c":0.7411,"i":0.0},{"s":"Diabetes*","m":"Regression kriging","c":0.78,"i":0.0},{"s":"High blood pressure*","m":"Regression kriging","c":0.8694,"i":0.0},{"s":"Obesity*","m":"Regression kriging","c":0.9389,"i":0.0},{"s":"DHS wealth","m":"QRF","c":0.9009,"i":0.0},{"s":"DHS wealth, no imagery","m":"QRF","c":0.8777,"i":0.0},{"s":"FIA biomass","m":"QRF","c":0.9497,"i":0.0},{"s":"CAMELS runoff","m":"QRF","c":0.918,"i":0.0},{"s":"County vote share","m":"QRF","c":0.9081,"i":0.0},{"s":"Seattle house price","m":"QRF","c":0.9169,"i":0.0},{"s":"ERA5 temperature","m":"QRF","c":0.9551,"i":0.0},{"s":"Stroke*","m":"QRF","c":0.9574,"i":0.0},{"s":"Diabetes*","m":"QRF","c":0.9766,"i":0.0},{"s":"High blood pressure*","m":"QRF","c":0.9743,"i":0.0},{"s":"Obesity*","m":"QRF","c":0.9331,"i":0.0},{"s":"DHS wealth","m":"JOMI","c":0.9063,"i":0.0},{"s":"DHS wealth, no imagery","m":"JOMI","c":0.9024,"i":0.0},{"s":"FIA biomass","m":"JOMI","c":0.9001,"i":0.0},{"s":"CAMELS runoff","m":"JOMI","c":0.947,"i":0.28},{"s":"County vote share","m":"JOMI","c":0.9072,"i":0.0},{"s":"Seattle house price","m":"JOMI","c":0.9056,"i":0.0},{"s":"ERA5 temperature","m":"JOMI","c":0.9038,"i":0.0},{"s":"Stroke*","m":"JOMI","c":0.9134,"i":0.0},{"s":"Diabetes*","m":"JOMI","c":0.912,"i":0.0},{"s":"High blood pressure*","m":"JOMI","c":0.9186,"i":0.0},{"s":"Obesity*","m":"JOMI","c":0.912,"i":0.0},{"s":"DHS wealth","m":"SC-GeoCCP","c":0.9164,"i":0.0},{"s":"DHS wealth, no imagery","m":"SC-GeoCCP","c":0.9139,"i":0.0},{"s":"FIA biomass","m":"SC-GeoCCP","c":0.9095,"i":0.0},{"s":"CAMELS runoff","m":"SC-GeoCCP","c":0.947,"i":0.28},{"s":"County vote share","m":"SC-GeoCCP","c":0.9147,"i":0.0},{"s":"Seattle house price","m":"SC-GeoCCP","c":0.9229,"i":0.0},{"s":"ERA5 temperature","m":"SC-GeoCCP","c":0.9131,"i":0.0},{"s":"Stroke*","m":"SC-GeoCCP","c":0.9243,"i":0.0},{"s":"Diabetes*","m":"SC-GeoCCP","c":0.9306,"i":0.0},{"s":"High blood pressure*","m":"SC-GeoCCP","c":0.9309,"i":0.0},{"s":"Obesity*","m":"SC-GeoCCP","c":0.928,"i":0.0}],"risk":{"Full ground inventory":{"Map error layer":[[0.005,0.017],[0.01,0.0255],[0.015,0.0295],[0.02,0.0335],[0.025,0.038],[0.03,0.038],[0.035,0.039],[0.04,0.0425],[0.045,0.0435],[0.05,0.0455],[0.055,0.048],[0.06,0.048],[0.065,0.0515],[0.07,0.052],[0.075,0.053],[0.08,0.055],[0.085,0.057],[0.09,0.0585],[0.095,0.0605],[0.1,0.063],[0.105,0.065],[0.11,0.066],[0.115,0.0685],[0.12,0.07],[0.125,0.072],[0.13,0.0745],[0.135,0.0755],[0.14,0.076],[0.145,0.0775],[0.15,0.0795],[0.155,0.08],[0.16,0.082],[0.165,0.0835],[0.17,0.0845],[0.175,0.086],[0.18,0.088],[0.185,0.0895],[0.19,0.0905],[0.195,0.091],[0.2,0.0915],[0.205,0.093],[0.21,0.095],[0.215,0.096],[0.22,0.0975],[0.225,0.099],[0.23,0.1015],[0.235,0.102],[0.24,0.1035],[0.245,0.1035],[0.25,0.1045],[0.255,0.106],[0.26,0.108],[0.265,0.1105],[0.27,0.113],[0.275,0.1145],[0.28,0.115],[0.285,0.1165],[0.29,0.117],[0.295,0.1185],[0.3,0.12],[0.305,0.1205],[0.31,0.122],[0.315,0.1235],[0.32,0.1255],[0.325,0.1255],[0.33,0.127],[0.335,0.1295],[0.34,0.132],[0.345,0.134],[0.35,0.1385],[0.355,0.1395],[0.36,0.1405],[0.365,0.1425],[0.37,0.1445],[0.375,0.147],[0.38,0.1505],[0.385,0.153],[0.39,0.1545],[0.395,0.1565],[0.4,0.159],[0.405,0.1625],[0.41,0.1635],[0.415,0.165],[0.42,0.167],[0.425,0.169],[0.43,0.1705],[0.435,0.1725],[0.44,0.1745],[0.445,0.175],[0.45,0.1765],[0.455,0.177],[0.46,0.178],[0.465,0.1785],[0.47,0.18],[0.475,0.1825],[0.48,0.185],[0.485,0.185],[0.49,0.187],[0.495,0.189],[0.5,0.191]],"Selection-aware estimate (ours)":[[0.005,0.003],[0.01,0.0055],[0.015,0.0065],[0.02,0.0085],[0.025,0.015],[0.03,0.0205],[0.035,0.023],[0.04,0.027],[0.045,0.031],[0.05,0.0345],[0.055,0.0395],[0.06,0.042],[0.065,0.048],[0.07,0.053],[0.075,0.057],[0.08,0.063],[0.085,0.0695],[0.09,0.0735],[0.095,0.0815],[0.1,0.0885],[0.105,0.095],[0.11,0.099],[0.115,0.104],[0.12,0.109],[0.125,0.115],[0.13,0.117],[0.135,0.125],[0.14,0.131],[0.145,0.1365],[0.15,0.144],[0.155,0.1525],[0.16,0.1565],[0.165,0.1605],[0.17,0.1705],[0.175,0.1775],[0.18,0.1815],[0.185,0.1865],[0.19,0.1885],[0.195,0.1955],[0.2,0.204],[0.205,0.209],[0.21,0.214],[0.215,0.221],[0.22,0.2255],[0.225,0.229],[0.23,0.2325],[0.235,0.2355],[0.24,0.2435],[0.245,0.247],[0.25,0.254],[0.255,0.2625],[0.26,0.27],[0.265,0.274],[0.27,0.279],[0.275,0.2835],[0.28,0.291],[0.285,0.2955],[0.29,0.2985],[0.295,0.303],[0.3,0.312],[0.305,0.321],[0.31,0.3255],[0.315,0.3305],[0.32,0.3345],[0.325,0.342],[0.33,0.346],[0.335,0.3505],[0.34,0.3555],[0.345,0.361],[0.35,0.365],[0.355,0.3705],[0.36,0.3795],[0.365,0.3825],[0.37,0.3865],[0.375,0.39],[0.38,0.393],[0.385,0.398],[0.39,0.402],[0.395,0.4055],[0.4,0.413],[0.405,0.418],[0.41,0.422],[0.415,0.4275],[0.42,0.4305],[0.425,0.433],[0.43,0.4365],[0.435,0.4395],[0.44,0.4415],[0.445,0.447],[0.45,0.4515],[0.455,0.4585],[0.46,0.4645],[0.465,0.4705],[0.47,0.4745],[0.475,0.479],[0.48,0.484],[0.485,0.491],[0.49,0.494],[0.495,0.497],[0.5,0.5]],"Survey-calibrated estimate":[[0.005,0.119],[0.01,0.122],[0.015,0.1255],[0.02,0.129],[0.025,0.132],[0.03,0.1335],[0.035,0.1355],[0.04,0.136],[0.045,0.137],[0.05,0.139],[0.055,0.1395],[0.06,0.1415],[0.065,0.1425],[0.07,0.144],[0.075,0.147],[0.08,0.1475],[0.085,0.1485],[0.09,0.151],[0.095,0.1525],[0.1,0.1535],[0.105,0.1535],[0.11,0.154],[0.115,0.1545],[0.12,0.1555],[0.125,0.1565],[0.13,0.1595],[0.135,0.1595],[0.14,0.1605],[0.145,0.1615],[0.15,0.162],[0.155,0.162],[0.16,0.162],[0.165,0.1625],[0.17,0.163],[0.175,0.164],[0.18,0.165],[0.185,0.1655],[0.19,0.1665],[0.195,0.168],[0.2,0.1685],[0.205,0.1705],[0.21,0.171],[0.215,0.172],[0.22,0.1725],[0.225,0.1725],[0.23,0.1725],[0.235,0.173],[0.24,0.1745],[0.245,0.1745],[0.25,0.1745],[0.255,0.175],[0.26,0.175],[0.265,0.175],[0.27,0.1755],[0.275,0.176],[0.28,0.176],[0.285,0.176],[0.29,0.1765],[0.295,0.1765],[0.3,0.177],[0.305,0.177],[0.31,0.1775],[0.315,0.178],[0.32,0.1785],[0.325,0.1795],[0.33,0.1795],[0.335,0.1795],[0.34,0.18],[0.345,0.181],[0.35,0.1815],[0.355,0.1815],[0.36,0.183],[0.365,0.183],[0.37,0.183],[0.375,0.183],[0.38,0.183],[0.385,0.1835],[0.39,0.1835],[0.395,0.184],[0.4,0.184],[0.405,0.1845],[0.41,0.185],[0.415,0.1865],[0.42,0.1875],[0.425,0.188],[0.43,0.1895],[0.435,0.1895],[0.44,0.19],[0.445,0.1905],[0.45,0.1905],[0.455,0.191],[0.46,0.191],[0.465,0.191],[0.47,0.191],[0.475,0.191],[0.48,0.1915],[0.485,0.1915],[0.49,0.192],[0.495,0.1925],[0.5,0.193]]},"Site + canopy height":{"Map error layer":[[0.005,0.023],[0.01,0.033],[0.015,0.041],[0.02,0.0485],[0.025,0.053],[0.03,0.058],[0.035,0.063],[0.04,0.07],[0.045,0.075],[0.05,0.0795],[0.055,0.0845],[0.06,0.0865],[0.065,0.0905],[0.07,0.096],[0.075,0.102],[0.08,0.1085],[0.085,0.112],[0.09,0.1175],[0.095,0.1215],[0.1,0.1255],[0.105,0.1295],[0.11,0.1335],[0.115,0.1395],[0.12,0.145],[0.125,0.151],[0.13,0.155],[0.135,0.159],[0.14,0.162],[0.145,0.166],[0.15,0.17],[0.155,0.174],[0.16,0.177],[0.165,0.18],[0.17,0.1835],[0.175,0.1885],[0.18,0.1905],[0.185,0.196],[0.19,0.1985],[0.195,0.2035],[0.2,0.208],[0.205,0.211],[0.21,0.2125],[0.215,0.2185],[0.22,0.222],[0.225,0.225],[0.23,0.229],[0.235,0.232],[0.24,0.236],[0.245,0.2395],[0.25,0.2415],[0.255,0.2455],[0.26,0.249],[0.265,0.252],[0.27,0.2565],[0.275,0.2595],[0.28,0.2635],[0.285,0.2665],[0.29,0.272],[0.295,0.275],[0.3,0.278],[0.305,0.2835],[0.31,0.2865],[0.315,0.2875],[0.32,0.292],[0.325,0.295],[0.33,0.2995],[0.335,0.302],[0.34,0.305],[0.345,0.3105],[0.35,0.3145],[0.355,0.32],[0.36,0.324],[0.365,0.325],[0.37,0.328],[0.375,0.3345],[0.38,0.3395],[0.385,0.3425],[0.39,0.3445],[0.395,0.3495],[0.4,0.3545],[0.405,0.358],[0.41,0.3605],[0.415,0.364],[0.42,0.3675],[0.425,0.37],[0.43,0.3725],[0.435,0.3765],[0.44,0.381],[0.445,0.3825],[0.45,0.3875],[0.455,0.392],[0.46,0.3965],[0.465,0.401],[0.47,0.404],[0.475,0.4085],[0.48,0.41],[0.485,0.413],[0.49,0.4165],[0.495,0.4215],[0.5,0.4245]],"Selection-aware estimate (ours)":[[0.005,0.0035],[0.01,0.0055],[0.015,0.0075],[0.02,0.011],[0.025,0.015],[0.03,0.0215],[0.035,0.026],[0.04,0.03],[0.045,0.0345],[0.05,0.0385],[0.055,0.043],[0.06,0.0485],[0.065,0.0545],[0.07,0.0575],[0.075,0.0605],[0.08,0.0635],[0.085,0.069],[0.09,0.076],[0.095,0.078],[0.1,0.086],[0.105,0.0905],[0.11,0.097],[0.115,0.102],[0.12,0.1075],[0.125,0.112],[0.13,0.1165],[0.135,0.119],[0.14,0.1235],[0.145,0.1275],[0.15,0.133],[0.155,0.136],[0.16,0.141],[0.165,0.147],[0.17,0.1505],[0.175,0.1575],[0.18,0.162],[0.185,0.166],[0.19,0.174],[0.195,0.1805],[0.2,0.1855],[0.205,0.191],[0.21,0.1975],[0.215,0.204],[0.22,0.215],[0.225,0.223],[0.23,0.227],[0.235,0.2305],[0.24,0.236],[0.245,0.241],[0.25,0.245],[0.255,0.249],[0.26,0.252],[0.265,0.2575],[0.27,0.261],[0.275,0.264],[0.28,0.2695],[0.285,0.2735],[0.29,0.278],[0.295,0.283],[0.3,0.2865],[0.305,0.2905],[0.31,0.296],[0.315,0.301],[0.32,0.3065],[0.325,0.3125],[0.33,0.317],[0.335,0.3215],[0.34,0.326],[0.345,0.331],[0.35,0.3375],[0.355,0.3395],[0.36,0.3465],[0.365,0.351],[0.37,0.3575],[0.375,0.3625],[0.38,0.365],[0.385,0.37],[0.39,0.379],[0.395,0.3845],[0.4,0.3885],[0.405,0.394],[0.41,0.399],[0.415,0.404],[0.42,0.407],[0.425,0.4115],[0.43,0.418],[0.435,0.426],[0.44,0.43],[0.445,0.4335],[0.45,0.439],[0.455,0.446],[0.46,0.4485],[0.465,0.453],[0.47,0.457],[0.475,0.463],[0.48,0.4665],[0.485,0.4735],[0.49,0.481],[0.495,0.486],[0.5,0.4885]],"Survey-calibrated estimate":[[0.005,0.21],[0.01,0.224],[0.015,0.236],[0.02,0.243],[0.025,0.2465],[0.03,0.252],[0.035,0.2595],[0.04,0.2645],[0.045,0.269],[0.05,0.274],[0.055,0.2775],[0.06,0.282],[0.065,0.2835],[0.07,0.286],[0.075,0.2875],[0.08,0.29],[0.085,0.295],[0.09,0.297],[0.095,0.2995],[0.1,0.304],[0.105,0.3055],[0.11,0.3075],[0.115,0.31],[0.12,0.315],[0.125,0.319],[0.13,0.3215],[0.135,0.322],[0.14,0.3245],[0.145,0.3255],[0.15,0.3275],[0.155,0.3295],[0.16,0.331],[0.165,0.3315],[0.17,0.3335],[0.175,0.334],[0.18,0.3355],[0.185,0.337],[0.19,0.338],[0.195,0.3395],[0.2,0.3415],[0.205,0.3445],[0.21,0.3445],[0.215,0.347],[0.22,0.348],[0.225,0.349],[0.23,0.352],[0.235,0.3535],[0.24,0.355],[0.245,0.357],[0.25,0.3575],[0.255,0.3595],[0.26,0.3605],[0.265,0.3625],[0.27,0.3625],[0.275,0.364],[0.28,0.366],[0.285,0.368],[0.29,0.3705],[0.295,0.3735],[0.3,0.375],[0.305,0.3755],[0.31,0.3755],[0.315,0.377],[0.32,0.3785],[0.325,0.38],[0.33,0.381],[0.335,0.384],[0.34,0.3855],[0.345,0.3865],[0.35,0.3875],[0.355,0.3895],[0.36,0.39],[0.365,0.3925],[0.37,0.3935],[0.375,0.3945],[0.38,0.395],[0.385,0.397],[0.39,0.3985],[0.395,0.4],[0.4,0.4],[0.405,0.401],[0.41,0.403],[0.415,0.403],[0.42,0.403],[0.425,0.4035],[0.43,0.4045],[0.435,0.4055],[0.44,0.408],[0.445,0.408],[0.45,0.41],[0.455,0.4115],[0.46,0.414],[0.465,0.415],[0.47,0.416],[0.475,0.4175],[0.48,0.4185],[0.485,0.419],[0.49,0.42],[0.495,0.42],[0.5,0.421]]},"Site attributes":{"Map error layer":[[0.005,0.011],[0.01,0.0165],[0.015,0.026],[0.02,0.0375],[0.025,0.0445],[0.03,0.055],[0.035,0.0625],[0.04,0.069],[0.045,0.0785],[0.05,0.087],[0.055,0.092],[0.06,0.101],[0.065,0.1105],[0.07,0.119],[0.075,0.1255],[0.08,0.14],[0.085,0.1445],[0.09,0.1505],[0.095,0.158],[0.1,0.165],[0.105,0.171],[0.11,0.179],[0.115,0.187],[0.12,0.195],[0.125,0.2005],[0.13,0.209],[0.135,0.2195],[0.14,0.227],[0.145,0.2365],[0.15,0.2435],[0.155,0.2495],[0.16,0.2575],[0.165,0.2665],[0.17,0.273],[0.175,0.2825],[0.18,0.288],[0.185,0.2985],[0.19,0.308],[0.195,0.314],[0.2,0.322],[0.205,0.329],[0.21,0.3375],[0.215,0.346],[0.22,0.3575],[0.225,0.366],[0.23,0.377],[0.235,0.384],[0.24,0.391],[0.245,0.398],[0.25,0.405],[0.255,0.411],[0.26,0.4165],[0.265,0.4235],[0.27,0.4335],[0.275,0.439],[0.28,0.4445],[0.285,0.452],[0.29,0.4585],[0.295,0.4625],[0.3,0.47],[0.305,0.475],[0.31,0.482],[0.315,0.489],[0.32,0.494],[0.325,0.5],[0.33,0.5065],[0.335,0.513],[0.34,0.519],[0.345,0.5275],[0.35,0.531],[0.355,0.536],[0.36,0.5415],[0.365,0.5475],[0.37,0.555],[0.375,0.5625],[0.38,0.5675],[0.385,0.5725],[0.39,0.578],[0.395,0.5835],[0.4,0.591],[0.405,0.596],[0.41,0.601],[0.415,0.6065],[0.42,0.613],[0.425,0.618],[0.43,0.6245],[0.435,0.634],[0.44,0.6385],[0.445,0.643],[0.45,0.6485],[0.455,0.655],[0.46,0.658],[0.465,0.6665],[0.47,0.6715],[0.475,0.6755],[0.48,0.682],[0.485,0.689],[0.49,0.6945],[0.495,0.697],[0.5,0.7035]],"Selection-aware estimate (ours)":[[0.005,0.002],[0.01,0.0075],[0.015,0.0095],[0.02,0.0125],[0.025,0.0165],[0.03,0.019],[0.035,0.023],[0.04,0.0245],[0.045,0.0305],[0.05,0.0365],[0.055,0.0435],[0.06,0.049],[0.065,0.055],[0.07,0.0605],[0.075,0.0645],[0.08,0.068],[0.085,0.074],[0.09,0.0785],[0.095,0.0845],[0.1,0.0885],[0.105,0.094],[0.11,0.098],[0.115,0.102],[0.12,0.106],[0.125,0.113],[0.13,0.121],[0.135,0.126],[0.14,0.131],[0.145,0.136],[0.15,0.1435],[0.155,0.1475],[0.16,0.154],[0.165,0.1585],[0.17,0.1635],[0.175,0.1675],[0.18,0.1715],[0.185,0.1775],[0.19,0.1835],[0.195,0.1895],[0.2,0.1945],[0.205,0.1985],[0.21,0.2035],[0.215,0.2065],[0.22,0.2135],[0.225,0.2165],[0.23,0.2205],[0.235,0.228],[0.24,0.231],[0.245,0.2325],[0.25,0.24],[0.255,0.2465],[0.26,0.25],[0.265,0.2565],[0.27,0.2635],[0.275,0.2675],[0.28,0.276],[0.285,0.284],[0.29,0.2875],[0.295,0.2925],[0.3,0.2975],[0.305,0.304],[0.31,0.3085],[0.315,0.3115],[0.32,0.3185],[0.325,0.3245],[0.33,0.328],[0.335,0.333],[0.34,0.3385],[0.345,0.3425],[0.35,0.348],[0.355,0.3525],[0.36,0.357],[0.365,0.36],[0.37,0.3645],[0.375,0.3695],[0.38,0.3735],[0.385,0.377],[0.39,0.3825],[0.395,0.3875],[0.4,0.392],[0.405,0.396],[0.41,0.4035],[0.415,0.408],[0.42,0.4135],[0.425,0.419],[0.43,0.4255],[0.435,0.4305],[0.44,0.4365],[0.445,0.441],[0.45,0.448],[0.455,0.454],[0.46,0.4585],[0.465,0.462],[0.47,0.47],[0.475,0.4755],[0.48,0.479],[0.485,0.482],[0.49,0.487],[0.495,0.491],[0.5,0.4945]],"Survey-calibrated estimate":[[0.005,0.2905],[0.01,0.328],[0.015,0.356],[0.02,0.369],[0.025,0.3865],[0.03,0.3965],[0.035,0.4075],[0.04,0.4175],[0.045,0.428],[0.05,0.4355],[0.055,0.44],[0.06,0.4475],[0.065,0.4545],[0.07,0.4605],[0.075,0.4655],[0.08,0.4715],[0.085,0.4775],[0.09,0.48],[0.095,0.485],[0.1,0.489],[0.105,0.4955],[0.11,0.5005],[0.115,0.5055],[0.12,0.507],[0.125,0.5115],[0.13,0.5155],[0.135,0.517],[0.14,0.521],[0.145,0.5255],[0.15,0.53],[0.155,0.532],[0.16,0.535],[0.165,0.539],[0.17,0.5405],[0.175,0.5425],[0.18,0.5465],[0.185,0.5495],[0.19,0.5525],[0.195,0.555],[0.2,0.5575],[0.205,0.562],[0.21,0.5635],[0.215,0.5645],[0.22,0.5655],[0.225,0.5695],[0.23,0.5725],[0.235,0.5775],[0.24,0.5815],[0.245,0.583],[0.25,0.5855],[0.255,0.588],[0.26,0.588],[0.265,0.592],[0.27,0.5935],[0.275,0.596],[0.28,0.5985],[0.285,0.5995],[0.29,0.6005],[0.295,0.604],[0.3,0.605],[0.305,0.6085],[0.31,0.611],[0.315,0.6135],[0.32,0.6155],[0.325,0.6165],[0.33,0.619],[0.335,0.6235],[0.34,0.624],[0.345,0.625],[0.35,0.6285],[0.355,0.6325],[0.36,0.6345],[0.365,0.6375],[0.37,0.6395],[0.375,0.642],[0.38,0.646],[0.385,0.6475],[0.39,0.649],[0.395,0.652],[0.4,0.6545],[0.405,0.6555],[0.41,0.659],[0.415,0.6625],[0.42,0.663],[0.425,0.665],[0.43,0.668],[0.435,0.6695],[0.44,0.671],[0.445,0.674],[0.45,0.6765],[0.455,0.677],[0.46,0.6785],[0.465,0.6805],[0.47,0.6825],[0.475,0.6855],[0.48,0.687],[0.485,0.688],[0.49,0.6895],[0.495,0.691],[0.5,0.694]]}},"credit":[{"map":"Site attributes","s":"Map total, no deduction","k":"point","risk":0.704,"ci":0.09,"cr":1.046},{"map":"Site attributes","s":"Protocol rule, map error layer","k":"VCS map (RF)","risk":0.511,"ci":0.093,"cr":0.999},{"map":"Site attributes","s":"Protocol rule, survey-calibrated estimate","k":"VCS model-assisted","risk":0.694,"ci":0.092,"cr":1.044},{"map":"Site attributes","s":"Protocol rule, selection-aware estimate (ours)","k":"ours: VCS formula, sel.-aware","risk":0.332,"ci":0.019,"cr":0.932},{"map":"Site attributes","s":"Exact selection-aware bound (ours)","k":"ours: exact, risk VCS","risk":0.007,"ci":0.004,"cr":0.651},{"map":"Site + canopy height","s":"Map total, no deduction","k":"point","risk":0.424,"ci":0.156,"cr":0.978},{"map":"Site + canopy height","s":"Protocol rule, map error layer","k":"VCS map (RF)","risk":0.299,"ci":0.144,"cr":0.94},{"map":"Site + canopy height","s":"Protocol rule, survey-calibrated estimate","k":"VCS model-assisted","risk":0.421,"ci":0.154,"cr":0.977},{"map":"Site + canopy height","s":"Protocol rule, selection-aware estimate (ours)","k":"ours: VCS formula, sel.-aware","risk":0.32,"ci":0.023,"cr":0.94},{"map":"Site + canopy height","s":"Exact selection-aware bound (ours)","k":"ours: exact, risk VCS","risk":0.005,"ci":0.004,"cr":0.682},{"map":"Full ground inventory","s":"Map total, no deduction","k":"point","risk":0.191,"ci":0.127,"cr":0.949},{"map":"Full ground inventory","s":"Protocol rule, map error layer","k":"VCS map (RF)","risk":0.191,"ci":0.127,"cr":0.948},{"map":"Full ground inventory","s":"Protocol rule, survey-calibrated estimate","k":"VCS model-assisted","risk":0.193,"ci":0.127,"cr":0.95},{"map":"Full ground inventory","s":"Protocol rule, selection-aware estimate (ours)","k":"ours: VCS formula, sel.-aware","risk":0.349,"ci":0.023,"cr":0.972},{"map":"Full ground inventory","s":"Exact selection-aware bound (ours)","k":"ours: exact, risk VCS","risk":0.0,"ci":0.0,"cr":0.786},{"map":"Site attributes","s":"Fixed deciles, same formula","k":"VCS domain10, formula","risk":0.51,"ci":0.097,"cr":1.005},{"map":"Site + canopy height","s":"Fixed deciles, same formula","k":"VCS domain10, formula","risk":0.346,"ci":0.141,"cr":0.951},{"map":"Full ground inventory","s":"Fixed deciles, same formula","k":"VCS domain10, formula","risk":0.201,"ci":0.126,"cr":0.951}],"floor":[{"n":"Guinea","k":2,"f":0.427,"c":0.945},{"n":"C\u00f4te d'Ivoire","k":3,"f":0.585,"c":0.803},{"n":"Togo","k":3,"f":0.585,"c":0.917},{"n":"Sierra Leone","k":3,"f":0.585,"c":0.99},{"n":"Cameroon","k":4,"f":0.663,"c":0.988},{"n":"DR Congo","k":4,"f":0.663,"c":0.99},{"n":"Ghana","k":4,"f":0.663,"c":0.897},{"n":"Senegal","k":4,"f":0.663,"c":0.875},{"n":"Zambia","k":5,"f":0.711,"c":0.942},{"n":"Mali","k":5,"f":0.711,"c":0.958},{"n":"Zimbabwe","k":6,"f":0.742,"c":0.862},{"n":"Benin","k":6,"f":0.742,"c":0.92},{"n":"Burkina Faso","k":6,"f":0.742,"c":0.923},{"n":"Uganda","k":6,"f":0.742,"c":0.93},{"n":"Lesotho","k":6,"f":0.742,"c":0.948},{"n":"Mozambique","k":6,"f":0.742,"c":0.94},{"n":"Angola","k":7,"f":0.765,"c":0.947},{"n":"Rwanda","k":8,"f":0.782,"c":0.91},{"n":"Ethiopia","k":9,"f":0.795,"c":0.931},{"n":"Nigeria","k":11,"f":0.814,"c":0.884},{"n":"Tanzania","k":13,"f":0.827,"c":0.925},{"n":"Kenya","k":14,"f":0.832,"c":0.9},{"n":"Malawi","k":15,"f":0.837,"c":0.943}],"bench":[{"rule":"top_k","m":1000.0,"ours":1.4e-05,"comp":2e-05,"swap":0.01021,"gb":0.09},{"rule":"top_k","m":10000.0,"ours":7.9e-05,"comp":0.00015,"swap":11.58,"gb":0.09},{"rule":"top_k","m":100000.0,"ours":0.000359,"comp":0.00708,"swap":49080.0,"gb":0.09},{"rule":"top_k","m":1000000.0,"ours":0.012916,"comp":0.47419,"swap":65220000.0,"gb":0.14},{"rule":"top_k","m":10000000.0,"ours":0.10149,"comp":46.205,"swap":86810000000.0,"gb":0.34},{"rule":"top_k","m":100000000.0,"ours":1.3936,"comp":null,"swap":null,"gb":2.55},{"rule":"quota","m":1000.0,"ours":0.000247,"comp":9e-05,"swap":0.492,"gb":0.09},{"rule":"quota","m":10000.0,"ours":0.001157,"comp":0.00035,"swap":31.19,"gb":0.09},{"rule":"quota","m":100000.0,"ours":0.01309,"comp":0.01623,"swap":52530.0,"gb":0.1},{"rule":"quota","m":1000000.0,"ours":0.16877,"comp":0.8434,"swap":69170000.0,"gb":0.19},{"rule":"quota","m":10000000.0,"ours":2.9117,"comp":124.4,"swap":83070000000.0,"gb":0.75},{"rule":"quota","m":100000000.0,"ours":39.561,"comp":null,"swap":null,"gb":5.72},{"rule":"budget","m":1000.0,"ours":8e-05,"comp":3e-05,"swap":0.0156,"gb":0.09},{"rule":"budget","m":10000.0,"ours":0.000997,"comp":0.00036,"swap":13.77,"gb":0.09},{"rule":"budget","m":100000.0,"ours":0.012851,"comp":0.01606,"swap":51090.0,"gb":0.1},{"rule":"budget","m":1000000.0,"ours":0.16057,"comp":1.7676,"swap":67900000.0,"gb":0.18},{"rule":"budget","m":10000000.0,"ours":2.5704,"comp":181.54,"swap":91690000000.0,"gb":0.81},{"rule":"budget","m":100000000.0,"ours":35.292,"comp":null,"swap":null,"gb":6.88},{"rule":"budget","m":1000000.0,"ours":0.16123,"comp":1.6432,"swap":68920000.0,"gb":0.18}],"lp":[{"n":100,"f":"active","t":0.00284,"first":0.0034},{"n":100,"f":"dual","t":0.00322,"first":0.0034},{"n":100,"f":"primal","t":0.00651,"first":0.0074},{"n":100,"f":"published","t":0.00601,"first":0.0121},{"n":1000,"f":"active","t":0.01976,"first":0.0206},{"n":1000,"f":"dual","t":0.03242,"first":0.0334},{"n":1000,"f":"primal","t":0.10216,"first":0.0985},{"n":1000,"f":"published","t":0.10879,"first":0.1113},{"n":10000,"f":"active","t":0.02857,"first":0.2291},{"n":10000,"f":"dual","t":0.57117,"first":0.6489},{"n":10000,"f":"primal","t":5.9066,"first":6.0708},{"n":10000,"f":"published","t":6.7023,"first":6.82},{"n":100000,"f":"active","t":0.03613,"first":4.2241},{"n":100000,"f":"dual","t":12.043,"first":12.296}],"arms":[{"map":"site","q":1.0,"n":92,"pf":0.0,"fin":0.0,"risk":0.034,"ci":0.006,"share":0.079,"survey":0.58},{"map":"site","q":1.0,"n":186,"pf":0.0,"fin":0.0,"risk":0.098,"ci":0.015,"share":0.24,"survey":0.594},{"map":"site","q":1.0,"n":1869,"pf":0.9,"fin":0.904,"risk":0.33,"ci":0.021,"share":0.918,"survey":0.706},{"map":"site","q":1.0,"n":3000,"pf":1.0,"fin":0.999,"risk":0.333,"ci":0.021,"share":0.931,"survey":0.688},{"map":"site","q":0.05,"n":92,"pf":0.904,"fin":0.896,"risk":0.319,"ci":0.023,"share":0.916,"survey":0.515},{"map":"site","q":0.05,"n":150,"pf":1.0,"fin":1.0,"risk":0.332,"ci":0.025,"share":0.935,"survey":0.541},{"map":"site","q":0.1,"n":186,"pf":0.903,"fin":0.902,"risk":0.325,"ci":0.014,"share":0.913,"survey":0.519},{"map":"site","q":0.1,"n":300,"pf":1.0,"fin":1.0,"risk":0.338,"ci":0.017,"share":0.93,"survey":0.53},{"map":"cci","q":1.0,"n":92,"pf":0.0,"fin":0.0,"risk":0.025,"ci":0.007,"share":0.072,"survey":0.973},{"map":"cci","q":1.0,"n":186,"pf":0.0,"fin":0.0,"risk":0.077,"ci":0.012,"share":0.226,"survey":0.98},{"map":"cci","q":1.0,"n":1869,"pf":0.9,"fin":0.886,"risk":0.324,"ci":0.021,"share":0.917,"survey":0.877},{"map":"cci","q":1.0,"n":3000,"pf":1.0,"fin":1.0,"risk":0.315,"ci":0.013,"share":0.927,"survey":0.807},{"map":"cci","q":0.05,"n":92,"pf":0.904,"fin":0.908,"risk":0.334,"ci":0.017,"share":0.917,"survey":0.432},{"map":"cci","q":0.05,"n":150,"pf":1.0,"fin":1.0,"risk":0.329,"ci":0.016,"share":0.934,"survey":0.405},{"map":"cci","q":0.1,"n":186,"pf":0.903,"fin":0.911,"risk":0.326,"ci":0.016,"share":0.918,"survey":0.477},{"map":"cci","q":0.1,"n":300,"pf":1.0,"fin":1.0,"risk":0.349,"ci":0.023,"share":0.938,"survey":0.44}]};
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS="http://www.w3.org/2000/svg";
+function E(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
+const fmt=(x,d=2)=>Number.isFinite(x)?x.toFixed(d):"∞";
+const int=x=>Math.round(x).toLocaleString("en-US");
+function sec(x){if(x<1e-3)return (x*1e6).toFixed(0)+" µs";if(x<1)return (x*1e3).toPrecision(2)+" ms";if(x<120)return x.toPrecision(2)+" s";if(x<7200)return (x/60).toPrecision(2)+" min";if(x<172800)return (x/3600).toPrecision(2)+" h";if(x<3.15e7)return (x/86400).toPrecision(2)+" days";return int(x/3.15e7)+" years"}
+const sup=n=>{const m="⁰¹²³⁴⁵⁶⁷⁸⁹";return "10"+String(n).split("").map(c=>c==="-"?"⁻":m[+c]).join("")};
+// ---- tooltip
+const tip=$("tip");
+function showTip(ev,html){tip.innerHTML=html;tip.hidden=false;const x=Math.min(ev.clientX+12,innerWidth-tip.offsetWidth-8),y=Math.max(ev.clientY-tip.offsetHeight-10,8);tip.style.left=x+"px";tip.style.top=y+"px"}
+const hideTip=()=>{tip.hidden=true};
+function hover(el,html){el.addEventListener("pointermove",e=>showTip(e,html));el.addEventListener("pointerleave",hideTip)}
+// ---- random numbers
+function rng(seed){let a=seed>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function normal(r){return Math.sqrt(-2*Math.log(r()+1e-12))*Math.cos(2*Math.PI*r())}
+function shuffle(n,r){const p=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[p[i],p[j]]=[p[j],p[i]]}return p}
+
+// ---- the same mathematics as excp/mapselect
+const lg=(()=>{const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.1208650973866179e-2,-.5395239384953e-5];return x=>{let y=x,t=x+5.5;t-=(x+.5)*Math.log(t);let s=1.000000000190015;for(const v of c)s+=v/++y;return -t+Math.log(2.5066282746310005*s/x)}})();
+const lchoose=(a,b)=>(b<0||b>a)?-Infinity:lg(a+1)-lg(b+1)-lg(a-b+1);
+function pFinite(n,m,K,alpha=.1){const thr=Math.ceil((1-alpha)/alpha-1e-12);if(n<thr)return 0;if(K>=m)return 0;const den=lchoose(n+m,n);let miss=0;for(let r=0;r<thr;r++){miss+=Math.exp(lchoose(r+K,K)+lchoose(n-r+m-K-1,m-K-1)-den)}return Math.max(0,Math.min(1,1-miss))}
+function nBudget(pop,K,prob,alpha=.1){const thr=Math.ceil((1-alpha)/alpha-1e-12);let hi=pop-K-1;if(hi<thr||pFinite(hi,pop-hi,K,alpha)<prob)return null;let lo=thr-1;while(hi-lo>1){const mid=(lo+hi)>>1;if(pFinite(mid,pop-mid,K,alpha)>=prob)hi=mid;else lo=mid}return hi}
+function nFixed(m,K,prob,alpha=.1){const thr=Math.ceil((1-alpha)/alpha-1e-12);let lo=thr-1,hi=thr;while(pFinite(hi,m,K,alpha)<prob){lo=hi;hi*=2;if(hi>1e9)return null}while(hi-lo>1){const mid=Math.floor((lo+hi)/2);if(pFinite(mid,m,K,alpha)>=prob)hi=mid;else lo=mid}return hi}
+function invMoment(n,m,K){const eps=Math.exp(lchoose(n+m-K,m-K-1)-lchoose(n+m,m-1));return m*(1-eps)/(K*(n+1))}
+const floorAt=(n,m,K,Mu,l1=.95,tau=.9)=>tau-l1*invMoment(n,m,K)*K/Mu;
+function nFloor(m,K,Mu,target){if(target>=.9)return null;let lo=0,hi=1;while(floorAt(hi,m,K,Mu)<target){lo=hi;hi*=2;if(hi>1e10)return null}while(hi-lo>1){const mid=Math.floor((lo+hi)/2);if(floorAt(mid,m,K,Mu)>=target)hi=mid;else lo=mid}return hi}
+
+// ---- world
+const N=1500;let world=null;
+const relief=(x,y)=>Math.exp(-((x-.68)**2+(y-.58)**2)/(2*.17**2))+.55*Math.exp(-((x-.22)**2+(y-.30)**2)/(2*.12**2))+.18*Math.exp(-((x-.25)**2+(y-.82)**2)/(2*.1**2));
+const regionOf=(x,y)=>Math.max(0,Math.min(4,Math.floor(5*(x+.05*Math.sin(6.3*y)))));
+function makeWorld(g){const r=rng(2027);const w={x:new Float64Array(N),y:new Float64Array(N),mu:new Float64Array(N),t:new Float64Array(N),s:new Float64Array(N),g:new Int32Array(N),c:new Float64Array(N)};
+ for(let i=0;i<N;i++){const x=r(),y=r(),f=relief(x,y),z=normal(r);w.x[i]=x;w.y[i]=y;w.mu[i]=f+1e-7*r();w.s[i]=.05+g*f*f;w.t[i]=f+w.s[i]*z;w.g[i]=regionOf(x,y);w.c[i]=1+2.2*Math.hypot(x-.5,y-.5)}return w}
+function selectRule(rule,w,A,T,share){
+ if(rule==="top"||rule==="bottom"){const sg=rule==="top"?1:-1,K=Math.max(1,Math.round(share*T.length));const o=T.slice().sort((a,b)=>sg*(w.mu[b]-w.mu[a]));const th=sg*w.mu[o[K]];const R=A.filter(i=>sg*w.mu[i]>th);return{S:o.slice(0,K),R:()=>R,sets:1}}
+ if(rule==="quota"){const by=[[],[],[],[],[]];for(const i of T)by[w.g[i]].push(i);const allT=[],minusT=[],S=[];const inv=new Map();for(let g=0;g<5;g++){const o=by[g].sort((a,b)=>w.mu[b]-w.mu[a]);const k=Math.max(1,Math.round(share*o.length));allT[g]=k<=o.length?w.mu[o[k-1]]:-Infinity;minusT[g]=k<o.length?w.mu[o[k]]:-Infinity;for(let q=0;q<Math.min(k,o.length);q++){S.push(o[q]);inv.set(o[q],g)}}
+  const cache={};return{S,R:j=>{const g=inv.get(j);if(!cache[g])cache[g]=A.filter(i=>w.mu[i]>(w.g[i]===g?minusT[g]:allT[w.g[i]]));return cache[g]},sets:5}}
+ const ratio=i=>(w.mu[i]+.1)/w.c[i];const o=T.slice().sort((a,b)=>ratio(b)-ratio(a));let tot=0;for(const i of T)tot+=w.c[i];const B=share*tot;const S=[];let cum=0;for(const i of o){cum+=w.c[i];if(cum<=B)S.push(i);else break}
+ const asc=o.slice().reverse(),rs=asc.map(ratio),suf=new Float64Array(asc.length+1);for(let k=asc.length-1;k>=0;k--)suf[k]=suf[k+1]+w.c[asc[k]];
+ const above=A.map(i=>{const v=ratio(i);let lo=0,hi=rs.length;while(lo<hi){const m=(lo+hi)>>1;if(rs[m]<=v)lo=m+1;else hi=m}return suf[lo]});
+ return{S,R:j=>{const rj=ratio(j),cj=w.c[j];return A.filter((i,k)=>above[k]-(rj>ratio(i)?cj:0)+w.c[i]<=B)},sets:S.length}}
+function jomiQ(sc){const N=sc.length,k=Math.ceil(.9*(N+1)-1e-9*(N+1));if(k>N)return Infinity;return Float64Array.from(sc).sort()[k-1]}
+function trial(w,par,seed){const r=rng(seed),p=shuffle(N,r),A=p.slice(0,par.n),T=p.slice(par.n);
+ const scale=par.scaled?(i=>w.s[i]):(()=>1);const score=i=>Math.abs(w.t[i]-w.mu[i])/scale(i);
+ const qs=jomiQ(A.map(score));const sel=selectRule(par.rule,w,A,T,par.share);
+ let covAll=0;for(const i of T)if(score(i)<=qs)covAll++;
+ const units=[];let cs=0,cj=0,inf=0,rs=0,wj=0,wj0=0,fin=0;const seen=new Map();
+ for(const j of sel.S){const R=sel.R(j);let q=seen.get(R);if(q===undefined){q=jomiQ(R.map(score));if(sel.sets<50)seen.set(R,q)}const e=score(j);
+  if(e<=qs)cs++;if(e<=q)cj++;if(!Number.isFinite(q))inf++;else{fin++;wj+=q*scale(j);wj0+=qs*scale(j)}rs+=R.length;units.push({j,e:(w.t[j]-w.mu[j])/scale(j),q,mu:w.mu[j]})}
+ return{A,T,S:sel.S,R:sel.S.length?sel.R(sel.S[0]):[],qs,units,covAll:covAll/T.length,k:sel.S.length,cs,cj,inf,rs,wj,wj0,fin,nT:T.length}}
+
+// ---- map
+let relCanvas=null;
+function buildRelief(cw,ch){const c=document.createElement("canvas");c.width=cw;c.height=ch;const x=c.getContext("2d"),im=x.createImageData(cw,ch);const hx=s=>{s=s.replace("#","");return[0,2,4].map(i=>parseInt(s.slice(i,i+2),16))};const a=hx(css("--relief-a")),b=hx(css("--relief-b"));const lv=9;
+ for(let py=0;py<ch;py++)for(let px=0;px<cw;px++){const v=Math.min(1,relief(px/cw,1-py/ch)/1.02),t=Math.floor(v*lv)/lv,q=(px+py*cw)*4;for(let k=0;k<3;k++)im.data[q+k]=a[k]+(b[k]-a[k])*t;im.data[q+3]=255}
+ x.putImageData(im,0,0);x.strokeStyle=css("--contour");x.globalAlpha=.55;x.lineWidth=.7;
+ const G=150,GY=Math.round(G*ch/cw);for(let l=1;l<lv;l++){const L=l/lv*1.02;x.beginPath();for(let gy=0;gy<GY;gy++)for(let gx=0;gx<G;gx++){const P=[[gx/G,gy/GY],[(gx+1)/G,gy/GY],[(gx+1)/G,(gy+1)/GY],[gx/G,(gy+1)/GY]];const V=P.map(p=>relief(p[0],1-p[1]));const pts=[];for(let e=0;e<4;e++){const u=V[e],w=V[(e+1)%4];if((u<L)!==(w<L)){const f=(L-u)/(w-u),a0=P[e],b0=P[(e+1)%4];pts.push([a0[0]+f*(b0[0]-a0[0]),a0[1]+f*(b0[1]-a0[1])])}}if(pts.length>=2){x.moveTo(pts[0][0]*cw,pts[0][1]*ch);x.lineTo(pts[1][0]*cw,pts[1][1]*ch)}}x.stroke()}
+ x.globalAlpha=1;return c}
+function drawMap(){const c=$("map");if(!cur)return;const W=c.clientWidth||600,H=Math.round(W*.62),d=Math.min(2,devicePixelRatio||1);c.style.height=H+"px";c.width=W*d;c.height=H*d;const x=c.getContext("2d");x.scale(d,d);if(!relCanvas||relCanvas.width!==Math.round(W*d))relCanvas=buildRelief(Math.round(W*d),Math.round(H*d));x.drawImage(relCanvas,0,0,W,H);
+ const px=i=>[world.x[i]*W,(1-world.y[i])*H],ink3=css("--ink3"),ink2=css("--ink2"),sel=css("--sel"),ref=css("--ref"),sheet=css("--sheet");
+ x.fillStyle=ink3;x.globalAlpha=.75;for(const i of cur.T){const[a,b]=px(i);x.beginPath();x.arc(a,b,1.4,0,6.3);x.fill()}x.globalAlpha=1;
+ const inR=new Set(cur.R);x.lineWidth=1;x.strokeStyle=ink2;for(const i of cur.A){if(inR.has(i))continue;const[a,b]=px(i);x.beginPath();x.arc(a,b,2.2,0,6.3);x.stroke()}
+ for(const i of cur.R){const[a,b]=px(i);x.beginPath();x.arc(a,b,3.6,0,6.3);x.fillStyle=ref;x.fill();x.lineWidth=1;x.strokeStyle=sheet;x.stroke()}
+ for(const i of cur.S){const[a,b]=px(i);x.beginPath();x.arc(a,b,4,0,6.3);x.fillStyle=sel;x.fill();x.lineWidth=1;x.strokeStyle=sheet;x.stroke()}}
+
+// ---- lab
+let cur=null,acc=null,running=0,seedN=1;
+function par(){return{rule:$("rule").value,share:+$("share").value/100,n:+$("audit").value,scaled:$("score").value==="scaled"}}
+function resetAcc(){acc={t:0,all:0,k:0,cs:0,cj:0,inf:0,rs:0,wj:0,wj0:0}}
+function add(t){acc.t++;acc.all+=t.covAll;acc.k+=t.k;acc.cs+=t.cs;acc.cj+=t.cj;acc.inf+=t.inf;acc.rs+=t.rs;acc.wj+=t.wj;acc.wj0+=t.wj0}
+function drawBars(){const el=$("bars");el.innerHTML="";const W=el.clientWidth||420;const rows=[["Split CP, all candidates",acc.all/acc.t,"var(--ink3)"],["Split CP, selected",acc.cs/acc.k,"var(--org)"],["JOMI, selected",acc.cj/acc.k,"var(--ref)"]];const lw=Math.min(170,W*.42),H=rows.length*30+22;const s=E("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img"},el);const X=v=>lw+v*(W-lw-46);
+ rows.forEach((r,i)=>{const y=i*30;E("text",{x:0,y:y+15},s,r[0]);E("rect",{x:lw,y:y+4,width:X(1)-lw,height:16,fill:"var(--wash)"},s);const b=E("rect",{x:lw,y:y+4,width:Math.max(0,X(r[1])-lw),height:16,fill:r[2],rx:2},s);E("text",{x:X(1)+6,y:y+16,class:"num"},s,fmt(r[1]));hover(b,`${r[0]}: coverage ${fmt(r[1],3)} over ${acc.t} audits`)});
+ E("line",{x1:X(.9),x2:X(.9),y1:0,y2:rows.length*30,stroke:"var(--ink)","stroke-width":1.5,"stroke-dasharray":"3 2"},s);E("text",{x:X(.9),y:H-5,"text-anchor":"middle"},s,"target 0.90");
+ $("sInf").textContent=Math.round(100*acc.inf/acc.k)+"%";$("sR").textContent=int(acc.rs/acc.k);$("sW").textContent=acc.wj0?fmt(acc.wj/acc.wj0,1)+"×":"–";$("runs").textContent=int(acc.t)+" audits so far"}
+function drawErrs(){const el=$("errs");el.innerHTML="";if(!cur)return;const W=el.clientWidth||420,H=170,L=40,B=20;const u=cur.units.slice().sort((a,b)=>a.mu-b.mu);const lim=Math.max(1e-6,cur.qs*1.6,...u.map(a=>Math.abs(a.e)))*1.08;const s=E("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img","aria-label":"Errors at selected places against intervals"},el);const X=i=>L+(i+.5)/Math.max(u.length,1)*(W-L-6),Y=v=>(H-B)/2-v/lim*(H-B)/2+2;
+ E("rect",{x:L,y:Y(cur.qs),width:W-L-6,height:Y(-cur.qs)-Y(cur.qs),fill:"var(--band)"},s);E("line",{x1:L,x2:W-6,y1:Y(0),y2:Y(0),class:"ax"},s);E("text",{x:L-6,y:Y(0)+4,"text-anchor":"end",class:"num"},s,"0");
+ E("text",{x:0,y:12},s,par().scaled?"Error / spread":"Error");E("text",{x:L,y:H-4},s,"Selected places, lowest to highest prediction");
+ const bw=Math.max(1.5,Math.min(3,(W-L)/u.length*.3));u.forEach((a,i)=>{const fin=Number.isFinite(a.q),t=fin?Math.min(lim,a.q):lim;E("line",{x1:X(i),x2:X(i),y1:Y(t),y2:Y(-t),stroke:"var(--ref)","stroke-width":bw,opacity:fin?.75:.3},s);const out=Math.abs(a.e)>cur.qs;const c=E("circle",{cx:X(i),cy:Y(Math.max(-lim,Math.min(lim,a.e))),r:3.2,fill:out?"var(--miss)":"var(--ink2)",stroke:"var(--sheet)","stroke-width":1},s);hover(c,`Error ${fmt(a.e)}. Split CP ±${fmt(cur.qs)}; JOMI ±${fmt(a.q)}.`)})}
+function newAudit(){cur=trial(world,par(),seedN++);drawMap();drawErrs()}
+function runMany(n,done){const id=++running;let left=n;const p=par();const step=()=>{if(id!==running)return;const t0=performance.now();while(left>0&&performance.now()-t0<14){add(trial(world,p,seedN++));left--}drawBars();if(left>0)setTimeout(step,0);else if(done)done()};step()}
+function refresh(){$("shareO").textContent=$("share").value+"%";$("auditO").textContent=int(+$("audit").value);$("growthO").textContent=(+$("growth").value/100).toFixed(2);world=makeWorld(+$("growth").value/100*.55);resetAcc();add(trial(world,par(),seedN++));newAudit();drawBars();runMany(240)}
+["rule","share","audit","growth","score"].forEach(i=>$(i).addEventListener("input",refresh));
+$("redraw").addEventListener("click",newAudit);$("run").addEventListener("click",()=>runMany(400));
+
+// ---- swap explainer
+const sw={K:3,pick:null,cand:[.08,.17,.24,.33,.41,.47,.55,.62,.68,.74,.81,.89,.95],aud:[.05,.13,.21,.3,.38,.44,.52,.58,.65,.71,.78,.85,.92]};
+function drawSwap(){const el=$("swapPlot");el.innerHTML="";const W=el.clientWidth||900,H=W<560?170:150,L=W<560?60:92,R=10,yC=38,yA=H-56;const s=E("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img","aria-label":"Candidates and audited places ordered by predicted value"},el);const X=v=>L+v*(W-L-R);
+ const K=sw.K,sorted=sw.cand.slice().sort((a,b)=>b-a),theta=sorted[K],selSet=new Set(sorted.slice(0,K));
+ E("text",{x:0,y:yC+4},s,"Candidates");E("text",{x:0,y:yA+4},s,"Audited");E("line",{x1:L,x2:W-R,y1:yC,y2:yC,class:"gl"},s);E("line",{x1:L,x2:W-R,y1:yA,y2:yA,class:"gl"},s);E("line",{x1:L,x2:W-R,y1:H-20,y2:H-20,class:"ax"},s);E("text",{x:(L+W-R)/2,y:H-4,"text-anchor":"middle"},s,"Predicted value, low to high");
+ E("line",{x1:X(theta),x2:X(theta),y1:yC-20,y2:H-20,stroke:"var(--ink)","stroke-width":1.5,"stroke-dasharray":"3 3"},s);E("text",{x:X(theta)-5,y:14,"text-anchor":"end"},s,"First candidate left out");
+ sw.cand.forEach(v=>{E("circle",{cx:X(v),cy:yC,r:selSet.has(v)?8:5,fill:selSet.has(v)?"var(--sel)":"var(--ink3)",stroke:"var(--sheet)","stroke-width":1.5},s)});
+ sw.aud.forEach((v,i)=>{const inR=v>theta,g=E("g",{class:"swapdot",tabindex:0,role:"button","aria-label":`Audited place at ${v}`},s),isP=sw.pick===i;E("circle",{cx:X(v),cy:yA,r:isP?9:7,fill:inR?"var(--ref)":"var(--sheet)",stroke:inR?"var(--sheet)":"var(--ink2)","stroke-width":isP?2.5:1.5},g);E("circle",{cx:X(v),cy:yA,r:14,fill:"transparent"},g);const act=()=>{sw.pick=i;drawSwap()};g.addEventListener("click",act);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}})});
+ if(sw.pick!==null){const v=sw.aud[sw.pick],j=sorted[0];const p=E("path",{d:`M${X(v)},${yA-9} C${X(v)},${(yA+yC)/2} ${X(j)},${(yA+yC)/2} ${X(j)},${yC+9}`,fill:"none",stroke:"var(--ink)","stroke-width":1.5},s);const ok=v>theta;$("swapText").textContent=ok?`This audited place passes. Swapped into a selected slot, its prediction would still rank in the top ${K}, so it joins the reference set.`:`This audited place fails. Swapped into a selected slot, its prediction would fall below the first candidate left out, so the rule would not select it, and its error says little about the selected places.`}else $("swapText").textContent="Click an audited place to try the swap."}
+$("swapK").addEventListener("input",e=>{sw.K=+e.target.value;$("swapKO").textContent=sw.K;drawSwap()});$("swapKO").textContent=sw.K;
+
+// ---- generic chart
+function chart(el,{H=280,xs,ys,xlog,ylog,xt,yt,xlab,ylab,fx,fy,L=52}){el.innerHTML="";const W=el.clientWidth||460,B=40,T=8,R=12;const s=E("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img"},el);const sc=(d,r,l)=>{const a=l?Math.log10(d[0]):d[0],b=l?Math.log10(d[1]):d[1];return v=>r[0]+((l?Math.log10(v):v)-a)/(b-a)*(r[1]-r[0])};const X=sc(xs,[L,W-R],xlog),Y=sc(ys,[H-B,T],ylog);
+ yt.forEach(v=>{E("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),class:"gl"},s);E("text",{x:L-6,y:Y(v)+4,"text-anchor":"end",class:"num"},s,fy(v))});xt.forEach(v=>{E("line",{x1:X(v),x2:X(v),y1:H-B,y2:H-B+4,class:"ax"},s);E("text",{x:X(v),y:H-B+17,"text-anchor":"middle",class:"num"},s,fx(v))});E("line",{x1:L,x2:W-R,y1:H-B,y2:H-B,class:"ax"},s);E("text",{x:(L+W-R)/2,y:H-3,"text-anchor":"middle"},s,xlab);if(ylab)E("text",{x:0,y:-1+T,"text-anchor":"start"},s,"");if(ylab){const t=E("text",{transform:`translate(11,${(H-B+T)/2}) rotate(-90)`,"text-anchor":"middle"},s,ylab)}
+ return{s,X,Y,W,H,B,T,L,R}}
+function linePath(pts,X,Y){return pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join("")}
+function crosshair(c,series,fmtTip){const r=E("rect",{x:c.L,y:c.T,width:c.W-c.L-c.R,height:c.H-c.B-c.T,fill:"transparent"},c.s);const v=E("line",{y1:c.T,y2:c.H-c.B,class:"ax",opacity:0},c.s);r.addEventListener("pointermove",e=>{const b=c.s.getBoundingClientRect(),px=(e.clientX-b.left)/b.width*c.W;const pts=series[0].pts;let best=0,bd=1e9;pts.forEach((p,i)=>{const d=Math.abs(c.X(p[0])-px);if(d<bd){bd=d;best=i}});const xv=pts[best][0];v.setAttribute("x1",c.X(xv));v.setAttribute("x2",c.X(xv));v.setAttribute("opacity",1);showTip(e,fmtTip(xv,best))});r.addEventListener("pointerleave",()=>{v.setAttribute("opacity",0);hideTip()})}
+
+// ---- planner
+function drawPlan(){const pop=Math.max(100,+$("pPop").value||6000),K=Math.max(1,Math.min(+$("pK").value||30,Math.floor(pop/3))),prob=+$("pProb").value;
+ const strata=[[1,"Whole map","var(--ink3)"],[.2,"Highest 20%","var(--grn)"],[.1,"Highest 10%","var(--org)"],[.05,"Highest 5%","var(--ref)"]].filter(a=>Math.round(a[0]*pop)>K+12);
+ const need=strata.map(a=>nBudget(Math.round(a[0]*pop),K,prob));const stats=$("planStats");stats.innerHTML="";strata.forEach((a,i)=>{const d=document.createElement("div");d.className="stat";d.innerHTML=`<b>${need[i]==null?"none":int(need[i])}</b><span>${a[1]}${need[i]==null?": no audit reaches this":""}</span>`;stats.appendChild(d)});
+ const xmin=10,xmax=Math.max(1000,pop-K-1);const c=chart($("planPlot"),{xs:[xmin,xmax],ys:[0,1],xlog:true,xt:(()=>{const t=[];for(let e=1;10**e<=xmax;e++)t.push(10**e);return t})(),yt:[0,.25,.5,.75,1],fx:v=>v>=1e5?sup(Math.log10(v)):int(v),fy:v=>v.toFixed(2),xlab:"Audited places",ylab:"Chance of finite intervals"});
+ E("line",{x1:c.L,x2:c.W-c.R,y1:c.Y(prob),y2:c.Y(prob),stroke:"var(--ink)","stroke-dasharray":"3 3"},c.s);const leg=$("planLegend");leg.innerHTML="";const ser=[];
+ strata.forEach((a,i)=>{const M=Math.round(a[0]*pop),top=M-K-1,pts=[];for(let k=0;k<=90;k++){const n=Math.round(xmin*Math.pow(top/xmin,k/90));if(n>=xmin&&n<=top&&(!pts.length||pts[pts.length-1][0]!==n))pts.push([n,pFinite(n,M-n,K)])}if(!pts.length)return;E("path",{d:linePath(pts,c.X,c.Y),fill:"none",stroke:a[2],"stroke-width":2,"stroke-linejoin":"round"},c.s);if(need[i]!=null){const mk=E("circle",{cx:c.X(need[i]),cy:c.Y(pFinite(need[i],M-need[i],K)),r:5,fill:a[2],stroke:"var(--sheet)","stroke-width":2},c.s);hover(mk,`${a[1]}: ${int(need[i])} audited places`)}ser.push({pts,a});const sp=document.createElement("span");sp.innerHTML=`<i class="l" style="background:${a[2]}"></i>${a[1]}`;leg.appendChild(sp)});
+ const m0=Math.max(pop,3000),Mu=Math.max(1,+$("fM").value||3),tg=+$("fT").value;const kk=Math.max(Mu,K);const f=nFloor(m0,Math.min(kk,m0-1),Mu,tg);$("fN").textContent=f==null?"none":int(f)}
+["pPop","pK","pProb","fM","fT"].forEach(i=>$(i).addEventListener("input",drawPlan));
+
+// ---- evidence
+const METHODS=[...new Set(DATA.cov.map(d=>d.m))].filter(m=>m!=="JOMI"&&m!=="SC-GeoCCP");
+$("covM").innerHTML=METHODS.map(m=>`<option>${m}</option>`).join("");
+function drawCov(){const m=$("covM").value;$("covLab").textContent=m;const by=s=>DATA.cov.filter(d=>d.m===s);const a=by(m),j=by("JOMI");const rows=j.map(r=>({s:r.s,j:r.c,inf:r.i,o:(a.find(x=>x.s===r.s)||{}).c})).sort((p,q)=>(p.o??1)-(q.o??1));const el=$("covPlot");el.innerHTML="";const W=el.clientWidth||460,rh=25,H=rows.length*rh+38,L=Math.min(158,W*.38),R=14;const s=E("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img"},el);const X=v=>L+(v-.3)/.72*(W-L-R);
+ [.4,.6,.8,1].forEach(v=>{E("line",{x1:X(v),x2:X(v),y1:0,y2:rows.length*rh,class:"gl"},s);E("text",{x:X(v),y:rows.length*rh+15,"text-anchor":"middle",class:"num"},s,v.toFixed(1))});E("line",{x1:X(.9),x2:X(.9),y1:0,y2:rows.length*rh,stroke:"var(--ink3)","stroke-width":1.5},s);E("text",{x:(L+W-R)/2,y:H-3,"text-anchor":"middle"},s,"Coverage at selected units");
+ rows.forEach((r,i)=>{const y=i*rh+rh/2;E("text",{x:0,y:y+4},s,r.s);if(r.o!=null){E("line",{x1:X(r.o),x2:X(r.j),y1:y,y2:y,stroke:"var(--ink3)","stroke-width":1},s);const c=E("circle",{cx:X(r.o),cy:y,r:5,fill:"var(--org)",stroke:"var(--sheet)","stroke-width":2},s);hover(c,`${r.s}, ${m}: ${fmt(r.o,3)}`)}const c=E("circle",{cx:X(r.j),cy:y,r:5,fill:"var(--ref)",stroke:"var(--sheet)","stroke-width":2},s);hover(c,`${r.s}, JOMI: ${fmt(r.j,3)}; ${Math.round(r.inf*100)}% infinite`)});
+ $("covTab").innerHTML=`<table><thead><tr><th>Setting</th><th class="n">${m}</th><th class="n">JOMI</th><th class="n">Infinite</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s}</td><td class="n">${r.o==null?"–":fmt(r.o,3)}</td><td class="n">${fmt(r.j,3)}</td><td class="n">${Math.round(r.inf*100)}%</td></tr>`).join("")}</tbody></table>`}
+$("covM").addEventListener("input",drawCov);
+$("riskM").innerHTML=Object.keys(DATA.risk).sort((a,b)=>a.startsWith("Site attr")?-1:1).map(m=>`<option>${m}</option>`).join("");
+function drawRisk(){const d=DATA.risk[$("riskM").value];const S=[["Survey-calibrated estimate","var(--org)"],["Map error layer","var(--ink3)"],["Selection-aware estimate (ours)","var(--ref)"]];const c=chart($("riskPlot"),{xs:[0,.5],ys:[0,1],xt:[0,.1,.2,.3,.4,.5],yt:[0,.25,.5,.75,1],fx:v=>v.toFixed(1),fy:v=>v.toFixed(2),xlab:"Declared over-crediting risk",ylab:"Realized risk"});
+ E("line",{x1:c.X(0),y1:c.Y(0),x2:c.X(.5),y2:c.Y(.5),stroke:"var(--ink)","stroke-dasharray":"3 3"},c.s);S.forEach(([k,col])=>E("path",{d:linePath(d[k],c.X,c.Y),fill:"none",stroke:col,"stroke-width":2},c.s));const ser=[{pts:d[S[0][0]]}];crosshair(c,ser,(x,i)=>`Declared ${x.toFixed(3)}<br>Survey-calibrated ${d[S[0][0]][i][1].toFixed(3)}<br>Map layer ${d[S[1][0]][i][1].toFixed(3)}<br>Selection-aware ${d[S[2][0]][i][1].toFixed(3)}`)}
+$("riskM").addEventListener("input",drawRisk);
+function drawFloor(){const c=chart($("floorPlot"),{xs:[.35,1],ys:[.35,1],xt:[.4,.6,.8,1],yt:[.4,.6,.8,1],fx:v=>v.toFixed(1),fy:v=>v.toFixed(1),xlab:"Floor guaranteed for the country",ylab:"Coverage observed"});E("line",{x1:c.X(.35),y1:c.Y(.35),x2:c.X(1),y2:c.Y(1),stroke:"var(--ink3)","stroke-width":1.5},c.s);DATA.floor.forEach(d=>{const m=E("circle",{cx:c.X(d.f),cy:c.Y(d.c),r:5,fill:"var(--vio)",stroke:"var(--sheet)","stroke-width":2},c.s);hover(m,`${d.n}: floor ${fmt(d.f)}, coverage ${fmt(d.c)}; ${d.k} villages selected per audit`)});$("floorTab").innerHTML=`<table><thead><tr><th>Country</th><th class="n">Selected</th><th class="n">Floor</th><th class="n">Coverage</th></tr></thead><tbody>${DATA.floor.slice().sort((a,b)=>a.f-b.f).map(d=>`<tr><td>${d.n}</td><td class="n">${d.k}</td><td class="n">${fmt(d.f)}</td><td class="n">${fmt(d.c)}</td></tr>`).join("")}</tbody></table>`}
+function drawArms(){const lab=q=>q===1?"Whole map":`Highest ${Math.round(q*100)}%`;const keep=DATA.arms.filter(a=>(a.q===1&&(a.n===3000||a.n===1869))||(a.q===.1&&a.n===186)||(a.q===.05&&a.n===92));const order=[[1,3000],[1,1869],[.1,186],[.05,92]];const row=(mp)=>order.map(([q,n])=>keep.find(a=>a.map===mp&&a.q===q&&a.n===n));const fx=a=>`<tr><td>${lab(a.q)}, ${int(a.n)}</td><td class="n">${fmt(a.fin)}</td><td class="n">${fmt(a.risk)}</td><td class="n">${fmt(a.survey)}</td><td class="n">${fmt(a.share)}</td></tr>`;$("armTab").innerHTML=`<table><thead><tr><th>Audit</th><th class="n">Finite</th><th class="n">Risk, selection-aware</th><th class="n">Risk, survey</th><th class="n">Credit</th></tr></thead><tbody><tr><td colspan="5"><b>Site-attribute maps</b></td></tr>${row("site").map(fx).join("")}<tr><td colspan="5"><b>ESA CCI</b></td></tr>${row("cci").map(fx).join("")}</tbody></table>`}
+function drawBench(){const seen=new Set(),B=DATA.bench.filter(d=>{const k=d.rule+d.m;if(seen.has(k))return false;seen.add(k);return true});const c=chart($("benchPlot"),{xs:[1e3,1e8],ys:[1e-6,1e12],xlog:true,ylog:true,xt:[1e3,1e4,1e5,1e6,1e7,1e8],yt:[1e-5,1e-2,1e1,1e4,1e7,1e10],fx:v=>sup(Math.round(Math.log10(v))),fy:v=>sup(Math.round(Math.log10(v))),xlab:"Candidates",ylab:"Seconds"});const line=(pts,col,dash,lab)=>{E("path",{d:linePath(pts,c.X,c.Y),fill:"none",stroke:col,"stroke-width":2,...(dash?{"stroke-dasharray":"5 4"}:{})},c.s);pts.forEach(p=>{const m=E("circle",{cx:c.X(p[0]),cy:c.Y(p[1]),r:4,fill:col,stroke:"var(--sheet)","stroke-width":1.5},c.s);hover(m,`${lab}, ${sup(Math.round(Math.log10(p[0])))} candidates: ${sec(p[1])}${dash?" (estimated)":""}`)})};const R=r=>B.filter(d=>d.rule===r);line(R("budget").filter(d=>d.swap).map(d=>[d.m,d.swap]),"var(--ink3)",true,"Literal swaps");line(R("budget").filter(d=>d.comp).map(d=>[d.m,d.comp]),"var(--org)",true,"Per-unit loop");line(R("budget").map(d=>[d.m,d.ours]),"var(--ref)",false,"Budget");line(R("quota").map(d=>[d.m,d.ours]),"var(--vio)",false,"Quota");line(R("top_k").map(d=>[d.m,d.ours]),"var(--grn)",false,"Top-K")}
+function drawLP(){const c=chart($("lpPlot"),{xs:[100,1e5],ys:[1e-3,30],xlog:true,ylog:true,xt:[100,1e3,1e4,1e5],yt:[1e-3,1e-2,.1,1,10],fx:v=>sup(Math.round(Math.log10(v))),fy:v=>v>=1?String(v):String(v),xlab:"Places in the reference set",ylab:"Seconds per place"});[["published","var(--ink3)","Earlier dense code"],["primal","var(--org)","Sparse primal"],["dual","var(--vio)","Full dual"],["active","var(--ref)","Active set, warm"]].forEach(([f,col,lab])=>{const pts=DATA.lp.filter(d=>d.f===f).sort((a,b)=>a.n-b.n).map(d=>[d.n,d.t]);E("path",{d:linePath(pts,c.X,c.Y),fill:"none",stroke:col,"stroke-width":2},c.s);pts.forEach(p=>{const m=E("circle",{cx:c.X(p[0]),cy:c.Y(p[1]),r:4,fill:col,stroke:"var(--sheet)","stroke-width":1.5},c.s);hover(m,`${lab}, ${int(p[0])} places: ${sec(p[1])}`)})})}
+
+// ---- copy
+$("copy").addEventListener("click",()=>{const t=$("code").textContent;const ok=()=>{$("copied").textContent="Copied"};const no=()=>{const r=document.createRange();r.selectNodeContents($("code"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("copied").textContent="Selected: press Ctrl or Cmd + C"};(navigator.clipboard?navigator.clipboard.writeText(t).then(ok,no):no())});
+
+// ---- boot and redraw on size or theme changes
+function drawStatic(){drawSwap();drawPlan();drawCov();drawRisk();drawFloor();drawArms();drawBench();drawLP()}
+function redrawAll(){relCanvas=null;drawMap();drawErrs();if(acc&&acc.t)drawBars();drawStatic()}
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(redrawAll,150)});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",redrawAll);
+new MutationObserver(redrawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+window.__mapselect={pFinite,nBudget,nFixed,invMoment,floorAt,nFloor,trial,makeWorld,selectRule};
+refresh();drawStatic();
+</script>
+</body></html>
