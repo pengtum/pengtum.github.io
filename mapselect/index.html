@@ -53,6 +53,7 @@ button.alt{background:transparent;color:var(--ink)}
 button:hover{background:var(--sel);border-color:var(--sel);color:#fff}
 :focus-visible{outline:2px solid var(--sel);outline-offset:2px}
 .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
 canvas{width:100%;display:block;border:1px solid var(--line);border-radius:2px;background:var(--wash)}
 svg{display:block;width:100%;overflow:visible}
 svg text{font-family:var(--body);fill:var(--ink2);font-size:13px}
@@ -85,14 +86,37 @@ footer{padding-block:30px;border-top:1px solid var(--line);font-size:14px;color:
 @media (max-width:820px){.grid2,.grid2.even{grid-template-columns:minmax(0,1fr)}section{padding-block:40px}}
 </style>
 
-<nav><div class="wrap"><b>mapselect</b><a href="#lab">Try it</a><a href="#data">Data</a><a href="#fia">Real plots</a><a href="#swap">How it works</a><a href="#plan">Plan an audit</a><a href="#evidence">Evidence</a><a href="#use">Use it</a></div></nav>
+<nav><div class="wrap"><b>mapselect</b><a href="#problem">The problem</a><a href="#lab">Try it</a><a href="#data">Data</a><a href="#fia">Real plots</a><a href="#swap">How it works</a><a href="#plan">Plan an audit</a><a href="#evidence">Evidence</a><a href="#use">Use it</a></div></nav>
 
 <header class="hero"><div class="wrap">
 <h1>Map uncertainty can fail at the places a map selects.</h1>
 <p class="lede">Machine-learning maps help choose where carbon is credited and where aid goes. Intervals that hold on average can be too narrow or needlessly wide at exactly those places. mapselect calibrates each selected place only on audited places the same rule would have selected.</p>
 </div></header>
 
-<section id="lab" style="border-top:0;padding-top:0"><div class="wrap">
+<section id="problem" style="border-top:0;padding-top:0"><div class="wrap">
+<div class="grid2">
+ <div class="panel">
+  <div class="lab">Forest plots in ten US states</div>
+  <canvas id="pMap" aria-label="FIA plots coloured by predicted biomass, with the plots the map selected"></canvas>
+  <div class="legend"><span><i style="background:var(--grn)"></i>Predicted biomass</span><span><i style="background:var(--sel)"></i>Selected by the map</span><span><i class="o" style="border-color:var(--miss);border-width:2px"></i>Selected, outside its interval</span></div>
+  <div class="btns" role="group" aria-label="Share selected"><button class="alt" data-pshare="0.01" aria-pressed="true">Highest 1%</button><button class="alt" data-pshare="0.05">Highest 5%</button><button id="pNew">Draw another audit</button></div>
+ </div>
+ <div class="panel">
+  <h3>The map's 90% intervals miss where it selects</h3>
+  <canvas id="pErr" aria-label="Error at every candidate plot, ranked by predicted biomass, against the interval"></canvas>
+  <div class="legend"><span><i class="l" style="background:var(--band);height:10px"></i>90% interval, one width (split CP)</span><span><i style="background:var(--ink3)"></i>Other plots</span><span><i style="background:var(--sel)"></i>Selected, inside</span><span><i style="background:var(--miss)"></i>Selected, outside</span></div>
+  <div class="stats"><div class="stat"><b id="pAll"></b><span>of all candidate plots covered</span></div><div class="stat"><b id="pSel" style="color:var(--miss)"></b><span>of the selected plots covered</span></div><div class="stat"><b id="pJomi" style="color:var(--ref)"></b><span>with mapselect (JOMI)</span></div></div>
+  <p class="src">Averages over 300 random audits of half the plots; the dots show the current one. Site-attribute biomass map, the kind that could map unvisited land (held-out R² 0.49). Scaling the width by the map's modelled error helps here (0.86) without a guarantee.</p>
+ </div>
+</div>
+<div class="panel" style="grid-template-columns:minmax(0,auto) minmax(0,1fr);align-items:center;gap:10px 22px">
+ <div class="stat"><b>1.8×</b><span>wider than needed</span></div>
+ <p class="cap" style="max-width:none">The failure also runs the other way. At the poorest 5% of survey villages in 23 African countries, a wealth map's default intervals covered 0.98 of the true values, 1.8 times as wide as intervals calibrated on the villages the rule would also select, which still covered 0.91. Aid targeted with them screens out villages it need not.</p>
+</div>
+</div></section>
+
+<section id="lab"><div class="wrap">
+<div class="head"><h2>Why it happens: try it on a synthetic map</h2><p class="lede">Ranking picks the places whose errors are least typical. Change the rule, the audit and how fast errors grow, and watch the default interval and JOMI over hundreds of audits.</p></div>
 <div class="grid2">
  <div class="panel">
   <canvas id="map" aria-label="Synthetic map with audited places, candidates, selected places and the reference set"></canvas>
@@ -484,11 +508,33 @@ function goCtry(m){CS.prev=CS.m;CS.m=m;if(matchMedia("(prefers-reduced-motion: r
 document.querySelectorAll("#ctryBtns button").forEach(b=>b.addEventListener("click",()=>goCtry(b.dataset.m)));
 window.__fia={fiaTrial,F};
 
+// ---- opening case: real FIA plots, site-attribute map, one default interval width
+const PB={share:.01,seed:7,avg:{}};
+function pTrial(share,seed){const mu=F.site.mu,y=F.y,r=rng(seed),p=shuffle(FM,r),n=Math.round(FM/2),C=p.slice(0,n),T=p.slice(n);const e=i=>y[i]-mu[i];const q=jomiQ(C.map(i=>Math.abs(e(i))));const K=Math.max(1,Math.round(share*T.length));const o=T.slice().sort((a,b)=>mu[b]-mu[a]),J=o.slice(0,K),th=mu[o[K]],R=C.filter(i=>mu[i]>th),qj=jomiQ(R.map(i=>Math.abs(e(i))));let all=0;for(const i of T)if(Math.abs(e(i))<=q)all++;let sel=0,jo=0;for(const j of J){if(Math.abs(e(j))<=q)sel++;if(Math.abs(e(j))<=qj)jo++}return{T,J,o,q,all:all/T.length,sel:sel/K,jo:jo/K}}
+function pAvg(share){if(!PB.avg[share]){let a=0,s=0,j=0;const N=300;for(let t=0;t<N;t++){const x=pTrial(share,9000+t);a+=x.all;s+=x.sel;j+=x.jo}PB.avg[share]={a:a/N,s:s/N,j:j/N}}return PB.avg[share]}
+function drawProblem(){const t=pTrial(PB.share,PB.seed),A=pAvg(PB.share),y=F.y,mu=F.site.mu;$("pAll").textContent=fmt(A.a);$("pSel").textContent=fmt(A.s);$("pJomi").textContent=fmt(A.j);
+ // map
+ {const c=$("pMap"),W=c.clientWidth||600,H=Math.round(W*.6),d=Math.min(2,devicePixelRatio||1);c.style.height=H+"px";c.width=W*d;c.height=H*d;const x=c.getContext("2d");x.scale(d,d);x.fillStyle=css("--wash");x.fillRect(0,0,W,H);
+  DATA.us.forEach(st=>{x.beginPath();st.p.forEach(poly=>poly.forEach(rg=>{rg.forEach((pt,i)=>{const[a,b]=proj(pt[0],pt[1],W,H);i?x.lineTo(a,b):x.moveTo(a,b)});x.closePath()}));x.fillStyle=st.fia?css("--sheet"):css("--wash");x.fill();x.strokeStyle=css("--line");x.lineWidth=st.fia?1:.6;x.stroke()});
+  const lo=Math.min(...mu),hi=Math.max(...mu);x.fillStyle=css("--grn");for(const i of t.T){const[a,b]=proj(F.lon[i],F.lat[i],W,H);x.globalAlpha=.15+.7*Math.sqrt((mu[i]-lo)/(hi-lo));x.fillRect(a-.9,b-.9,1.8,1.8)}x.globalAlpha=1;
+  for(const j of t.J){const[a,b]=proj(F.lon[j],F.lat[j],W,H),out=Math.abs(y[j]-mu[j])>t.q;x.beginPath();x.arc(a,b,3.4,0,6.3);x.fillStyle=css("--sel");x.fill();if(out){x.beginPath();x.arc(a,b,6,0,6.3);x.lineWidth=1.6;x.strokeStyle=css("--miss");x.stroke()}}}
+ // ranked errors
+ {const c=$("pErr"),W=c.clientWidth||460,H=Math.round(Math.min(320,W*.7)),d=Math.min(2,devicePixelRatio||1);c.style.height=H+"px";c.width=W*d;c.height=H*d;const x=c.getContext("2d");x.scale(d,d);x.fillStyle=css("--sheet");x.fillRect(0,0,W,H);
+  const L=46,B=30,Tp=10,R=8,n=t.o.length,lim=t.q*3.2,mx=mu[t.o[0]]*1.02,mn=Math.min(0,mu[t.o[n-1]]),X=k=>L+(mu[t.o[k]]-mn)/(mx-mn)*(W-L-R),Y=v=>Tp+(lim-Math.max(-lim,Math.min(lim,v)))/(2*lim)*(H-B-Tp);
+  const K=t.J.length;const xs=(X(K-1)+X(K))/2;x.fillStyle=css("--wash");x.fillRect(xs,Tp,W-R-xs,H-B-Tp);x.fillStyle=css("--band");x.fillRect(L,Y(t.q),W-L-R,Y(-t.q)-Y(t.q));
+  x.strokeStyle=css("--ink3");x.lineWidth=1;x.beginPath();x.moveTo(L,Y(0));x.lineTo(W-R,Y(0));x.stroke();
+  x.font="12px "+css("--mono");x.fillStyle=css("--ink2");x.textAlign="right";[-2,-1,0,1,2].forEach(k=>{const v=k*t.q*1.5;x.fillText(Math.round(v),L-5,Y(v)+4)});x.textAlign="left";x.font="13px "+css("--body");[0,100,200,300,400,500].filter(v=>v<=mx).forEach(v=>{const px=L+(v-mn)/(mx-mn)*(W-L-R);x.textAlign="center";x.font="12px "+css("--mono");x.fillText(v,px,H-B+14)});x.font="13px "+css("--body");x.textAlign="center";x.fillText("Predicted biomass (Mg/ha); error = measured minus predicted",(L+W-R)/2,H-3);
+  x.globalAlpha=.55;x.fillStyle=css("--ink3");for(let k=K;k<n;k++){const i=t.o[k];x.fillRect(X(k)-1,Y(y[i]-mu[i])-1,2,2)}x.globalAlpha=1;
+  PB.pts=[];for(let k=0;k<K;k++){const i=t.o[k],e=y[i]-mu[i],out=Math.abs(e)>t.q,px=X(k),py=Y(e);x.beginPath();x.arc(px,py,3.6,0,6.3);x.fillStyle=out?css("--miss"):css("--sel");x.fill();x.lineWidth=1;x.strokeStyle=css("--sheet");x.stroke();PB.pts.push([px,py,`Measured ${Math.round(y[i])} Mg/ha, predicted ${Math.round(mu[i])}; interval ±${Math.round(t.q)}`])}
+  x.textAlign="right";x.fillStyle=css("--ink2");x.fillText(`Selected: ${K} plots`,W-R-4,Tp+14)}}
+$("pErr").addEventListener("pointermove",e=>{const b=$("pErr").getBoundingClientRect(),px=e.clientX-b.left,py=e.clientY-b.top;let best=null,bd=64;(PB.pts||[]).forEach(p=>{const d=(p[0]-px)**2+(p[1]-py)**2;if(d<bd){bd=d;best=p}});best?showTip(e,best[2]):hideTip()});$("pErr").addEventListener("pointerleave",hideTip);
+document.querySelectorAll("[data-pshare]").forEach(b=>b.addEventListener("click",()=>{PB.share=+b.dataset.pshare;document.querySelectorAll("[data-pshare]").forEach(x=>x.setAttribute("aria-pressed",x===b));drawProblem()}));$("pNew").addEventListener("click",()=>{PB.seed++;drawProblem()});
+
 // ---- copy
 $("copy").addEventListener("click",()=>{const t=$("code").textContent;const ok=()=>{$("copied").textContent="Copied"};const no=()=>{const r=document.createRange();r.selectNodeContents($("code"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("copied").textContent="Selected: press Ctrl or Cmd + C"};(navigator.clipboard?navigator.clipboard.writeText(t).then(ok,no):no())});
 
 // ---- boot and redraw on size or theme changes
-function drawStatic(){drawShare(SH.shown??20,SH.shown??20,1);SH.shown=SH.shown??20;drawCtry(1);drawFiaMap();drawFiaBars();drawFiaRisk();drawSwap();drawPlan();drawCov();drawRisk();drawFloor();drawArms();drawBench();drawLP()}
+function drawStatic(){drawProblem();drawShare(SH.shown??20,SH.shown??20,1);SH.shown=SH.shown??20;drawCtry(1);drawFiaMap();drawFiaBars();drawFiaRisk();drawSwap();drawPlan();drawCov();drawRisk();drawFloor();drawArms();drawBench();drawLP()}
 function redrawAll(){relCanvas=null;drawMap();drawErrs();if(acc&&acc.t)drawBars();drawStatic()}
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(redrawAll,150)});
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",redrawAll);
