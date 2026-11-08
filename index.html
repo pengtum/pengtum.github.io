@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Peng Luo</title>
   <meta name="description" content="Peng Luo — Assistant Professor at the University of Iowa, School of Earth, Environment, and Sustainability. Trustworthy GeoAI, Explainable AI, Uncertainty Quantification." />
-  <link rel="stylesheet" href="css/style.css?v=20261108" />
+  <link rel="stylesheet" href="css/style.css?v=20261109" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/" />
@@ -72,64 +72,6 @@
     </div>
   </div>
 
-  <!-- Atlas -->
-  <section class="atlas" aria-labelledby="atlasTitle">
-    <div class="atlas-head">
-      <h2 class="atlas-title" id="atlasTitle">Atlas</h2>
-      <p class="atlas-sub">Maps, tools and animations from my research. Open a plate to explore it.</p>
-    </div>
-    <div class="atlas-grid">
-      <a class="plate plate--lead" href="mesoscale/">
-        <div class="plate-media"><img src="assets/atlas/mesoscale.jpg" alt="Preview of Overlapping Mesoscale Atlas" loading="lazy"></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 01 &middot; Interactive atlas</div>
-          <div class="plate-title">Overlapping Mesoscale Atlas <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">How mobility flows reveal overlapping communities in 50 US cities.</div>
-        </div>
-      </a>
-      <a class="plate plate--side" href="research-trustworthy-geoai.html#visual-stories">
-        <div class="plate-media"><video class="atlas-video" muted loop playsinline preload="metadata" poster="assets/viz/popmunich-ntl-shap-poster.jpg" aria-label="Animation of SHAP values flying from a dependence plot to the Munich population grid"><source src="assets/viz/popmunich-ntl-shap.mp4" type="video/mp4"></video></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 02 &middot; Animation</div>
-          <div class="plate-title">Where does night-time light matter? <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">Munich's 100 m grid, flying from a SHAP plot to the map.</div>
-        </div>
-      </a>
-      <a class="plate plate--side" href="sega/">
-        <div class="plate-media"><img src="assets/atlas/sega.jpg" alt="Preview of SEGA: Self-Evolving Geospatial Algorithms" loading="lazy"></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 03 &middot; Project page</div>
-          <div class="plate-title">SEGA: Self-Evolving Geospatial Algorithms <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">LLM agents that evolve geospatial algorithms.</div>
-        </div>
-      </a>
-      <a class="plate plate--third" href="https://vezarachan.github.io/GeoXCPWeb/" target="_blank" rel="noopener">
-        <div class="plate-media"><img src="assets/atlas/geoxcp.jpg" alt="Preview of GeoXCP" loading="lazy"></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 04 &middot; Interactive tool</div>
-          <div class="plate-title">GeoXCP <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">SHAP explanations with spatially calibrated uncertainty.</div>
-        </div>
-      </a>
-      <a class="plate plate--third" href="https://vezarachan.github.io/GeoXCPWeb/focus_radial.html" target="_blank" rel="noopener">
-        <div class="plate-media"><img src="assets/atlas/lens.jpg" alt="Preview of Spatial Lens" loading="lazy"></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 05 &middot; Interactive tool</div>
-          <div class="plate-title">Spatial Lens <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">Focus on local clusters of uncertain explanations.</div>
-        </div>
-      </a>
-      <a class="plate plate--third" href="https://spatialuncertaintyviz-production.up.railway.app/" target="_blank" rel="noopener">
-        <div class="plate-media"><img src="assets/atlas/conformal.jpg" alt="Preview of Conformal Prediction Explorer" loading="lazy"></div>
-        <div class="plate-cap">
-          <div class="plate-kicker">Plate 06 &middot; Interactive tool</div>
-          <div class="plate-title">Conformal Prediction Explorer <span class="plate-arrow">&rarr;</span></div>
-          <div class="plate-desc">Spatial uncertainty quantification on your own data.</div>
-        </div>
-      </a>
-    </div>
-  </section>
-
   <!-- Research interests -->
   <div class="section">
     <div class="section-label">Research Interests</div>
@@ -140,6 +82,21 @@
       <li><a class="ri-theme" href="research-generalization-geoai.html">Transferable and scalable GeoAI</a>: Methods that generalize across regions, datasets, and tasks, and multi-agent large language models for geospatial model discovery, including <a href="https://arxiv.org/abs/2509.21593" target="_blank">GeoEvolve</a>, self-evolving geospatial algorithms (<em>Annals of the AAG</em>, in press), and <a href="https://doi.org/10.1016/j.isprsjprs.2025.12.008" target="_blank">graph-based deep spatial regression</a>.</li>
     </ul>
   </div>
+
+  <!-- Atlas -->
+  <section class="atlas" aria-label="Atlas of visualizations">
+    <div class="section-label">Atlas</div>
+    <div class="atlas-reel" id="atlasReel">
+      <div class="atlas-track">
+        <a class="reel-plate" href="mesoscale/" draggable="false"><span class="reel-cover"><img src="assets/atlas/mesoscale.jpg" alt="" draggable="false"></span><span class="reel-kicker">01 &middot; Interactive atlas</span><span class="reel-title">Overlapping Mesoscale Atlas</span></a>
+        <a class="reel-plate" href="research-trustworthy-geoai.html#visual-stories" draggable="false"><span class="reel-cover"><img src="assets/atlas/flight.jpg" alt="" draggable="false"></span><span class="reel-kicker">02 &middot; Animation</span><span class="reel-title">Where does night-time light matter?</span></a>
+        <a class="reel-plate" href="sega/" draggable="false"><span class="reel-cover"><img src="assets/atlas/sega.jpg" alt="" draggable="false"></span><span class="reel-kicker">03 &middot; Project page</span><span class="reel-title">SEGA: Self-Evolving Geospatial Algorithms</span></a>
+        <a class="reel-plate" href="https://vezarachan.github.io/GeoXCPWeb/" target="_blank" rel="noopener" draggable="false"><span class="reel-cover"><img src="assets/atlas/geoxcp.jpg" alt="" draggable="false"></span><span class="reel-kicker">04 &middot; Interactive tool</span><span class="reel-title">GeoXCP</span></a>
+        <a class="reel-plate" href="https://vezarachan.github.io/GeoXCPWeb/focus_radial.html" target="_blank" rel="noopener" draggable="false"><span class="reel-cover"><img src="assets/atlas/lens.jpg" alt="" draggable="false"></span><span class="reel-kicker">05 &middot; Interactive tool</span><span class="reel-title">Spatial Lens</span></a>
+        <a class="reel-plate" href="https://spatialuncertaintyviz-production.up.railway.app/" target="_blank" rel="noopener" draggable="false"><span class="reel-cover"><img src="assets/atlas/conformal.jpg" alt="" draggable="false"></span><span class="reel-kicker">06 &middot; Interactive tool</span><span class="reel-title">Conformal Prediction Explorer</span></a>
+      </div>
+    </div>
+  </section>
 
   <!-- Upcoming -->
   <div class="section">
@@ -400,14 +357,51 @@ function toggleNews() {
     btn.innerHTML = 'Show all &darr;';
   }
 }
-// Atlas animation: play only while on screen, honour reduced motion
+// Atlas reel: drifts on its own, reacts to page scroll, can be dragged, pauses on hover
 (function() {
-  var v = document.querySelector('.atlas-video');
-  if (!v || !('IntersectionObserver' in window)) return;
+  var reel = document.getElementById('atlasReel');
+  if (!reel) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  new IntersectionObserver(function(es) {
-    es.forEach(function(e) { if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function() {}); } else v.pause(); });
-  }, { threshold: 0.25 }).observe(v);
+  var track = reel.querySelector('.atlas-track');
+  Array.prototype.slice.call(track.children).forEach(function(p) {
+    var c = p.cloneNode(true);
+    c.setAttribute('aria-hidden', 'true');
+    c.tabIndex = -1;
+    track.appendChild(c);
+  });
+  reel.classList.add('is-live');
+  var x = 0, boost = 0, hover = false, drag = null, moved = false, visible = true, lastY = window.scrollY, last = 0;
+  function loop(t) {
+    var dt = Math.min(t - last, 50) || 16; last = t;
+    var half = track.scrollWidth / 2;
+    if (!drag && visible) x -= (hover ? 0 : 0.028 * dt) + boost;
+    boost *= 0.92;
+    if (half) { x = x % half; if (x > 0) x -= half; }
+    track.style.transform = 'translate3d(' + x + 'px,0,0)';
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY;
+    if (visible) boost += (y - lastY) * 0.05;
+    boost = Math.max(-14, Math.min(14, boost));
+    lastY = y;
+  }, { passive: true });
+  new IntersectionObserver(function(es) { visible = es[0].isIntersecting; }).observe(reel);
+  reel.addEventListener('mouseenter', function() { hover = true; });
+  reel.addEventListener('mouseleave', function() { hover = false; });
+  reel.addEventListener('focusin', function(e) { hover = true; });
+  reel.addEventListener('focusout', function() { hover = false; });
+  reel.addEventListener('pointerdown', function(e) { drag = { px: e.clientX, x: x }; moved = false; });
+  window.addEventListener('pointermove', function(e) {
+    if (!drag) return;
+    var d = e.clientX - drag.px;
+    if (Math.abs(d) > 5) { moved = true; reel.classList.add('is-dragging'); }
+    x = drag.x + d;
+  });
+  window.addEventListener('pointerup', function() { drag = null; reel.classList.remove('is-dragging'); });
+  window.addEventListener('pointercancel', function() { drag = null; reel.classList.remove('is-dragging'); });
+  reel.addEventListener('click', function(e) { if (moved) e.preventDefault(); }, true);
+  requestAnimationFrame(loop);
 })();
 </script>
 </body>
