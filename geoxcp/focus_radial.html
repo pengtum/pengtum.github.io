@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoXCP Radial Focus Explorer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #3b5bdb; --bg: #f1f5f9; --card: #ffffff;
+      --border: #e2e8f0; --text: #1e293b; --muted: #64748b; --light: #94a3b8;
+    }
+    body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+    /* ── HEADER ── */
+    .header { height: 52px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 14px; z-index: 1000; flex-shrink: 0; }
+    .logo-badge { background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: .5px; }
+    .header-title { font-size: 15px; font-weight: 600; }
+    .header-sub   { font-size: 12px; color: var(--muted); }
+    .header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .chip { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 11px; color: var(--muted); font-weight: 500; }
+    .ds-select { font-size: 12px; font-weight: 500; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer; outline: none; }
+    .ds-select:focus { border-color: var(--primary); }
+
+    /* ── MAP ── */
+    #map { flex: 1; position: relative; cursor: crosshair; }
+    #map.dragging { cursor: grabbing; }
+
+    /* ── RADIAL SVG OVERLAY ── */
+    #radial-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 500; overflow: visible; }
+
+    /* ── HOVER TOOLTIP (inline in expanded slice, no floating box) ── */
+    .radial-tooltip {
+      position: fixed;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.14);
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 2000;
+      min-width: 190px;
+      transition: opacity .15s;
+    }
+    .radial-tooltip.hidden { opacity: 0; pointer-events: none; }
+    .tt-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 7px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+    .tt-row  { display: flex; justify-content: space-between; gap: 16px; margin-top: 4px; font-size: 11.5px; color: var(--muted); }
+    .tt-val  { font-weight: 700; font-size: 12px; }
+    .tt-bar-wrap { margin-top: 6px; }
+    .tt-bar-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .tt-bar-track { background: var(--bg); border-radius: 3px; height: 6px; overflow: hidden; position: relative; }
+    .tt-bar-fill  { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+    .tt-uncert-track { background: var(--bg); border-radius: 3px; height: 4px; overflow: hidden; position: relative; margin-top: 3px; }
+    .tt-footer { margin-top: 7px; font-size: 10px; color: var(--light); border-top: 1px solid var(--border); padding-top: 5px; }
+
+    /* ── CONTROLS (bottom) ── */
+    .controls {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 20px; display: flex; align-items: center; gap: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.12); z-index: 800; min-width: 420px;
+    }
+    .ctrl-group { display: flex; align-items: center; gap: 8px; }
+    .ctrl-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .ctrl-value { font-size: 12px; font-weight: 600; color: var(--primary); min-width: 52px; }
+    input[type=range] {
+      -webkit-appearance: none; width: 140px; height: 4px;
+      background: linear-gradient(to right, var(--primary) var(--pct,30%), var(--border) var(--pct,30%));
+      border-radius: 2px; outline: none; cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; box-shadow: 0 1px 4px rgba(59,91,219,.4); }
+    .toggle-group { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .toggle-btn { padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all .15s; white-space: nowrap; }
+    .toggle-btn.active { background: var(--primary); color: #fff; }
+    .ctrl-divider { width: 1px; height: 24px; background: var(--border); }
+
+    /* ── MAP HINT ── */
+    .map-hint { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(30,41,59,.85); color: #fff; font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 20px; pointer-events: none; z-index: 800; transition: opacity .4s; }
+    .map-hint.hidden { opacity: 0; }
+
+    /* ── LEGEND ── */
+    .map-legend { position: absolute; right: 12px; top: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; z-index: 800; min-width: 140px; }
+    .legend-title { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+    .legend-grad  { width: 100%; height: 8px; border-radius: 4px; margin-bottom: 4px; }
+    .legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+
+    /* ── RADIAL LEGEND ── */
+    #radial-legend {
+      position: absolute; left: 12px; bottom: 80px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 13px; z-index: 800; min-width: 170px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .rl-section { margin-top: 8px; }
+    .rl-section:first-child { margin-top: 0; }
+    .rl-section-title { font-size: 9px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+    .rl-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; font-size: 11px; color: var(--muted); }
+    .rl-row:last-child { margin-bottom: 0; }
+    .rl-swatch { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; opacity: 0.85; }
+    .rl-grad-swatch { width: 60px; height: 8px; border-radius: 3px; flex-shrink: 0; }
+    .rl-divider { border: none; border-top: 1px solid var(--border); margin: 7px 0; }
+    .rl-note { font-size: 9.5px; color: var(--light); margin-top: 6px; }
+
+    /* ── NO DATA ── */
+    #no-data { position: absolute; inset: 0; background: rgba(241,245,249,.96); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; gap: 12px; }
+    #no-data h2 { font-size: 18px; }
+    #no-data p  { font-size: 13px; color: var(--muted); text-align: center; max-width: 400px; line-height: 1.6; }
+    #no-data code { background: #1e293b; color: #94d82d; padding: 8px 16px; border-radius: 6px; font-size: 12px; display: block; margin-top: 4px; }
+
+    /* ═════════════════ MOBILE (≤ 768px) ═════════════════ */
+    @media (max-width: 768px) {
+      .header {
+        height: auto;
+        min-height: 48px;
+        padding: 8px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .header-title { font-size: 13px; }
+      .header-sub {
+        font-size: 10.5px;
+        line-height: 1.35;
+        max-width: 100%;
+      }
+      .header-right {
+        margin-left: 0;
+        order: 3;
+        flex-basis: 100%;
+        justify-content: flex-end;
+      }
+      .chip { font-size: 10.5px; padding: 2px 8px; }
+      .ds-select { font-size: 11px; padding: 4px 8px; }
+
+      /* Bottom controls: full-width, docked */
+      .controls {
+        bottom: 8px;
+        left: 8px; right: 8px;
+        transform: none;
+        min-width: 0;
+        width: auto;
+        padding: 10px 12px;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .ctrl-divider { display: none; }
+      input[type=range] { width: 100%; min-width: 140px; flex: 1; }
+      .ctrl-label { font-size: 10px; }
+
+      /* Map hint */
+      .map-hint {
+        top: 10px;
+        font-size: 11px;
+        padding: 6px 12px;
+        max-width: calc(100vw - 24px);
+        text-align: center;
+      }
+
+      /* Map legend (top-right): smaller */
+      .map-legend {
+        right: 8px; top: 8px;
+        padding: 6px 9px;
+        min-width: 100px;
+      }
+      .legend-title { font-size: 9.5px; }
+      .legend-labels { font-size: 9.5px; }
+
+      /* Radial legend (bottom-left): docked with reduced padding */
+      #radial-legend {
+        left: 8px;
+        bottom: 80px;
+        padding: 7px 10px;
+        min-width: 130px;
+        font-size: 10px;
+      }
+      .rl-row { font-size: 10px; gap: 6px; margin-bottom: 3px; }
+      .rl-grad-swatch { width: 44px; }
+      .rl-note { font-size: 9px; }
+
+      /* Tooltip — narrower, prevent overflow */
+      .radial-tooltip {
+        min-width: 0;
+        max-width: calc(100vw - 24px);
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+      .tt-name { font-size: 11.5px; }
+      .tt-row { font-size: 11px; gap: 10px; }
+    }
+
+    /* ═════════════════ SMALL MOBILE (≤ 420px) ═════════════════ */
+    @media (max-width: 420px) {
+      .header-title { font-size: 12px; }
+      .header-sub { display: none; }
+      /* hide one of the two legends to free vertical space */
+      #radial-legend { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <span class="logo-badge">GeoXCP</span>
+  <select class="ds-select" id="dataset-sel">
+    <option value="0">NYC Median Income</option>
+    <option value="1">Seattle House Price</option>
+    <option value="2">US Politics Voting</option>
+  </select>
+  <div>
+    <div class="header-title" id="header-title">Radial Focus Explorer</div>
+    <div class="header-sub">Click map to place Focus Circle · Drag to move · Hover bars for details</div>
+  </div>
+  <div class="header-right">
+    <span class="chip" id="chip-n">— points</span>
+    <span class="chip" id="chip-r">— radius</span>
+  </div>
+</header>
+
+<div id="map">
+  <!-- no-data -->
+  <div id="no-data" style="display:none">
+    <h2>Loading data…</h2>
+    <p>Fetching dataset from server. Make sure you're running a local server:</p>
+    <code>python3 -m http.server 8765</code>
+  </div>
+
+  <!-- SVG overlay for radial bars -->
+  <svg id="radial-svg"></svg>
+
+  <!-- Hover tooltip -->
+  <div class="radial-tooltip hidden" id="radial-tooltip"></div>
+
+  <!-- Map hint -->
+  <div class="map-hint" id="map-hint">Click anywhere on the map to place a Focus Circle</div>
+
+  <!-- Y-value legend -->
+  <div class="map-legend" id="map-legend" style="display:none">
+    <div class="legend-title" id="legend-title">Value</div>
+    <div class="legend-grad" id="legend-grad"></div>
+    <div class="legend-labels"><span id="leg-min">—</span><span id="leg-max">—</span></div>
+  </div>
+
+  <!-- Radial chart legend -->
+  <div id="radial-legend" style="display:none"></div>
+
+  <!-- Controls -->
+  <div class="controls" id="controls" style="display:none">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Radius</span>
+      <input type="range" id="radius-slider" min="200" max="5000" step="50" value="2000">
+      <span class="ctrl-value" id="radius-val">2.0 km</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+'use strict';
+
+// ── dataset registry ──────────────────────────────────────
+const DATASETS = [
+  {
+    label:      'NYC Median Income',
+    url:        'data/results_nyc.json',
+    scriptUrl:  'data/results_nyc.js',
+    varName:    'GeoXCPDataNYC',
+    yField:     'income',
+    yLabel:     'Median Income',
+    yUnit:      '$',
+    pointLabel: 'tracts',
+    radiusMin:  200, radiusMax: 5000, radiusDefault: 2000,
+    dotColors:  ['#93c5fd', '#1e3a8a'],
+  },
+  {
+    label:      'Seattle House Price',
+    url:        'data/results.json',
+    scriptUrl:  'data/results.js',
+    varName:    'GeoXCPData',
+    yField:     'price',
+    yLabel:     'House Price',
+    yUnit:      '$',
+    yScale:     10000,   // data stored in $10k units
+    pointLabel: 'houses',
+    radiusMin:  200, radiusMax: 5000, radiusDefault: 2000,
+    dotColors:  ['#86efac', '#14532d'],
+  },
+  {
+    label:      'US Politics Voting',
+    url:        'data/results_politics.json',
+    scriptUrl:  'data/results_politics.js',
+    varName:    'GeoXCPDataPolitics',
+    yField:     'y_val',
+    yLabel:     'Dem. Vote %',
+    yUnit:      '%',
+    pointLabel: 'counties',
+    radiusMin:  10000, radiusMax: 400000, radiusDefault: 80000,
+    dotColors:  ['#fca5a5', '#1d4ed8'],
+  },
+];
+
+// ── constants ─────────────────────────────────────────────
+const EXCLUDE    = new Set(['lon', 'lat']);
+const DEG_PER_M  = 1 / 111000;
+const MAX_SPOKES = 19;
+
+const MAX_H         = 90;
+const LABEL_PAD     = 12;
+const SUB_GAP       = 0.006;
+const SLICE_GAP     = 0.018;
+const EXPAND_FACTOR = 4.0;
+
+const SHORT = {
+  UNEMP_RATE:'Unemploy.', gini:'Gini', profes_p:'Profession',
+  master_p:"Master's", labor_part_p:'Labor Part.', popover18_p:'Pop.>18',
+  male_p:'Male %', european_p:'White %', asian_p:'Asian %', african_p:'African %',
+  hispanic_p:'Hispanic %', highschool_p:'Hi.School', bachelor_p:"Bachelor's",
+  doctorate_p:'Doctorate', pub_assist_p:'Pub.Assist', long_commute_p:'Commute',
+  dropout_p:'Dropout', medianage:'Med.Age', popdty:'Pop.Density'
+};
+
+// ── state ─────────────────────────────────────────────────
+let data, features, featureLabels, currentDS;
+let fmtY = v => String(v);   // dynamic value formatter
+let map, markersLayer, circleLayer, centerLatLng;
+let radiusM    = 2000;
+let currentAgg = null;
+let hoveredIdx = null;
+let sortedFeatures = [];
+
+// ── dataset loading ────────────────────────────────────────
+function resetRadialState() {
+  currentAgg = null; hoveredIdx = null; sortedFeatures = [];
+  if (circleLayer) { circleLayer.remove(); circleLayer = null; }
+  centerLatLng = null;
+  d3.select('#radial-svg').selectAll('*').remove();
+  document.getElementById('radial-tooltip').classList.add('hidden');
+  document.getElementById('map-hint').classList.remove('hidden');
+  document.getElementById('map-legend').style.display    = 'none';
+  document.getElementById('controls').style.display      = 'none';
+  document.getElementById('radial-legend').style.display = 'none';
+}
+
+function loadDataset(ds) {
+  resetRadialState();
+  // Try fetch (HTTP server), fall back to <script> tag (file:// protocol)
+  fetch(ds.url)
+    .then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
+    .then(json => { document.getElementById('no-data').style.display = 'none'; setupData(json, ds); })
+    .catch(() => loadViaScript(ds));
+}
+
+function loadViaScript(ds) {
+  // Already loaded (e.g., switching back to same dataset)?
+  if (window[ds.varName]) {
+    document.getElementById('no-data').style.display = 'none';
+    setupData(window[ds.varName], ds);
+    return;
+  }
+  const s = document.createElement('script');
+  s.src = ds.scriptUrl;
+  s.onload = () => {
+    if (window[ds.varName]) {
+      document.getElementById('no-data').style.display = 'none';
+      setupData(window[ds.varName], ds);
+    } else {
+      showLoadError(ds);
+    }
+  };
+  s.onerror = () => showLoadError(ds);
+  document.head.appendChild(s);
+}
+
+function showLoadError(ds) {
+  const nd = document.getElementById('no-data');
+  nd.querySelector('h2').textContent = 'Failed to load data';
+  nd.querySelector('p').textContent  = `Could not load ${ds.label}. Run the data generation script and serve via HTTP.`;
+  nd.style.display = 'flex';
+}
+
+function setupData(json, ds) {
+  currentDS = ds;
+  data          = json;
+  features      = data.features.filter(f => !EXCLUDE.has(f));
+  featureLabels = data.feature_labels;
+
+  // Resolve effective y-field and label from meta (politics has it) or dataset config
+  const yField = data.meta.y_field || ds.yField;
+  const yLabel = data.meta.y_label || ds.yLabel;
+  const yUnit  = data.meta.y_unit  || ds.yUnit;
+
+  // Dynamic value formatter (apply yScale if data is in sub-unit, e.g. $10k)
+  const yScale = ds.yScale || 1;
+  if (yUnit === '%') {
+    fmtY = v => (v * yScale).toFixed(1) + '%';
+  } else if (yUnit === '$') {
+    fmtY = v => fmt$(v * yScale);
+  } else {
+    fmtY = v => Number(v * yScale).toFixed(2);
+  }
+
+  // Init map (first call) or reuse
+  if (!map) {
+    map = L.map('map', { zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false, dragging: false });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri', subdomains: 'abcd', maxZoom: 16
+    }).addTo(map);
+
+    // Map events (registered once)
+    map.on('click', e => {
+      if (!circleLayer) {
+        placeCircle(e.latlng);
+        centerLatLng = e.latlng;
+        onCircleUpdate();
+        document.getElementById('map-hint').classList.add('hidden');
+      }
+    });
+    map.on('mousedown', e => {
+      if (!circleLayer) return;
+      let moved = false;
+      const mapEl = document.getElementById('map');
+      const onMove = ev => {
+        if (!moved) { moved = true; mapEl.classList.add('dragging'); }
+        centerLatLng = ev.latlng;
+        circleLayer.setLatLng(ev.latlng);
+        onCircleUpdate();
+      };
+      const onUp = () => {
+        mapEl.classList.remove('dragging');
+        map.off('mousemove', onMove);
+        map.off('mouseup', onUp);
+        if (!moved) {
+          centerLatLng = e.latlng;
+          circleLayer.setLatLng(e.latlng);
+          onCircleUpdate();
+        }
+      };
+      map.on('mousemove', onMove);
+      map.on('mouseup', onUp);
+    });
+    map.on('move zoom', redrawRadial);
+
+    ['controls','map-legend'].forEach(id => {
+      const el = document.getElementById(id);
+      L.DomEvent.disableClickPropagation(el);
+      L.DomEvent.disableScrollPropagation(el);
+    });
+
+    const slider = document.getElementById('radius-slider');
+    slider.addEventListener('input', () => {
+      radiusM = +slider.value;
+      document.getElementById('radius-val').textContent = fmtRadius(radiusM);
+      document.getElementById('chip-r').textContent     = fmtRadius(radiusM);
+      updateGrad(slider);
+      if (circleLayer) { circleLayer.setRadius(radiusM); onCircleUpdate(); }
+    });
+
+    // Viewport changes (rotation, resize)
+    window.addEventListener('resize', () => {
+      map.invalidateSize();
+      redrawRadial();
+    });
+  }
+
+  // Remove old markers
+  if (markersLayer) { markersLayer.remove(); markersLayer = null; }
+
+  // Auto-zoom to dataset extent
+  const latMin = data.meta.lat_min ?? Math.min(...data.points.map(p => p.lat));
+  const latMax = data.meta.lat_max ?? Math.max(...data.points.map(p => p.lat));
+  const lonMin = data.meta.lon_min ?? Math.min(...data.points.map(p => p.lon));
+  const lonMax = data.meta.lon_max ?? Math.max(...data.points.map(p => p.lon));
+  map.fitBounds([[latMin, lonMin], [latMax, lonMax]], { padding: [40, 40] });
+
+  // Color scale for dots
+  const vals = data.points.map(p => p[yField]).filter(v => v != null);
+  const vMin = d3.quantile(vals.slice().sort(d3.ascending), 0.02);
+  const vMax = d3.quantile(vals.slice().sort(d3.ascending), 0.98);
+  const cScale = d3.scaleSequential(t => d3.interpolateRgb(ds.dotColors[0], ds.dotColors[1])(t)).domain([vMin, vMax]);
+
+  // Draw markers
+  markersLayer = L.layerGroup().addTo(map);
+  data.points.forEach(pt => {
+    const val = pt[yField];
+    L.circleMarker([pt.lat, pt.lon], {
+      radius: 4, fillColor: val != null ? cScale(val) : '#aaa',
+      color: '#fff', weight: 0.5, fillOpacity: 0.8
+    }).bindTooltip(`<b>${val != null ? fmtY(val) : '—'}</b> ${yLabel}`, { sticky: true })
+      .addTo(markersLayer);
+  });
+
+  // Legend
+  buildLegend(cScale, vMin, vMax, yLabel);
+
+  // Radius slider range
+  const slider = document.getElementById('radius-slider');
+  slider.min   = ds.radiusMin;
+  slider.max   = ds.radiusMax;
+  slider.value = ds.radiusDefault;
+  radiusM      = ds.radiusDefault;
+  updateGrad(slider);
+
+  // Header and chips
+  document.getElementById('header-title').textContent = `${ds.label} — Radial Focus Explorer`;
+  const nTotal = data.meta.n_total || (data.meta.n_train + data.meta.n_calib + data.meta.n_test);
+  document.getElementById('chip-n').textContent = `${nTotal} ${ds.pointLabel}`;
+  document.getElementById('chip-r').textContent = fmtRadius(radiusM);
+  document.getElementById('radius-val').textContent = fmtRadius(radiusM);
+
+  document.getElementById('map-legend').style.display    = '';
+  document.getElementById('controls').style.display      = '';
+  document.getElementById('radial-legend').style.display = '';
+  updateRadialLegend(yLabel, ds);
+}
+
+function fmtRadius(m) {
+  return m >= 1000 ? (m / 1000).toFixed(0) + ' km' : m + ' m';
+}
+
+// ── circle ────────────────────────────────────────────────
+function placeCircle(latlng) {
+  centerLatLng = latlng;
+  circleLayer  = L.circle(latlng, {
+    radius: radiusM, color: '#eb0f6f', weight: 1.5,
+    fillColor: '#eb0f6f', fillOpacity: 0.05
+  }).addTo(map);
+}
+
+// ── aggregation ────────────────────────────────────────────
+function aggregateInCircle() {
+  if (!centerLatLng) return null;
+  const cLat = centerLatLng.lat, cLon = centerLatLng.lng;
+  const rDeg = radiusM * DEG_PER_M;
+  const sigma = rDeg / 2;
+  const pts = [];
+  for (const pt of data.points) {
+    const dLat = pt.lat - cLat;
+    const dLon = (pt.lon - cLon) * Math.cos(cLat * Math.PI / 180);
+    const d = Math.sqrt(dLat * dLat + dLon * dLon);
+    if (d > rDeg) continue;
+    pts.push({ pt, w: Math.exp(-d * d / (2 * sigma * sigma)) });
+  }
+  if (!pts.length) return { n: 0, features: {} };
+  // Only aggregate test points (those that have SHAP features)
+  const testPts = pts.filter(({ pt }) => pt.features);
+  if (!testPts.length) return { n: pts.length, features: {} };
+  const sumW = testPts.reduce((s, d) => s + d.w, 0);
+  const res = {};
+  for (const f of features) {
+    let sw = 0, sa = 0, su = 0;
+    for (const { pt, w } of testPts) {
+      const fd = pt.features[f];
+      sw += w * fd.shap;
+      sa += w * Math.abs(fd.shap);
+      su += w * fd.geo_uncertainty;
+    }
+    res[f] = { wshap: sw / sumW, abshap: sa / sumW, uncert: su / sumW };
+  }
+  return { n: pts.length, features: res };
+}
+
+function onCircleUpdate() {
+  currentAgg = aggregateInCircle();
+  hoveredIdx = null;
+  if (currentAgg && currentAgg.n && Object.keys(currentAgg.features).length) {
+    sortedFeatures = features
+      .map(f => ({ f, ...currentAgg.features[f] }))
+      .filter(d => d.abshap != null)
+      .sort((a, b) => b.abshap - a.abshap)
+      .slice(0, MAX_SPOKES);
+  } else {
+    sortedFeatures = [];
+  }
+  updateRadialLegend(currentDS ? (data.meta.y_label || currentDS.yLabel) : '', currentDS);
+  redrawRadial();
+}
+
+// ── screen geometry ────────────────────────────────────────
+function circleScreenGeom() {
+  const cPx = map.latLngToContainerPoint(centerLatLng);
+  const ePx = map.latLngToContainerPoint(
+    L.latLng(centerLatLng.lat,
+      centerLatLng.lng + (radiusM * DEG_PER_M) / Math.cos(centerLatLng.lat * Math.PI / 180))
+  );
+  return { cx: cPx.x, cy: cPx.y, rPx: Math.hypot(ePx.x - cPx.x, ePx.y - cPx.y) };
+}
+
+// ── angle layout ───────────────────────────────────────────
+function computeAngles(N, expandedIdx) {
+  const totalGap  = N * SLICE_GAP;
+  const available = 2 * Math.PI - totalGap;
+
+  let baseAng, expandAng, compressAng;
+  if (expandedIdx === null || N <= 1) {
+    baseAng = available / N;
+    expandAng = baseAng;
+    compressAng = baseAng;
+  } else {
+    baseAng     = available / N;
+    expandAng   = Math.min(baseAng * EXPAND_FACTOR, available * 0.45);
+    compressAng = (available - expandAng) / (N - 1);
+  }
+
+  const angles = [];
+  let cur = -Math.PI / 2; // start at top
+  for (let i = 0; i < N; i++) {
+    const w     = (expandedIdx !== null && i === expandedIdx) ? expandAng : compressAng;
+    const start = cur + SLICE_GAP / 2;
+    const end   = cur + w + SLICE_GAP / 2;
+    angles.push({ startAngle: start, endAngle: end, midAngle: (start + end) / 2 });
+    cur += w + SLICE_GAP;
+  }
+  return angles;
+}
+
+// ── main draw ──────────────────────────────────────────────
+function redrawRadial() {
+  const svg = d3.select('#radial-svg');
+  if (!circleLayer || !centerLatLng || !sortedFeatures.length) {
+    svg.selectAll('*').remove();
+    return;
+  }
+
+  const { cx, cy, rPx } = circleScreenGeom();
+  const N      = sortedFeatures.length;
+  const angles = computeAngles(N, hoveredIdx);
+
+  const maxShap   = d3.max(sortedFeatures, d => d.abshap) || 1;
+  const maxUncert = d3.max(sortedFeatures, d => d.uncert) || 1;
+
+  // Sub-arc split: left half = SHAP, right half = uncertainty
+  const shapArc = d3.arc()
+    .innerRadius(rPx)
+    .outerRadius(d => rPx + (d.abshap / maxShap) * MAX_H)
+    .startAngle(d => d.startAngle)
+    .endAngle(d => d.midAngle - SUB_GAP / 2)
+    .cornerRadius(2);
+
+  const uncertArc = d3.arc()
+    .innerRadius(rPx)
+    .outerRadius(d => rPx + (d.uncert / maxUncert) * MAX_H)
+    .startAngle(d => d.midAngle + SUB_GAP / 2)
+    .endAngle(d => d.endAngle)
+    .cornerRadius(2);
+
+  // Hit zone covers full slice
+  const hitArc = d3.arc()
+    .innerRadius(rPx)
+    .outerRadius(rPx + MAX_H + LABEL_PAD)
+    .startAngle(d => d.startAngle)
+    .endAngle(d => d.endAngle);
+
+  const sliceData = sortedFeatures.map((d, i) => ({
+    ...d, ...angles[i], idx: i, color: getColor(i)
+  }));
+
+  svg.selectAll('*').remove();
+
+  // Gray overlay outside the focus circle (even-odd: large rect with circular hole)
+  const svgEl   = document.getElementById('radial-svg');
+  const W = svgEl.clientWidth  || window.innerWidth;
+  const H = svgEl.clientHeight || window.innerHeight;
+  svg.append('path')
+    .attr('d', `M0,0 H${W} V${H} H0 Z M${cx},${cy} m${-rPx},0 a${rPx},${rPx} 0 1,0 ${rPx*2},0 a${rPx},${rPx} 0 1,0 ${-rPx*2},0`)
+    .attr('fill', 'rgba(148,163,184,0.38)')
+    .attr('fill-rule', 'evenodd')
+    .style('pointer-events', 'none');
+
+  // Focus circle ring
+  svg.append('circle')
+    .attr('cx', cx).attr('cy', cy).attr('r', rPx)
+    .attr('fill', 'none').attr('stroke', '#eb0f6f')
+    .attr('stroke-width', 1.5).attr('opacity', 0.5);
+
+  // Reference rings at 25/50/75/100% of MAX_H
+  [0.25, 0.5, 0.75, 1.0].forEach(t => {
+    svg.append('circle')
+      .attr('cx', cx).attr('cy', cy).attr('r', rPx + t * MAX_H)
+      .attr('fill', 'none').attr('stroke', '#94a3b8')
+      .attr('stroke-width', 0.5).attr('stroke-dasharray', '3,3').attr('opacity', 0.35);
+  });
+
+  const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
+
+  // Background hit circle: clears hover when cursor moves to non-slice area
+  g.append('circle')
+    .attr('r', rPx + MAX_H + LABEL_PAD + 10)
+    .attr('fill', 'transparent')
+    .style('pointer-events', 'all')
+    .on('mouseenter', () => { if (hoveredIdx !== null) setHovered(null); });
+
+  const slices = g.selectAll('.slice').data(sliceData, d => d.f)
+    .join('g').attr('class', 'slice').style('pointer-events', 'all').style('cursor', 'pointer');
+
+  // Left sub-arc: mean|SHAP|
+  slices.append('path')
+    .attr('class', 'arc-shap')
+    .attr('d', shapArc)
+    .attr('fill', d => d.color)
+    .attr('opacity', d => hoveredIdx === null ? 0.82 : (d.idx === hoveredIdx ? 0.95 : 0.22))
+    .attr('stroke', '#fff').attr('stroke-width', 0.5);
+
+  // Right sub-arc: geo-uncertainty (amber)
+  slices.append('path')
+    .attr('class', 'arc-uncert')
+    .attr('d', uncertArc)
+    .attr('fill', '#f48420')
+    .attr('opacity', d => hoveredIdx === null ? 0.65 : (d.idx === hoveredIdx ? 0.85 : 0.18))
+    .attr('stroke', '#fff').attr('stroke-width', 0.5);
+
+  // Labels outside arcs
+  slices.append('text')
+    .attr('class', 'slice-label')
+    .attr('transform', d => {
+      const r  = rPx + MAX_H + LABEL_PAD;
+      const mx = d.midAngle;
+      const x  = Math.sin(mx) * r, y = -Math.cos(mx) * r;
+      const rot  = mx * 180 / Math.PI;
+      const mxN = ((mx % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+      const flip = mxN > Math.PI;
+      return `translate(${x},${y}) rotate(${flip ? rot + 90 : rot - 90})`;
+    })
+    .attr('text-anchor', d => {
+      const mxN = ((d.midAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+      return mxN > Math.PI ? 'end' : 'start';
+    })
+    .attr('dy', '0.35em')
+    .attr('font-size', d => hoveredIdx === d.idx ? 13 : 11)
+    .attr('font-weight', d => hoveredIdx === d.idx ? 600 : 400)
+    .attr('font-family', 'Inter, sans-serif')
+    .attr('fill', '#6e0f1c')
+    .attr('opacity', d => hoveredIdx === null ? 1 : (d.idx === hoveredIdx ? 1 : 0.3))
+    .style('pointer-events', 'none')
+    .text(d => SHORT[d.f] || (featureLabels && featureLabels[d.f]) || d.f);
+
+  // Inline value labels inside hovered slice
+  if (hoveredIdx !== null) {
+    const d    = sliceData[hoveredIdx];
+    const flip = d.midAngle > Math.PI / 2 && d.midAngle < 3 * Math.PI / 2;
+    const rot  = d.midAngle * 180 / Math.PI;
+
+    // SHAP value — centered in left sub-arc at mid-height
+    const shapMid  = (d.startAngle + d.midAngle - SUB_GAP / 2) / 2;
+    const shapR    = rPx + (d.abshap / maxShap) * MAX_H * 0.55;
+    const shapLx   = Math.sin(shapMid) * shapR, shapLy = -Math.cos(shapMid) * shapR;
+    const shapRot  = shapMid * 180 / Math.PI;
+    const shapFlip = shapMid > Math.PI / 2 && shapMid < 3 * Math.PI / 2;
+    const sg = g.append('g')
+      .attr('transform', `translate(${shapLx},${shapLy}) rotate(${shapFlip ? shapRot + 180 : shapRot})`)
+      .style('pointer-events', 'none');
+    sg.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em')
+      .attr('font-size', 12).attr('font-weight', 700).attr('font-family', 'Inter, sans-serif')
+      .attr('fill', getColor(d.idx))
+      .text(fmtY(d.abshap));
+
+    // Uncertainty value — centered in right sub-arc at mid-height
+    const uncMid  = (d.midAngle + SUB_GAP / 2 + d.endAngle) / 2;
+    const uncR    = rPx + (d.uncert / maxUncert) * MAX_H * 0.55;
+    const uncLx   = Math.sin(uncMid) * uncR, uncLy = -Math.cos(uncMid) * uncR;
+    const uncRot  = uncMid * 180 / Math.PI;
+    const uncFlip = uncMid > Math.PI / 2 && uncMid < 3 * Math.PI / 2;
+    g.append('g')
+      .attr('transform', `translate(${uncLx},${uncLy}) rotate(${uncFlip ? uncRot + 180 : uncRot})`)
+      .style('pointer-events', 'none')
+      .append('text').attr('text-anchor', 'middle').attr('dy', '0.35em')
+      .attr('font-size', 9).attr('font-weight', 600).attr('font-family', 'Inter, sans-serif')
+      .attr('fill', '#92400e')
+      .text('±' + fmtY(d.uncert));
+  }
+
+  // Hit zones (painted last = on top, intercept mouse before background circle)
+  slices.append('path')
+    .attr('class', 'arc-hit')
+    .attr('d', hitArc)
+    .attr('fill', 'transparent')
+    .style('pointer-events', 'all')
+    .on('mouseenter', function(event, d) { setHovered(d.idx, event); })
+    .on('mousemove',  function(event)    { moveTooltip(event); })
+    .on('mouseleave', function()         { setHovered(null); });
+
+  drawBandLegend(svg, cx, cy, rPx);
+}
+
+// ── hover ──────────────────────────────────────────────────
+function setHovered(idx, event) {
+  hoveredIdx = idx;
+  redrawRadial();
+  if (idx !== null) {
+    showTooltip(sortedFeatures[idx], event);
+  } else {
+    document.getElementById('radial-tooltip').classList.add('hidden');
+  }
+}
+
+function showTooltip(d, event) {
+  const maxAbs    = d3.max(sortedFeatures, x => x.abshap) || 1;
+  const maxUncert = d3.max(sortedFeatures, x => x.uncert) || 1;
+  const barPct    = (d.abshap / maxAbs) * 100;
+  const uncPct    = (d.uncert / maxUncert) * 100;
+  const i         = sortedFeatures.indexOf(d);
+
+  const ptLabel = currentDS ? currentDS.pointLabel : 'points';
+  document.getElementById('radial-tooltip').innerHTML = `
+    <div class="tt-name">${featureLabels[d.f]}</div>
+    <div class="tt-row"><span>Mean |SHAP|</span><span class="tt-val">${fmtY(d.abshap)}</span></div>
+    <div class="tt-bar-wrap">
+      <div class="tt-bar-label">Mean |SHAP| (relative)</div>
+      <div class="tt-bar-track"><div class="tt-bar-fill" style="width:${barPct.toFixed(1)}%;background:${getColor(i)}"></div></div>
+    </div>
+    <div class="tt-bar-wrap">
+      <div class="tt-bar-label">Geo-uncertainty ±${fmtY(d.uncert)}</div>
+      <div class="tt-uncert-track"><div class="tt-bar-fill" style="width:${uncPct.toFixed(1)}%;background:#f48420"></div></div>
+    </div>
+    <div class="tt-footer">${currentAgg.n} ${ptLabel} · ${fmtRadius(radiusM)} · Gaussian weighted</div>`;
+
+  document.getElementById('radial-tooltip').classList.remove('hidden');
+  if (event) moveTooltip(event);
+}
+
+function moveTooltip(event) {
+  const tip = document.getElementById('radial-tooltip');
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let x = event.clientX + 16, y = event.clientY - 14;
+  if (x + tw > window.innerWidth  - 10) x = event.clientX - tw - 16;
+  if (y + th > window.innerHeight - 10) y = event.clientY - th + 14;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
+}
+
+// ── radial legend (HTML card) ──────────────────────────────
+function updateRadialLegend(yLabel, ds) {
+  const el = document.getElementById('radial-legend');
+  if (!el) return;
+  const dotLabel = yLabel || 'Value';
+  const dotColors = ds ? ds.dotColors : ['#93c5fd', '#1e3a8a'];
+  const ptLabel   = ds ? ds.pointLabel : 'points';
+
+  let html = `<div class="legend-title">Radial Chart</div>`;
+  html += `<div class="rl-section">
+    <div class="rl-section-title">Left arc — Mean |SHAP|</div>
+    <div class="rl-row" style="margin-top:4px"><span class="rl-swatch" style="background:#eb0f6f"></span>Mean |SHAP| (arc length)</div>
+  </div>`;
+  html += `<hr class="rl-divider">
+  <div class="rl-section">
+    <div class="rl-section-title">Geo-uncertainty (right arc)</div>
+    <div class="rl-row"><span class="rl-swatch" style="background:#f48420"></span>Prediction interval width</div>
+  </div>`;
+  html += `<hr class="rl-divider">
+  <div class="rl-section">
+    <div class="rl-section-title">${ptLabel} dots</div>
+    <div class="rl-row">
+      <span class="rl-grad-swatch" style="background:linear-gradient(to right,${dotColors[0]},${dotColors[1]})"></span>
+      ${dotLabel}
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--light);margin-top:1px">
+      <span>Low</span><span>High</span>
+    </div>
+  </div>`;
+  html += `<p class="rl-note">Arc length = relative magnitude within circle</p>`;
+  el.innerHTML = html;
+}
+
+// ── band legend (SVG, no-op — replaced by HTML card) ───────
+function drawBandLegend(svg, cx, cy, rPx) {}
+
+// ── color ─────────────────────────────────────────────────
+function getColor(i) {
+  return '#eb0f6f';
+}
+
+// ── legend ─────────────────────────────────────────────────
+function buildLegend(scale, min, max, yLabel) {
+  const stops = d3.range(0, 1.01, 0.1).map(t => scale(min + t*(max-min))).join(',');
+  document.getElementById('legend-grad').style.background = `linear-gradient(to right,${stops})`;
+  document.getElementById('legend-title').textContent = yLabel || 'Value';
+  document.getElementById('leg-min').textContent = fmtY(min);
+  document.getElementById('leg-max').textContent = fmtY(max);
+}
+
+// ── utils ──────────────────────────────────────────────────
+function fmt$(v) {
+  const a = Math.abs(v);
+  if (a >= 1000) return (v < 0 ? '-' : '') + '$' + (a/1000).toFixed(0) + 'k';
+  return '$' + Math.round(v);
+}
+function updateGrad(el) {
+  const p = ((el.value - el.min) / (el.max - el.min) * 100).toFixed(1);
+  el.style.setProperty('--pct', p + '%');
+}
+
+// ── boot ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('dataset-sel');
+  sel.addEventListener('change', () => {
+    const ds = DATASETS[+sel.value];
+    loadDataset(ds);
+  });
+  loadDataset(DATASETS[0]);
+});
+</script>
+</body>
+</html>

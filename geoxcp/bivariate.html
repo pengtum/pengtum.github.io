@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoXCP | Bivariate + Radar</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif; font-size: 12px; }
+
+    #map { width: 100vw; height: 100vh; }
+
+    /* Full-map SVG overlay for radar + connector + focus ring */
+    #radar-svg {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 650;
+      display: none;
+    }
+    #radar-svg * { pointer-events: none; }
+
+    /* ── Dataset selector ── */
+    #ds-select {
+      position: absolute; top: 14px; left: 14px;
+      background: rgba(15,23,42,0.88); color: #e2e8f0;
+      border: 1px solid #334155; border-radius: 6px;
+      padding: 6px 10px; font-size: 12px; font-family: inherit;
+      z-index: 900; cursor: pointer; outline: none;
+    }
+
+    /* ── Info panel ── */
+    #info-panel {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(15,23,42,0.88); color: #e2e8f0;
+      border-radius: 10px; padding: 14px 18px;
+      z-index: 900; min-width: 300px;
+      font-size: 13px;
+    }
+    .ip-title { font-weight: 700; font-size: 17px; color: white; margin-bottom: 8px; }
+    .ip-row { display: flex; justify-content: space-between; gap: 20px; margin-top: 4px; }
+    .ip-key { color: #94a3b8; }
+    .ip-val { font-weight: 600; }
+    #ip-hint {
+      font-size: 13px; color: #94a3b8; line-height: 1.7;
+    }
+    #ip-hint kbd {
+      display: inline-block;
+      background: rgba(255,255,255,0.12); border: 1px solid #475569;
+      border-radius: 3px; padding: 0 5px; font-size: 12px;
+      font-family: inherit; font-style: normal; color: #cbd5e1;
+    }
+    #ip-focus-hint {
+      display: none;
+      font-size: 13px; color: #93c5fd;
+      line-height: 1.5; margin-top: 5px;
+    }
+
+    /* ── Bivariate legend ── */
+    #bv-legend {
+      position: absolute; bottom: 28px; left: 14px;
+      background: rgba(255,255,255,0.93);
+      border: 1px solid #ddd; border-radius: 10px;
+      padding: 14px 18px; z-index: 900;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .bv-legend-title {
+      font-size: 15px; font-weight: 600; color: #334155;
+      margin-bottom: 11px; line-height: 1.4;
+    }
+    .bv-layout { display: flex; gap: 8px; align-items: flex-start; }
+    .bv-grid-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .bv-row { display: flex; gap: 2px; }
+    .bv-cell { width: 30px; height: 30px; border-radius: 3px; }
+    .bv-axis-x {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: #94a3b8; margin-top: 4px;
+    }
+    .bv-axis-y {
+      display: flex; flex-direction: column; justify-content: space-between;
+      font-size: 13px; color: #94a3b8;
+      height: calc(3 * 30px + 2 * 2px);
+      padding-right: 5px; text-align: right;
+    }
+    .bv-axis-label {
+      font-size: 13px; color: #94a3b8; text-align: center;
+    }
+    .bv-unc-label {
+      font-size: 13px; color: #94a3b8;
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      padding-bottom: 2px;
+    }
+
+    /* ── Collapsible panel header (used on mobile) ── */
+    .panel-collapse-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0 0 0 8px;
+      font-size: 14px;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .panel-collapse-btn:hover { color: #e2e8f0; }
+
+    /* ── Mobile mode toggle (hidden on desktop) ── */
+    #mobile-mode-bar {
+      display: none;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 4px;
+      z-index: 900;
+      gap: 2px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    #mobile-mode-bar button {
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    #mobile-mode-bar button.active {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+    }
+    #mobile-mode-bar button.clear-btn {
+      padding: 6px 10px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    /* MapLibre attribution: keep small on mobile */
+    .maplibregl-ctrl-attrib { font-size: 10px; }
+
+    /* ═════════════════ MOBILE (≤ 768px) ═════════════════ */
+    @media (max-width: 768px) {
+      /* Hide built-in MapLibre nav button cluster on mobile (pinch-to-zoom is enough) */
+      .maplibregl-ctrl-top-right .maplibregl-ctrl-group,
+      .maplibregl-ctrl-top-left  .maplibregl-ctrl-group { display: none; }
+
+      #ds-select {
+        top: 10px; left: 10px;
+        padding: 6px 10px;
+        font-size: 11.5px;
+        min-height: 32px;
+        max-width: 44vw;             /* keep clear of info-panel at top-right */
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      /* Mode toggle bar: dock on a SECOND ROW below ds-select / info-panel.
+         Placing it at the bottom hides it on iOS Safari where the URL bar
+         overlaps the lower ~80px of the viewport. */
+      #mobile-mode-bar {
+        display: inline-flex; align-items: center;
+        top: 52px;
+        bottom: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 3px;
+      }
+      #mobile-mode-bar button { padding: 5px 12px; font-size: 11px; }
+      #mobile-mode-bar button.clear-btn { padding: 5px 9px; font-size: 12px; }
+
+      /* Info panel: compact collapsible, anchored top-right */
+      #info-panel {
+        top: 10px; right: 10px;
+        min-width: 0;
+        max-width: calc(50vw - 8px);
+        padding: 8px 10px;
+        font-size: 11px;
+        max-height: calc(100vh - 100px);
+        overflow: hidden;
+      }
+      .panel-collapse-btn { display: inline-block; }
+      #info-panel.collapsed { padding: 6px 10px; }
+      #info-panel.collapsed .ip-body { display: none; }
+      #info-panel.collapsed .panel-collapse-btn { transform: rotate(-90deg); }
+      .ip-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+      }
+      .ip-title { font-size: 12px; margin-bottom: 0; flex: 1; }
+      .ip-row { gap: 8px; margin-top: 2px; font-size: 10.5px; }
+      #ip-hint { display: none; }
+      #ip-focus-hint { font-size: 10.5px; }
+
+      /* Bv legend: collapsible to a small chip */
+      #bv-legend {
+        bottom: 12px; left: 10px;
+        padding: 7px 10px;
+        max-width: calc(100vw - 20px);
+        transition: padding 0.2s;
+      }
+      #bv-legend.collapsed { padding: 6px 12px; }
+      #bv-legend.collapsed .bv-layout { display: none; }
+      #bv-legend.collapsed .bv-legend-title {
+        margin-bottom: 0;
+        font-size: 11px;
+      }
+      #bv-legend .panel-collapse-btn { display: inline-block; vertical-align: middle; float: right; }
+      #bv-legend.collapsed .panel-collapse-btn { transform: rotate(180deg); }
+      .bv-legend-title { font-size: 11px; margin-bottom: 6px; line-height: 1.3; }
+      .bv-cell { width: 20px; height: 20px; }
+      .bv-axis-y { height: calc(3 * 20px + 2 * 2px); padding-right: 4px; font-size: 10px; }
+      .bv-axis-x { font-size: 10px; margin-top: 3px; }
+      .bv-axis-label, .bv-unc-label { font-size: 10px; }
+    }
+
+    /* ═════════════════ SMALL MOBILE (≤ 420px) ═════════════════ */
+    @media (max-width: 420px) {
+      #ds-select { font-size: 11px; padding: 6px 10px; min-height: 32px; }
+      #info-panel {
+        max-width: calc(58vw - 8px);
+        font-size: 10.5px;
+      }
+      .ip-title { font-size: 11.5px; }
+      .ip-row { font-size: 10px; }
+      .bv-cell { width: 18px; height: 18px; }
+      .bv-axis-y { height: calc(3 * 18px + 2 * 2px); font-size: 9.5px; }
+      .bv-axis-x, .bv-axis-label, .bv-unc-label { font-size: 9.5px; }
+      #mobile-mode-bar button { padding: 5px 10px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="map" style="position:relative;">
+  <svg id="radar-svg"></svg>
+
+  <!-- Mobile-only mode toggle: tap a point to show radar / focus circle -->
+  <div id="mobile-mode-bar" role="tablist" aria-label="Tap mode">
+    <button id="mode-radar-btn" class="active" data-mode="radar" aria-pressed="true">Radar</button>
+    <button id="mode-focus-btn" data-mode="focus" aria-pressed="false">Focus</button>
+    <button id="mode-clear-btn" class="clear-btn" aria-label="Clear">✕</button>
+  </div>
+</div>
+
+<select id="ds-select"></select>
+
+<div id="info-panel">
+  <div class="ip-header">
+    <div class="ip-title">GeoXCP · Bivariate</div>
+    <button class="panel-collapse-btn" id="info-collapse" aria-label="Collapse info">▾</button>
+  </div>
+  <div class="ip-body">
+    <div class="ip-row"><span class="ip-key">Dataset</span><span class="ip-val" id="ip-ds">—</span></div>
+    <div class="ip-row"><span class="ip-key">Points</span><span class="ip-val" id="ip-n">—</span></div>
+    <div class="ip-row"><span class="ip-key">Test R²</span><span class="ip-val" id="ip-r2">—</span></div>
+    <div class="ip-row" style="margin-top:6px;">
+      <span id="ip-hint">Hover point for radar<br><kbd id="ip-alt-key"></kbd>+hover → focus circle (up to 6 points)<br>Click or <kbd>Esc</kbd> to dismiss</span>
+    </div>
+    <div id="ip-focus-hint">⊙ Focus active · click or Esc to dismiss</div>
+  </div>
+</div>
+
+<div id="bv-legend">
+  <div class="bv-legend-title">Color: Avg |SHAP| × Avg Geo Uncertainty
+    <button class="panel-collapse-btn" id="legend-collapse" aria-label="Collapse legend">▾</button>
+  </div>
+  <div class="bv-layout">
+    <div class="bv-unc-label">Avg |SHAP| →</div>
+    <div class="bv-axis-y" id="bv-axis-y">
+      <span>High</span><span></span><span>Low</span>
+    </div>
+    <div>
+      <div class="bv-grid-wrap" id="bv-grid"></div>
+      <div class="bv-axis-x">
+        <span>Low</span><span style="flex:1"></span><span>High</span>
+      </div>
+      <div class="bv-axis-label">Avg Uncertainty →</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  GeoXCP · Bivariate Map + Radar Chart (MapLibre GL)  ║
+// ╚══════════════════════════════════════════════════════╝
+
+// ── Platform hint ─────────────────────────────────────────
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const ALT_LABEL = isMac ? '⌥ Option' : 'Alt';
+document.getElementById('ip-alt-key').textContent = ALT_LABEL;
+
+// ── Dataset registry ─────────────────────────────────────
+// markerMinR / markerMaxR — per-dataset point radius at zoom 4 / zoom 16.
+// NYC has ~7700 tracts so dots need to be small to avoid a sea-of-circles
+// look; Seattle has ~2400 houses and tolerates bigger dots.
+const DATASETS = [
+  { label: 'Seattle House Price', url: 'data/results.json',          scriptUrl: 'data/results.js',          varName: 'GeoXCPData',         yField: 'price',  yLabel: 'House Price',   yUnit: '$',    markerMinR: 3, markerMaxR: 9 },
+  { label: 'NYC Median Income',   url: 'data/results_nyc.json',      scriptUrl: 'data/results_nyc.js',      varName: 'GeoXCPDataNYC',      yField: 'income', yLabel: 'Median Income', yUnit: '$raw', markerMinR: 1.5, markerMaxR: 5 },
+  { label: 'US Politics Voting',  url: 'data/results_politics.json', scriptUrl: 'data/results_politics.js', varName: 'GeoXCPDataPolitics', yField: 'y_val',  yLabel: 'Dem. Vote %',   yUnit: '%',    markerMinR: 2.5, markerMaxR: 7 },
+];
+
+// ── Bivariate color scheme (Joshua Stevens · Blue × Purple) ─
+const BIVARIATE = [
+  ['#e8e8e8', '#ace4e4', '#5ac8c8'],
+  ['#dfb0d6', '#a5add3', '#5698b9'],
+  ['#be64ac', '#8c62aa', '#3b4994'],
+];
+
+// ── Radar sizing (set dynamically per viewport) ───────────
+let R_CHART  = 90;
+let R_PAD    = 50;
+let R_BOX    = R_CHART * 2 + R_PAD * 2;
+let CONN_GAP = 65;
+
+// ── Focus mini-radar constants ────────────────────────────
+const FOCUS_K  = 6;
+let   R_MINI   = 78;
+let   MINI_GAP = 32;
+
+function setRadarSizes() {
+  const w = window.innerWidth;
+  if (w <= 420)      { R_CHART = 62; R_PAD = 30; R_MINI = 42; MINI_GAP = 10; }
+  else if (w <= 768) { R_CHART = 80; R_PAD = 40; R_MINI = 52; MINI_GAP = 14; }
+  else if (w <= 1024){ R_CHART = 100; R_PAD = 60; R_MINI = 66; MINI_GAP = 24; }
+  else               { R_CHART = 115; R_PAD = 72; R_MINI = 78; MINI_GAP = 32; }
+  R_BOX = R_CHART * 2 + R_PAD * 2;
+}
+function isMobileView() { return window.innerWidth <= 768; }
+
+function isTouchDevice() {
+  if (window.matchMedia) {
+    if (window.matchMedia('(pointer: coarse)').matches) return true;
+    if (window.matchMedia('(hover: none)').matches)     return true;
+  }
+  return (navigator.maxTouchPoints || 0) > 0;
+}
+
+// Mobile interaction mode: 'radar' or 'focus'
+let mobileMode = 'radar';
+
+// ── State ────────────────────────────────────────────────
+let data       = null;
+let currentDS  = null;
+let map        = null;           // maplibregl.Map
+let mapReady   = false;          // becomes true after first 'load'
+let pointStats = [];
+
+// ── Focus state ──────────────────────────────────────────
+// MapLibre version: no Leaflet circle object — just track the centre and
+// re-render the dashed ring in SVG every time the map moves.
+let focusCenter = null;          // [lon, lat] or null
+let focusClearTimer = null;
+
+// ── Geometry helpers ─────────────────────────────────────
+// Haversine distance in meters between two [lon, lat] arrays
+function haversineDistance(p1, p2) {
+  const R = 6371000;
+  const toRad = d => d * Math.PI / 180;
+  const lat1 = toRad(p1[1]);
+  const lat2 = toRad(p2[1]);
+  const dLat = toRad(p2[1] - p1[1]);
+  const dLon = toRad(p2[0] - p1[0]);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+// Project [lon, lat] → container pixel {x, y}
+function projectLL(lonlat) {
+  const p = map.project(lonlat);
+  return { x: p.x, y: p.y };
+}
+
+// ── Build bivariate legend grid ──────────────────────────
+function buildLegend() {
+  const grid = document.getElementById('bv-grid');
+  grid.innerHTML = '';
+  for (let s = 2; s >= 0; s--) {
+    const row = document.createElement('div');
+    row.className = 'bv-row';
+    for (let u = 0; u < 3; u++) {
+      const cell = document.createElement('div');
+      cell.className = 'bv-cell';
+      cell.style.background = BIVARIATE[s][u];
+      cell.title = `|SHAP|: ${['Low','Mid','High'][s]}, Unc: ${['Low','Mid','High'][u]}`;
+      row.appendChild(cell);
+    }
+    grid.appendChild(row);
+  }
+}
+
+// ── Data loading ─────────────────────────────────────────
+function loadDataset(ds) {
+  fetch(ds.url)
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(json => setup(json, ds))
+    .catch(() => {
+      if (window[ds.varName]) { setup(window[ds.varName], ds); return; }
+      const s = document.createElement('script');
+      s.src = ds.scriptUrl;
+      s.onload = () => window[ds.varName] && setup(window[ds.varName], ds);
+      document.head.appendChild(s);
+    });
+}
+
+function buildGeoJSON() {
+  return {
+    type: 'FeatureCollection',
+    features: pointStats.map((ps, idx) => ({
+      type: 'Feature',
+      id: idx,
+      geometry: { type: 'Point', coordinates: [ps.point.lon, ps.point.lat] },
+      properties: { idx, color: ps.color },
+    })),
+  };
+}
+
+function setup(json, ds) {
+  data      = json;
+  currentDS = ds;
+  clearFocusCircle();
+  document.getElementById('radar-svg').style.display = 'none';
+
+  // Info panel
+  document.getElementById('ip-ds').textContent = ds.label;
+  document.getElementById('ip-n').textContent  = data.points.length;
+  document.getElementById('ip-r2').textContent = data.meta.test_r2
+    ? data.meta.test_r2.toFixed(3) : '—';
+
+  // Compute per-point averages
+  const testPoints = data.points.filter(p => p.features);
+  pointStats = testPoints.map(p => {
+    const feats   = data.features;
+    const avgShap = d3.mean(feats, f => p.features[f].shap_abs ?? Math.abs(p.features[f].shap));
+    const avgUnc  = d3.mean(feats, f => p.features[f].geo_uncertainty);
+    return { point: p, avgShap, avgUnc };
+  });
+
+  // Quantile breakpoints for 3×3 bins
+  const shapSorted = pointStats.map(s => s.avgShap).sort(d3.ascending);
+  const uncSorted  = pointStats.map(s => s.avgUnc).sort(d3.ascending);
+  const shapQ = [d3.quantile(shapSorted, 1/3), d3.quantile(shapSorted, 2/3)];
+  const uncQ  = [d3.quantile(uncSorted,  1/3), d3.quantile(uncSorted,  2/3)];
+
+  pointStats.forEach(ps => {
+    ps.shapBin = ps.avgShap < shapQ[0] ? 0 : ps.avgShap < shapQ[1] ? 1 : 2;
+    ps.uncBin  = ps.avgUnc  < uncQ[0]  ? 0 : ps.avgUnc  < uncQ[1]  ? 1 : 2;
+    ps.color   = BIVARIATE[ps.shapBin][ps.uncBin];
+  });
+
+  // Compute fit bounds
+  const lats = testPoints.map(p => p.lat);
+  const lons = testPoints.map(p => p.lon);
+  const latMin = data.meta.lat_min ?? d3.min(lats);
+  const latMax = data.meta.lat_max ?? d3.max(lats);
+  const lonMin = data.meta.lon_min ?? d3.min(lons);
+  const lonMax = data.meta.lon_max ?? d3.max(lons);
+
+  if (!map) {
+    initMap([lonMin, latMin, lonMax, latMax]);
+    return;  // applySource() will run from map's 'load' callback below
+  }
+
+  if (mapReady) {
+    applySource();
+    map.fitBounds([[lonMin, latMin], [lonMax, latMax]], { padding: 40, animate: true });
+  } else {
+    // Map exists but not yet loaded; will run after 'load' fires
+    map.once('load', () => {
+      applySource();
+      map.fitBounds([[lonMin, latMin], [lonMax, latMax]], { padding: 40, animate: false });
+    });
+  }
+}
+
+// Build / update the points source & layer
+function applySource() {
+  const geojson = buildGeoJSON();
+  if (map.getSource('points')) {
+    map.getSource('points').setData(geojson);
+  } else {
+    map.addSource('points', { type: 'geojson', data: geojson, promoteId: 'idx' });
+    map.addLayer({
+      id: 'points-layer',
+      type: 'circle',
+      source: 'points',
+      paint: {
+        'circle-radius': radiusExpression(),
+        'circle-color': ['get', 'color'],
+        'circle-stroke-color': [
+          'case',
+          ['boolean', ['feature-state', 'flash'], false], '#0f172a',
+          'rgba(30,41,59,0.6)'
+        ],
+        'circle-stroke-width': [
+          'case',
+          ['boolean', ['feature-state', 'flash'], false], 3,
+          0.8
+        ],
+        'circle-opacity': 0.88,
+      },
+    });
+    wirePointEvents();
+    return;
+  }
+  // Layer already exists — only the dataset's marker scale needs to change.
+  map.setPaintProperty('points-layer', 'circle-radius', radiusExpression());
+}
+
+// Min / max radius for the current dataset, slightly enlarged on touch
+function currentRadiusRange() {
+  const ds = currentDS || DATASETS[0];
+  const isCoarse = isTouchDevice();
+  // Bump touch radius by ~1.6× for tappability, but keep dense datasets (NYC)
+  // from turning into a blob.
+  const minR = isCoarse ? ds.markerMinR * 1.5 + 0.5 : ds.markerMinR;
+  const maxR = isCoarse ? ds.markerMaxR * 1.4 + 0.5 : ds.markerMaxR;
+  return { minR, maxR };
+}
+
+// MapLibre paint expression: zoom-interpolated radius using the per-dataset range
+function radiusExpression() {
+  const { minR, maxR } = currentRadiusRange();
+  const midR = (minR + maxR) / 2;
+  return [
+    'interpolate', ['linear'], ['zoom'],
+    4,  minR,
+    10, midR,
+    16, maxR,
+  ];
+}
+
+// Current rendered radius of a map circle at the current zoom — used to
+// size the SVG callout dot so it matches the map marker visually.
+function currentMarkerRadius() {
+  const z = map ? map.getZoom() : 10;
+  const { minR, maxR } = currentRadiusRange();
+  const midR = (minR + maxR) / 2;
+  const stops = [[4, minR], [10, midR], [16, maxR]];
+  if (z <= stops[0][0]) return stops[0][1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [z0, r0] = stops[i], [z1, r1] = stops[i + 1];
+    if (z <= z1) return r0 + (r1 - r0) * (z - z0) / (z1 - z0);
+  }
+  return stops[stops.length - 1][1];
+}
+
+function initMap(bboxArr) {
+  map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://tiles.openfreemap.org/styles/positron',
+    bounds: [[bboxArr[0], bboxArr[1]], [bboxArr[2], bboxArr[3]]],
+    fitBoundsOptions: { padding: 40 },
+    attributionControl: false,  // we add manually below to keep it compact
+  });
+
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  if (!isTouchDevice()) {
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  }
+
+  map.on('load', () => {
+    mapReady = true;
+    applySource();
+    // Map-level events
+    map.on('movestart', () => {
+      // Hide hover radar; focus radars re-render after move
+      if (!focusCenter) hideRadar();
+      else hideRadarKeepFocus();
+    });
+    map.on('moveend', () => {
+      if (focusCenter) renderFocusRadars();
+    });
+    map.on('click', e => {
+      // Clicks on point features are handled by the layer-specific click
+      // below — if we get here, it's a click on empty map area.
+      if (!e._handledByLayer) {
+        if (focusCenter) clearFocusCircle();
+        else hideRadar();
+      }
+    });
+  });
+
+  document.addEventListener('keyup', e => {
+    if ((e.key === 'Alt' || e.key === 'Escape') && focusCenter) clearFocusCircle();
+  });
+}
+
+// ── Wire click / hover handlers on the points layer ──────
+function wirePointEvents() {
+  let hoverIdx = null;
+
+  map.on('click', 'points-layer', e => {
+    if (!e.features || !e.features.length) return;
+    e._handledByLayer = true;  // tell the empty-area click handler to skip
+    if (e.originalEvent) e.originalEvent.preventDefault?.();
+    const idx = e.features[0].id;
+    const ps  = pointStats[idx];
+
+    // Flash visual feedback via feature-state
+    map.setFeatureState({ source: 'points', id: idx }, { flash: true });
+    setTimeout(() => map.setFeatureState({ source: 'points', id: idx }, { flash: false }), 220);
+
+    if (isTouchDevice()) {
+      if (mobileMode === 'focus') {
+        placeFocusCircle([ps.point.lon, ps.point.lat]);
+      } else {
+        if (focusCenter) clearFocusCircle();
+        showRadar(ps);
+      }
+    } else {
+      // Desktop click: same as hover (show radar). Alt-click → focus.
+      if (e.originalEvent && e.originalEvent.altKey) {
+        placeFocusCircle([ps.point.lon, ps.point.lat]);
+      } else {
+        if (focusCenter) clearFocusCircle();
+        showRadar(ps);
+      }
+    }
+  });
+
+  // Cursor + hover-radar on desktop
+  map.on('mousemove', 'points-layer', e => {
+    if (isTouchDevice()) return;
+    if (!e.features || !e.features.length) return;
+    map.getCanvas().style.cursor = 'pointer';
+    const idx = e.features[0].id;
+    if (idx === hoverIdx) return;
+    hoverIdx = idx;
+    clearTimeout(focusClearTimer);
+    const ps = pointStats[idx];
+    if (e.originalEvent && e.originalEvent.altKey) {
+      placeFocusCircle([ps.point.lon, ps.point.lat]);
+    } else {
+      if (focusCenter) clearFocusCircle();
+      showRadar(ps);
+    }
+  });
+  map.on('mouseleave', 'points-layer', () => {
+    if (isTouchDevice()) return;
+    map.getCanvas().style.cursor = '';
+    hoverIdx = null;
+    if (focusCenter) {
+      focusClearTimer = setTimeout(clearFocusCircle, 200);
+    } else {
+      hideRadar();
+    }
+  });
+}
+
+// ── Radar visibility ──────────────────────────────────────
+function hideRadar() {
+  if (focusCenter) return;
+  const svg = document.getElementById('radar-svg');
+  svg.style.display = 'none';
+  svg.innerHTML = '';
+}
+function hideRadarKeepFocus() {
+  // Used during pan: clear visuals briefly while moving
+  const svg = document.getElementById('radar-svg');
+  svg.innerHTML = '';
+}
+
+// ── Show single hover/tap radar ───────────────────────────
+function showRadar(ps) {
+  if (focusCenter) return;
+  const p   = ps.point;
+  const svg = document.getElementById('radar-svg');
+  const con = map.getContainer();
+  const mapW = con.offsetWidth;
+  const mapH = con.offsetHeight;
+
+  setRadarSizes();
+  CONN_GAP = isMobileView()
+    ? Math.round(Math.min(mapW * 0.05, 40))
+    : Math.round(Math.min(mapW * 0.08, 120));
+
+  const px = projectLL([p.lon, p.lat]);
+
+  const countOverlap = (cx, cy) => {
+    const hw = R_BOX / 2, hh = R_BOX / 2;
+    return pointStats.filter(ps2 => {
+      const q = projectLL([ps2.point.lon, ps2.point.lat]);
+      return q.x >= cx - hw && q.x <= cx + hw && q.y >= cy - hh && q.y <= cy + hh;
+    }).length;
+  };
+
+  const vOffsets = [0, -80, 80, -160, 160];
+  const candidates = [];
+  for (const s of ['right', 'left']) {
+    const cx0 = s === 'right'
+      ? Math.min(px.x + CONN_GAP + R_BOX / 2, mapW - R_BOX / 2 - 8)
+      : Math.max(px.x - CONN_GAP - R_BOX / 2, R_BOX / 2 + 8);
+    for (const dy of vOffsets) {
+      const cy0 = Math.max(R_BOX / 2 + 6, Math.min(mapH - R_BOX / 2 - 6, px.y + dy));
+      candidates.push({ side: s, cx: cx0, cy: cy0, score: countOverlap(cx0, cy0) });
+    }
+  }
+  candidates.sort((a, b) => a.score - b.score || Math.abs(a.cy - px.y) - Math.abs(b.cy - px.y));
+  const best = candidates[0];
+  const radarCx = best.cx;
+  const radarCy = best.cy;
+
+  // Anchor on whichever side of the radar disc actually faces the data point.
+  // (Don't trust `best.side` — when the point is near a screen edge the
+  // candidate cx gets clamped, so the radar can end up on the opposite side
+  // from where `side` claims, and the line then crosses the whole disc to the
+  // far edge — looking like it points at the centre.)
+  const radarToRight = radarCx > px.x;
+  const anchorX = radarToRight ? radarCx - R_CHART : radarCx + R_CHART;
+  const anchorY = radarCy;
+  const stubX   = px.x + (anchorX - px.x) * 0.55;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${mapW} ${mapH}`);
+  svg.setAttribute('width',  mapW);
+  svg.setAttribute('height', mapH);
+
+  // Elbow connector
+  const conn = document.createElementNS(ns, 'polyline');
+  conn.setAttribute('points', `${px.x},${px.y} ${stubX},${px.y} ${anchorX},${anchorY}`);
+  conn.setAttribute('stroke', '#1e293b');
+  conn.setAttribute('stroke-width', '2.5');
+  conn.setAttribute('stroke-dasharray', '6,3');
+  conn.setAttribute('fill', 'none');
+  conn.setAttribute('stroke-linecap', 'round');
+  conn.setAttribute('opacity', '0.95');
+  svg.appendChild(conn);
+
+  // Marker dot — match the actual map marker's current rendered radius so
+  // the SVG overlay sits on top of the map circle as a single visual unit.
+  const markerR = currentMarkerRadius();
+  const dot = document.createElementNS(ns, 'circle');
+  dot.setAttribute('cx', px.x);
+  dot.setAttribute('cy', px.y);
+  dot.setAttribute('r',  (markerR + 0.5).toFixed(1));
+  dot.setAttribute('fill', ps.color);
+  dot.setAttribute('stroke', '#1e293b');
+  dot.setAttribute('stroke-width', '1.2');
+  svg.appendChild(dot);
+
+  // Radar group
+  const g = document.createElementNS(ns, 'g');
+  g.setAttribute('transform', `translate(${radarCx.toFixed(1)},${radarCy.toFixed(1)})`);
+  drawRadar(g, ns, ps);
+  svg.appendChild(g);
+  svg.style.display = 'block';
+}
+
+// ── Halo text helper (white outline so SVG text reads over any background) ──
+function svgHaloText(g, ns, txt, x, y, size, weight, fill, anchor, halo) {
+  const t = document.createElementNS(ns, 'text');
+  t.setAttribute('x', x.toFixed(1));
+  t.setAttribute('y', y.toFixed(1));
+  t.setAttribute('font-size', String(size));
+  t.setAttribute('font-family', 'Inter, sans-serif');
+  t.setAttribute('font-weight', String(weight));
+  t.setAttribute('fill', fill);
+  t.setAttribute('text-anchor', anchor || 'middle');
+  t.setAttribute('dominant-baseline', 'middle');
+  t.setAttribute('stroke', 'white');
+  t.setAttribute('stroke-width', String(halo == null ? 2.5 : halo));
+  t.setAttribute('paint-order', 'stroke');
+  t.textContent = txt;
+  g.appendChild(t);
+}
+
+// ── Unified radar drawing (used for both single-point radar and focus mini radars) ──
+// RM = radar circle radius (R_CHART for the main one, R_MINI for the focus ones).
+// All visual elements scale with RM so the two sizes share a single design language:
+//   frosted bg disc + ps.color border, 2 grid rings, dashed zero ref, axis spokes,
+//   shaded uncertainty band, blue SHAP polygon with vertex dots, signed SHAP value
+//   labels just outside each vertex, feature labels around the perimeter, and a
+//   "yLabel name / yValue" header above the disc.
+function drawRadarChart(g, ns, ps, RM, opts) {
+  const p     = ps.point;
+  const feats = data.features;
+  const n     = feats.length;
+  const isFull = opts.variant === 'full';
+
+  const shapVals   = feats.map(f => p.features[f].shap);
+  const hasUncBand = feats.every(f => p.features[f].lower_bound != null && p.features[f].upper_bound != null);
+  const lowerVals  = hasUncBand
+    ? feats.map(f => p.features[f].lower_bound)
+    : feats.map(f => p.features[f].shap - p.features[f].geo_uncertainty);
+  const upperVals  = hasUncBand
+    ? feats.map(f => p.features[f].upper_bound)
+    : feats.map(f => p.features[f].shap + p.features[f].geo_uncertainty);
+
+  const allAbsVals = [...shapVals, ...lowerVals, ...upperVals].map(Math.abs);
+  const absMax = Math.max(...allAbsVals) * 1.05 || 1;
+  const valToR = v => Math.max(0, ((v + absMax) / (2 * absMax)) * RM);
+  const angle  = i => (i / n) * 2 * Math.PI - Math.PI / 2;
+  const polar  = (r, a) => ({ x: r * Math.cos(a), y: r * Math.sin(a) });
+
+  // Visual parameters scale with RM via a single factor; full-size also picks
+  // larger label/value fonts so the bigger disc doesn't look sparse.
+  const mob       = isMobileView();
+  const bgPad     = isFull ? 10 : 8;
+  const bgStroke  = isFull ? 2.5 : 2;
+  const axisStroke = isFull ? 0.8 : 0.5;
+  const ringInner = isFull ? 0.9 : 0.7;
+  const ringOuter = isFull ? 1.2 : 0.9;
+  const zeroStroke = isFull ? 1.4 : 1.0;
+  const polyStroke = isFull ? 1.8 : 1.5;
+  const dotR      = isFull ? 2.6 : 1.8;
+  const dotStroke = isFull ? 0.9 : 0.7;
+  // Font sizes
+  const fsLabel  = isFull ? (mob ? 9    : 10  ) : 7.5;
+  const fsValue  = isFull ? (mob ? 8    : 9   ) : 7;
+  const fsName   = isFull ? (mob ? 9.5  : 11  ) : 8.5;
+  const fsBig    = isFull ? (mob ? 14   : 17  ) : 13;
+  // Vertex value offset & label radius — proportional to RM
+  const valOffset = isFull ? 11 : 9;
+  const LABEL_R   = RM + (isFull ? (mob ? 14 : 18) : 15);
+  const labelMaxLen = isFull ? (mob ? 12 : 14) : 11;
+  // Title vertical positions above the disc
+  const nameY = -RM - (isFull ? (mob ? 28 : 38) : 34);
+  const valueY = -RM - (isFull ? (mob ? 13 : 17) : 17);
+
+  // 1. Frosted background disc with point-color border
+  const bg = document.createElementNS(ns, 'circle');
+  bg.setAttribute('cx', 0); bg.setAttribute('cy', 0);
+  bg.setAttribute('r', (RM + bgPad).toFixed(1));
+  bg.setAttribute('fill', 'rgba(255,255,255,0.85)');
+  bg.setAttribute('stroke', ps.color);
+  bg.setAttribute('stroke-width', String(bgStroke));
+  g.appendChild(bg);
+
+  // 2. Grid rings (inner @ 0.5 R, outer @ 1.0 R)
+  [0.5, 1.0].forEach(t => {
+    const el = document.createElementNS(ns, 'circle');
+    el.setAttribute('cx', 0); el.setAttribute('cy', 0);
+    el.setAttribute('r', (t * RM).toFixed(1));
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke', t === 1.0 ? '#94a3b8' : '#e2e8f0');
+    el.setAttribute('stroke-width', String(t === 1.0 ? ringOuter : ringInner));
+    g.appendChild(el);
+  });
+
+  // 3. Zero-reference circle (dashed orange)
+  const zeroEl = document.createElementNS(ns, 'circle');
+  zeroEl.setAttribute('cx', 0); zeroEl.setAttribute('cy', 0);
+  zeroEl.setAttribute('r', valToR(0).toFixed(1));
+  zeroEl.setAttribute('fill', 'none');
+  zeroEl.setAttribute('stroke', '#f59e0b');
+  zeroEl.setAttribute('stroke-width', String(zeroStroke));
+  zeroEl.setAttribute('stroke-dasharray', isFull ? '4,3' : '3,2');
+  g.appendChild(zeroEl);
+
+  // 4. Axis spokes
+  feats.forEach((_, i) => {
+    const end = polar(RM, angle(i));
+    const ln  = document.createElementNS(ns, 'line');
+    ln.setAttribute('x1', 0); ln.setAttribute('y1', 0);
+    ln.setAttribute('x2', end.x.toFixed(1)); ln.setAttribute('y2', end.y.toFixed(1));
+    ln.setAttribute('stroke', '#cbd5e1');
+    ln.setAttribute('stroke-width', String(axisStroke));
+    g.appendChild(ln);
+  });
+
+  // 5. Uncertainty band (between lower & upper, evenodd fill)
+  const upperPts  = feats.map((f, i) => polar(valToR(upperVals[i]), angle(i)));
+  const lowerPts  = feats.map((f, i) => polar(Math.max(0, valToR(lowerVals[i])), angle(i)));
+  const ptStr     = pts => pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const upperPath = upperPts.map((p, i) => `${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') + ' Z';
+  const lowerPath = [...lowerPts].reverse().map((p, i) => `${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') + ' Z';
+  const band = document.createElementNS(ns, 'path');
+  band.setAttribute('d', `${upperPath} ${lowerPath}`);
+  band.setAttribute('fill', 'rgba(147,197,253,0.45)');
+  band.setAttribute('fill-rule', 'evenodd');
+  band.setAttribute('stroke', 'none');
+  g.appendChild(band);
+
+  // 6. SHAP polygon (blue outline)
+  const shapPts = feats.map((f, i) => polar(valToR(shapVals[i]), angle(i)));
+  const shapPoly = document.createElementNS(ns, 'polygon');
+  shapPoly.setAttribute('points', ptStr(shapPts));
+  shapPoly.setAttribute('fill', 'none');
+  shapPoly.setAttribute('stroke', '#2563eb');
+  shapPoly.setAttribute('stroke-width', String(polyStroke));
+  shapPoly.setAttribute('stroke-linejoin', 'round');
+  g.appendChild(shapPoly);
+
+  // 7. Vertex dots (emphasise the polygon corners)
+  shapPts.forEach(pt => {
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', pt.x.toFixed(1));
+    dot.setAttribute('cy', pt.y.toFixed(1));
+    dot.setAttribute('r',  String(dotR));
+    dot.setAttribute('fill', '#2563eb');
+    dot.setAttribute('stroke', 'white');
+    dot.setAttribute('stroke-width', String(dotStroke));
+    g.appendChild(dot);
+  });
+
+  // 8. Signed SHAP value labels just outside each vertex
+  feats.forEach((f, i) => {
+    const a    = angle(i);
+    const vr   = valToR(shapVals[i]);
+    const vpos = polar(vr + valOffset, a);
+    const val  = shapVals[i];
+    const txt  = (val >= 0 ? '+' : '') + val.toFixed(1);
+    svgHaloText(g, ns, txt, vpos.x, vpos.y, fsValue, 600,
+      val >= 0 ? '#1d4ed8' : '#be123c', 'middle');
+  });
+
+  // 9. Feature labels around the perimeter
+  const labels = data.feature_labels || {};
+  feats.forEach((f, i) => {
+    const a    = angle(i);
+    const lpos = polar(LABEL_R, a);
+    const cosA = Math.cos(a);
+    const anchor = Math.abs(cosA) < 0.25 ? 'middle' : (cosA > 0 ? 'start' : 'end');
+    const raw   = labels[f] || f;
+    const lbl   = raw.length > labelMaxLen ? raw.slice(0, labelMaxLen - 1) + '…' : raw;
+    svgHaloText(g, ns, lbl, lpos.x, lpos.y, fsLabel, 600, '#1e293b', anchor,
+      isFull ? 3 : 2.5);
+  });
+
+  // 10. Header above the disc: yLabel name (small) + yValue (big)
+  const yField = data.meta.y_field || (currentDS && currentDS.yField) || 'price';
+  const yVal   = p[yField];
+  if (yVal != null) {
+    svgHaloText(g, ns, currentDS ? currentDS.yLabel : yField,
+      0, nameY, fsName, 500, '#64748b', 'middle', isFull ? 3 : 2.5);
+    svgHaloText(g, ns, fmtY(yVal),
+      0, valueY, fsBig, 700, '#0f172a', 'middle', isFull ? 4 : 3);
+  }
+}
+
+// ── Thin wrappers so existing call sites stay unchanged ──
+function drawRadar(g, ns, ps)     { drawRadarChart(g, ns, ps, R_CHART, { variant: 'full' }); }
+function drawMiniRadar(g, ns, ps) { drawRadarChart(g, ns, ps, R_MINI, { variant: 'mini' }); }
+
+
+// ── Focus circle: clear ──────────────────────────────────
+function clearFocusCircle() {
+  focusCenter = null;
+  const svg = document.getElementById('radar-svg');
+  if (svg) { svg.style.display = 'none'; svg.innerHTML = ''; }
+  const fh = document.getElementById('ip-focus-hint');
+  if (fh) fh.style.display = 'none';
+}
+
+// ── Focus circle: place / move ───────────────────────────
+function placeFocusCircle(lonlat) {
+  focusCenter = lonlat;  // [lon, lat]
+  document.getElementById('ip-focus-hint').style.display = 'block';
+  renderFocusRadars();
+}
+
+// ── Get K nearest points ─────────────────────────────────
+function getPointsInCircle() {
+  if (!focusCenter) return [];
+  return pointStats
+    .slice()
+    .sort((a, b) =>
+      haversineDistance(focusCenter, [a.point.lon, a.point.lat]) -
+      haversineDistance(focusCenter, [b.point.lon, b.point.lat])
+    )
+    .slice(0, FOCUS_K);
+}
+
+// ── Render focus ring + K mini radars ────────────────────
+function renderFocusRadars() {
+  if (!focusCenter) return;
+  setRadarSizes();
+  const inCircle = getPointsInCircle();
+
+  const svg  = document.getElementById('radar-svg');
+  const con  = map.getContainer();
+  const mapW = con.offsetWidth;
+  const mapH = con.offsetHeight;
+  const ns   = 'http://www.w3.org/2000/svg';
+
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${mapW} ${mapH}`);
+  svg.setAttribute('width',  mapW);
+  svg.setAttribute('height', mapH);
+  svg.style.display = 'block';
+
+  if (inCircle.length === 0) return;
+
+  // Pixel center
+  const cx0 = projectLL(focusCenter);
+
+  // pxRadius = farthest pixel distance among the K selected points
+  const pxRadius = Math.max(30, ...inCircle.map(ps => {
+    const ptPx = projectLL([ps.point.lon, ps.point.lat]);
+    return Math.hypot(ptPx.x - cx0.x, ptPx.y - cx0.y);
+  }));
+
+  // Draw dashed focus ring (replacement for the old L.circle)
+  const ring = document.createElementNS(ns, 'circle');
+  ring.setAttribute('cx', cx0.x.toFixed(1));
+  ring.setAttribute('cy', cx0.y.toFixed(1));
+  ring.setAttribute('r',  (pxRadius * 1.08).toFixed(1));
+  ring.setAttribute('fill', 'rgba(59,130,246,0.05)');
+  ring.setAttribute('stroke', '#3b82f6');
+  ring.setAttribute('stroke-width', '2');
+  ring.setAttribute('stroke-dasharray', '6,4');
+  svg.appendChild(ring);
+
+  // Angular spreading
+  const labelPad = isMobileView() ? 36 : 80;
+  const minSep   = (R_MINI + 5) * 2 + labelPad;
+  const n        = inCircle.length;
+  const minPlaceDist = n > 1 ? minSep / (2 * Math.sin(Math.PI / n)) : 0;
+  const placeDist    = Math.max(pxRadius + MINI_GAP + R_MINI, minPlaceDist);
+
+  const entries = inCircle.map(ps => {
+    const ptPx = projectLL([ps.point.lon, ps.point.lat]);
+    const dx = ptPx.x - cx0.x, dy = ptPx.y - cx0.y;
+    let ang = Math.atan2(dy || -1, dx);
+    if (ang < 0) ang += 2 * Math.PI;
+    return { ang, ps, ptPx };
+  });
+  entries.sort((a, b) => a.ang - b.ang);
+
+  const minAngGap = 2 * Math.asin(Math.min(0.9999, minSep / (2 * placeDist)));
+
+  let startIdx = 0, maxGap = 0;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const gap = ((entries[j].ang - entries[i].ang) + 2 * Math.PI) % (2 * Math.PI);
+    if (gap > maxGap) { maxGap = gap; startIdx = j; }
+  }
+  const ord = [...entries.slice(startIdx), ...entries.slice(0, startIdx)];
+  for (let i = 1; i < n; i++) {
+    while (ord[i].ang <= ord[i - 1].ang) ord[i].ang += 2 * Math.PI;
+  }
+
+  for (let iter = 0; iter < 300; iter++) {
+    let moved = false;
+    for (let i = 0; i < n - 1; i++) {
+      const diff = ord[i + 1].ang - ord[i].ang;
+      if (diff < minAngGap) {
+        const push = (minAngGap - diff) * 0.5;
+        ord[i].ang     -= push;
+        ord[i + 1].ang += push;
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+
+  const PAD = R_MINI + (isMobileView() ? 14 : 30);
+  const positions = ord.map(e => {
+    let x = cx0.x + Math.cos(e.ang) * placeDist;
+    let y = cx0.y + Math.sin(e.ang) * placeDist;
+    x = Math.max(PAD, Math.min(mapW - PAD, x));
+    y = Math.max(PAD, Math.min(mapH - PAD, y));
+    return { x, y, ps: e.ps, ptPx: e.ptPx };
+  });
+
+  for (let iter = 0; iter < 80; iter++) {
+    let moved = false;
+    for (let i = 0; i < positions.length; i++) {
+      for (let j = i + 1; j < positions.length; j++) {
+        const dx = positions[j].x - positions[i].x;
+        const dy = positions[j].y - positions[i].y;
+        const d  = Math.hypot(dx, dy);
+        if (d < minSep && d > 0.01) {
+          const push = (minSep - d) * 0.6;
+          const nx = dx / d, ny = dy / d;
+          positions[i].x = Math.max(PAD, Math.min(mapW - PAD, positions[i].x - nx * push));
+          positions[i].y = Math.max(PAD, Math.min(mapH - PAD, positions[i].y - ny * push));
+          positions[j].x = Math.max(PAD, Math.min(mapW - PAD, positions[j].x + nx * push));
+          positions[j].y = Math.max(PAD, Math.min(mapH - PAD, positions[j].y + ny * push));
+          moved = true;
+        }
+      }
+    }
+    if (!moved) break;
+  }
+
+  // Elbow connectors
+  const STUB = isMobileView() ? 14 : 32;
+  positions.forEach(pos => {
+    const stubX = pos.ptPx.x + (pos.x >= pos.ptPx.x ? STUB : -STUB);
+    const conn = document.createElementNS(ns, 'polyline');
+    conn.setAttribute('points',
+      `${pos.ptPx.x.toFixed(1)},${pos.ptPx.y.toFixed(1)} ` +
+      `${stubX.toFixed(1)},${pos.ptPx.y.toFixed(1)} ` +
+      `${pos.x.toFixed(1)},${pos.y.toFixed(1)}`);
+    conn.setAttribute('stroke', '#1e293b');
+    conn.setAttribute('stroke-width', '2');
+    conn.setAttribute('stroke-dasharray', '5,3');
+    conn.setAttribute('fill', 'none');
+    conn.setAttribute('stroke-linecap', 'round');
+    conn.setAttribute('stroke-linejoin', 'round');
+    conn.setAttribute('opacity', '0.9');
+    svg.appendChild(conn);
+  });
+
+  const focusMarkerR = Math.max(4, currentMarkerRadius() + 0.5);
+  positions.forEach(pos => {
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', pos.ptPx.x.toFixed(1));
+    dot.setAttribute('cy', pos.ptPx.y.toFixed(1));
+    dot.setAttribute('r',  focusMarkerR.toFixed(1));
+    dot.setAttribute('fill', pos.ps.color);
+    dot.setAttribute('stroke', 'white');
+    dot.setAttribute('stroke-width', '1.5');
+    svg.appendChild(dot);
+  });
+
+  positions.forEach(pos => {
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('transform', `translate(${pos.x.toFixed(1)},${pos.y.toFixed(1)})`);
+    drawMiniRadar(g, ns, pos.ps);
+    svg.appendChild(g);
+  });
+}
+
+// ── Formatting helpers ───────────────────────────────────
+function fmtY(v) {
+  if (!currentDS) return String(v);
+  const unit = currentDS.yUnit;
+  if (unit === '$') {
+    const d = v * 10000;
+    return d >= 1e6 ? `$${(d/1e6).toFixed(2)}M` : `$${Math.round(d/1000)}k`;
+  }
+  if (unit === '$raw') {
+    return v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : `$${Math.round(v/1000)}k`;
+  }
+  if (unit === '%') return `${Number(v).toFixed(1)}%`;
+  return Number(v).toFixed(2);
+}
+
+// ── Init ─────────────────────────────────────────────────
+buildLegend();
+
+const dsSel = document.getElementById('ds-select');
+DATASETS.forEach((ds, i) => {
+  const opt = document.createElement('option');
+  opt.value = i; opt.textContent = ds.label;
+  dsSel.appendChild(opt);
+});
+dsSel.addEventListener('change', e => {
+  loadDataset(DATASETS[+e.target.value]);
+});
+
+// ── Mobile mode toggle & collapsible panels ──────────────
+(function () {
+  const modeRadar = document.getElementById('mode-radar-btn');
+  const modeFocus = document.getElementById('mode-focus-btn');
+  const modeClear = document.getElementById('mode-clear-btn');
+
+  function setMode(m) {
+    mobileMode = m;
+    [modeRadar, modeFocus].forEach(b => {
+      const on = b.dataset.mode === m;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (focusCenter) clearFocusCircle();
+    else hideRadar();
+  }
+  modeRadar.addEventListener('click', () => setMode('radar'));
+  modeFocus.addEventListener('click', () => setMode('focus'));
+  modeClear.addEventListener('click', () => {
+    if (focusCenter) clearFocusCircle();
+    else hideRadar();
+  });
+
+  const ipPanel = document.getElementById('info-panel');
+  const ipBtn   = document.getElementById('info-collapse');
+  if (ipBtn) {
+    if (window.innerWidth <= 768) ipPanel.classList.add('collapsed');
+    ipBtn.addEventListener('click', () => ipPanel.classList.toggle('collapsed'));
+    ipPanel.querySelector('.ip-header').addEventListener('click', e => {
+      if (e.target === ipBtn) return;
+      if (ipPanel.classList.contains('collapsed')) ipPanel.classList.remove('collapsed');
+    });
+  }
+
+  const bvLegend = document.getElementById('bv-legend');
+  const lgBtn    = document.getElementById('legend-collapse');
+  if (lgBtn) {
+    if (window.innerWidth <= 768) bvLegend.classList.add('collapsed');
+    lgBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      bvLegend.classList.toggle('collapsed');
+    });
+    bvLegend.querySelector('.bv-legend-title').addEventListener('click', e => {
+      if (e.target === lgBtn) return;
+      if (bvLegend.classList.contains('collapsed')) bvLegend.classList.remove('collapsed');
+    });
+  }
+
+  // Prevent panel clicks/scrolls from triggering map interactions.
+  // MapLibre listens on the canvas; stopping propagation at the panel root
+  // is enough since panels live above the canvas in the DOM.
+  ['mobile-mode-bar', 'info-panel', 'bv-legend', 'ds-select'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    ['click', 'mousedown', 'touchstart', 'pointerdown', 'wheel'].forEach(ev => {
+      el.addEventListener(ev, e => e.stopPropagation(), { passive: true });
+    });
+  });
+
+  // Viewport changes (rotation, resize)
+  let _rsT = null;
+  window.addEventListener('resize', () => {
+    if (map) map.resize();
+    clearTimeout(_rsT);
+    _rsT = setTimeout(() => {
+      if (focusCenter) renderFocusRadars();
+      else { const s = document.getElementById('radar-svg'); if (s) s.style.display = 'none'; }
+    }, 150);
+  });
+})();
+
+loadDataset(DATASETS[0]);
+</script>
+</body>
+</html>

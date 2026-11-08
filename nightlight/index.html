@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where does night-time light matter? — Peng Luo</title>
+  <link rel="stylesheet" href="../css/style.css?v=20261110" />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+  <link rel="canonical" href="https://peng-luo.com/nightlight/" />
+  <meta name="description" content="An animation of SHAP values for night-time light, flying from a dependence plot to their true locations on the Munich 100 m population grid." />
+  <style>
+    .story-page { max-width: 1040px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    .story-page h1 { font-family: var(--font-serif); font-size: 38px; font-weight: 500; line-height: 1.15; margin-bottom: 0.5rem; }
+    .story-lede { font-size: 16px; color: var(--text-muted); max-width: 680px; margin-bottom: 1.75rem; }
+    .story-frame { background: #fff; border: 1px solid #e6e1d6; border-radius: 8px; overflow: hidden; }
+    .story-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    .story-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: 1.75rem 0; padding: 0; list-style: none; }
+    .story-steps b { display: block; font-family: var(--font-serif); font-size: 20px; font-weight: 500; margin-bottom: 0.2rem; }
+    .story-steps li { font-size: 14px; line-height: 1.65; color: var(--text-muted); }
+    .story-source { font-size: 13.5px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+    @media (max-width: 680px) { .story-steps { grid-template-columns: 1fr; } .story-page h1 { font-size: 30px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li class="nav-dropdown">
+          <a href="../research.html">Research &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="../research-spatial-explicit.html">Spatial Explicit Modeling</a>
+            <a href="../research-trustworthy-geoai.html">Trustworthy GeoAI</a>
+            <a href="../research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a>
+          </div>
+        </li>
+      <li><a href="../publications.html">Publications</a></li>
+      <li><a href="../lab.html">Lab</a></li>
+      <li><a href="../opportunities.html">Opportunities</a></li>
+      <li><a href="../teaching.html">Teaching</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="story-page">
+  <h1>Where does night-time light matter for population?</h1>
+  <p class="story-lede">Each dot is one 100&nbsp;m grid cell in Munich (6,000 of 29,520 shown), colored by its SHAP value for night-time light.</p>
+  <div class="story-frame">
+    <video id="storyVideo" muted loop playsinline controls preload="metadata" poster="../assets/viz/popmunich-ntl-shap-poster.jpg"
+           aria-label="Animation: SHAP values for night-time light, first shown as a dependence plot, then flying to their true locations on the Munich 100 m population grid">
+      <source src="../assets/viz/popmunich-ntl-shap.mp4" type="video/mp4">
+    </video>
+  </div>
+  <ol class="story-steps">
+    <li><b>Little, almost everywhere</b>Across most cells, night-time light adds little: the model leans on built form instead.</li>
+    <li><b>But not at random</b>When the dots leave the plot for the map, the exceptions are not scattered at random.</li>
+    <li><b>Structured in space</b>The strong negative contributions concentrate in specific parts of the city.</li>
+  </ol>
+  <p class="story-source">From P. Luo, C. Chen, S. Gao, X. Zhang, D. Majok Chol, Z. Yang, L. Meng. Understanding of the predictability and uncertainty in population distributions empowered by visual analytics. <em>International Journal of Geographical Information Science</em>, 39(3), 675&ndash;705, 2025. <a href="https://doi.org/10.1080/13658816.2024.2427870" target="_blank" rel="noopener">Read the paper &rarr;</a></p>
+</main>
+
+<footer>
+  <div class="footer-brand">Peng Luo</div>
+  <div class="footer-copy">University of Iowa &middot; <span id="year"></span></div>
+</footer>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+  var p = document.getElementById('storyVideo').play();
+  if (p && p.catch) p.catch(function() {});
+}
+</script>
+</body>
+</html>
