@@ -506,6 +506,38 @@ nav {
 .selpub-doi:hover { filter: brightness(0.96); text-decoration: none; }
 .selpub-more { margin-top: 1.1rem; font-size: 13px; font-weight: 500; }
 
+/* ── Homepage atlas (numbered visualization plates) ── */
+.atlas {
+  width: min(1180px, calc(100vw - 48px));
+  margin: 0 0 3.5rem 50%;
+  transform: translateX(-50%);
+}
+.atlas-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding-bottom: 0.4rem; margin-bottom: 1.1rem; border-bottom: 1px solid var(--text); }
+.atlas-title { font-family: var(--font-serif); font-size: 30px; font-weight: 500; }
+.atlas-sub { font-size: 13.5px; color: var(--text-muted); }
+.atlas-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.plate { display: flex; flex-direction: column; padding: 8px 8px 12px; background: #f8f6f1; border: 1px solid #e6e1d6; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+.plate:hover { text-decoration: none; border-color: #bdb5a4; box-shadow: 0 8px 24px rgba(60, 50, 30, 0.12); }
+.plate--lead { grid-column: span 7; grid-row: span 2; }
+.plate--side { grid-column: span 5; }
+.plate--third { grid-column: span 4; }
+.plate-media { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; aspect-ratio: 16 / 9; background: #fff; }
+.plate--lead .plate-media { aspect-ratio: auto; min-height: 340px; }
+.plate-media img, .plate-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.plate:hover .plate-media img { transform: scale(1.03); }
+.plate-cap { padding: 10px 6px 0; }
+.plate-kicker { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8171; }
+.plate-title { font-family: var(--font-serif); font-size: 20px; line-height: 1.25; margin: 2px 0; }
+.plate--lead .plate-title { font-size: 26px; }
+.plate-arrow { color: var(--accent); display: inline-block; transition: transform 0.2s; }
+.plate:hover .plate-arrow { transform: translateX(4px); }
+.plate-desc { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
+@media (max-width: 760px) {
+  .atlas-grid { grid-template-columns: 1fr; }
+  .plate--lead, .plate--side, .plate--third { grid-column: auto; grid-row: auto; }
+  .plate--lead .plate-media { aspect-ratio: 16 / 10; min-height: 0; }
+}
+
 /* ── Homepage research interests ─────────────────── */
 .ri-intro { font-size: 14.5px; line-height: 1.8; margin-bottom: 0.9rem; }
 .ri-list { padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; }
