@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SEGA: Self-Evolving Geospatial Algorithms</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/atom-one-dark.min.css" />
+  <link rel="stylesheet" href="styles.css?v=5" />
+</head>
+<body>
+  <div id="app">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span class="brand-text">SEGA</span>
+        </div>
+        <h1 id="title">SEGA: Self-Evolving Geospatial Algorithms</h1>
+        <p id="subtitle" class="subtitle"></p>
+      </div>
+    </header>
+
+    <section class="card" id="provenance">
+      <div class="card-header"><h2>About this trace</h2></div>
+      <p class="muted" style="margin:0 0 4px 0; line-height:1.55;">
+        This page replays, verbatim, the recorded evolution run visualized in
+        Figure&nbsp;4 of the paper: each round's system prompt, retrieved
+        knowledge, best program, and logged metrics exactly as produced by the
+        run. The selection fitness (<code>combined_score</code>) is the mean
+        Rand Index over the three training grids (Rectangular&nbsp;#5,
+        Voronoi&nbsp;#75, Arbitrary&nbsp;#149), computed by a frozen evaluation
+        section that lies outside the <code>EVOLVE-BLOCK</code>; the SSR, NMI,
+        and MAE fields in the log are recorded for monitoring. The evolvable
+        algorithm block references no ground-truth labels in any round, and the
+        discovered algorithm's own internal objective is label-free (post-merge
+        SSR under a connectivity constraint), so it runs unchanged on real data.
+        File-system paths in the trace are redacted to
+        <code>&lt;PROJECT_ROOT&gt;</code>.
+      </p>
+    </section>
+
+    <section class="timeline-section card">
+      <div class="card-header">
+        <div>
+          <h2>Evolution Timeline</h2>
+          <p class="muted">Click a round, or press <kbd>Auto Play</kbd> to step through the self-evolving process.</p>
+        </div>
+        <div class="timeline-controls">
+          <button id="prev-btn" class="ghost-btn" title="Previous round">◀</button>
+          <button id="play-btn" class="primary-btn">▶ Auto Play</button>
+          <button id="next-btn" class="ghost-btn" title="Next round">▶</button>
+        </div>
+      </div>
+      <div id="timeline" class="timeline"></div>
+      <div id="sparklines" class="sparklines">
+        <div class="spark"><div class="spark-label">Rand Index — fitness <span class="muted small" id="spark-randi-range"></span></div><canvas id="spark-randi"></canvas></div>
+        <div class="spark"><div class="spark-label">NMI — monitor <span class="muted small" id="spark-nmi-range"></span></div><canvas id="spark-nmi"></canvas></div>
+        <div class="spark"><div class="spark-label">SSR — monitor <span class="muted small" id="spark-ssr-range"></span></div><canvas id="spark-ssr"></canvas></div>
+        <div class="spark"><div class="spark-label">MAE — monitor <span class="muted small" id="spark-mae-range"></span></div><canvas id="spark-mae"></canvas></div>
+      </div>
+    </section>
+
+    <section class="metrics-section">
+      <div class="metric-card" data-metric="randi">
+        <div class="metric-label">Rand Index (selection fitness)</div>
+        <div class="metric-value" id="m-randi">—</div>
+        <div class="metric-delta" id="d-randi"></div>
+      </div>
+      <div class="metric-card" data-metric="nmi">
+        <div class="metric-label">NMI (monitor)</div>
+        <div class="metric-value" id="m-nmi">—</div>
+        <div class="metric-delta" id="d-nmi"></div>
+      </div>
+      <div class="metric-card" data-metric="ssr">
+        <div class="metric-label">SSR (monitor)</div>
+        <div class="metric-value" id="m-ssr">—</div>
+        <div class="metric-delta" id="d-ssr"></div>
+      </div>
+      <div class="metric-card" data-metric="mae">
+        <div class="metric-label">MAE (monitor)</div>
+        <div class="metric-value" id="m-mae">—</div>
+        <div class="metric-delta" id="d-mae"></div>
+      </div>
+      <div class="metric-card" data-metric="time">
+        <div class="metric-label">Runtime (s)</div>
+        <div class="metric-value" id="m-time">—</div>
+        <div class="metric-delta" id="d-time"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>What Changed This Round <span id="imp-round-badge" class="round-badge">Round 1</span></h2>
+          <p class="muted">
+            Improvements accepted into the winning chain.
+            <span class="imp-legend">
+              <span class="imp-key imp-key-add">+ New Idea</span>
+              <span class="imp-key imp-key-mod">↻ Modification</span>
+              <span class="imp-key imp-key-par">{#} Parameter Change</span>
+            </span>
+          </p>
+        </div>
+        <div id="imp-status" class="imp-status"></div>
+      </div>
+      <div id="imp-grid" class="imp-grid">
+        <div class="imp-col" data-kind="add">
+          <h3 class="imp-h3 imp-h3-add">+ New Ideas</h3>
+          <ul id="imp-additions" class="imp-list"></ul>
+        </div>
+        <div class="imp-col" data-kind="mod">
+          <h3 class="imp-h3 imp-h3-mod">↻ Modifications</h3>
+          <ul id="imp-modifications" class="imp-list"></ul>
+        </div>
+        <div class="imp-col" data-kind="par">
+          <h3 class="imp-h3 imp-h3-par">{#} Parameter Changes</h3>
+          <ul id="imp-parameter-changes" class="imp-list"></ul>
+        </div>
+      </div>
+      <p id="imp-empty" class="imp-empty muted">—</p>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>RAG Knowledge Retrieval <span id="round-badge" class="round-badge">Round 1</span></h2>
+          <p class="muted">What the algorithm decided it needed to learn this round, and what was retrieved.</p>
+        </div>
+      </div>
+      <div class="kn-grid">
+        <div class="kn-block">
+          <h3>Missing or Problematic Knowledge</h3>
+          <p id="kn-missing" class="kn-missing">—</p>
+
+          <h3>Geographical Theory Needed?</h3>
+          <p id="kn-need-theory" class="kn-tag">—</p>
+
+          <h3>Knowledge Keyword</h3>
+          <p id="kn-keyword">—</p>
+
+          <h3>Search Queries</h3>
+          <ul id="kn-queries" class="query-list"></ul>
+        </div>
+        <div class="kn-block">
+          <div class="kn-retrieved-header">
+            <h3>Knowledge Retrieved</h3>
+            <span id="kn-retrieved-len" class="muted small">—</span>
+          </div>
+          <div id="kn-retrieved" class="kn-retrieved markdown"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Prompt Evolution</h2>
+          <p class="muted">System message changes between rounds.</p>
+        </div>
+        <div class="tabs" id="prompt-tabs">
+          <button class="tab active" data-tab="prompt-current">Current Prompt</button>
+          <button class="tab" data-tab="prompt-diff">Diff vs. Previous</button>
+        </div>
+      </div>
+      <div id="prompt-current" class="tab-panel active">
+        <pre class="prompt-pre" id="prompt-text"></pre>
+      </div>
+      <div id="prompt-diff" class="tab-panel">
+        <div id="prompt-diff-view" class="diff-view"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Code Evolution</h2>
+          <p class="muted">
+            Best program at this round. Diff view shows lines added (+), removed (−), or kept versus the previous round.
+          </p>
+        </div>
+        <div class="tabs" id="code-tabs">
+          <button class="tab active" data-tab="code-diff">Diff View</button>
+          <button class="tab" data-tab="code-full">Full Code</button>
+        </div>
+        <div class="code-stats" id="code-stats"></div>
+      </div>
+      <div id="code-diff" class="tab-panel active">
+        <div id="code-diff-view" class="diff-view"></div>
+      </div>
+      <div id="code-full" class="tab-panel">
+        <pre><code id="code-text" class="language-python"></code></pre>
+      </div>
+    </section>
+
+    <footer class="page-footer muted small">
+      Generated from <code>outputs_georegime_2kmodels_static_gpt/</code>. Metrics from
+      <code>best_program_info.json</code>; knowledge & prompts from
+      <code>geoevolve_georegime_2kmodels_static_gpt.log</code> and
+      <code>config_round_*.yaml</code>.
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/lib/languages/python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="app.js?v=6"></script>
+</body>
+</html>
