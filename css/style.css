@@ -531,6 +531,35 @@ nav {
 @media (min-width: 761px) { body { overflow-x: clip; } }
 @media (max-width: 760px) { .reel-plate { width: 210px; } }
 
+@media (min-width: 1280px) {
+  .atlas {
+    position: fixed;
+    top: calc(var(--nav-h) + 20px);
+    bottom: 16px;
+    left: calc(50% + 438px);
+    width: 176px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+  }
+  .atlas .section-label { font-size: 20px; margin-bottom: 0.5rem; flex: none; }
+  .atlas-reel {
+    width: auto;
+    margin-left: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .atlas-track { flex-direction: column; width: auto; gap: 16px; }
+  .reel-plate { width: 100%; }
+  .reel-plate:hover { transform: translateX(-4px); }
+  .reel-kicker { font-size: 9.5px; margin-top: 6px; }
+  .reel-title { font-size: 15px; }
+}
+
 /* ── Homepage research interests ─────────────────── */
 .ri-intro { font-size: 14.5px; line-height: 1.8; margin-bottom: 0.9rem; }
 .ri-list { padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; }

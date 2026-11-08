@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Peng Luo</title>
   <meta name="description" content="Peng Luo — Assistant Professor at the University of Iowa, School of Earth, Environment, and Sustainability. Trustworthy GeoAI, Explainable AI, Uncertainty Quantification." />
-  <link rel="stylesheet" href="css/style.css?v=20261109" />
+  <link rel="stylesheet" href="css/style.css?v=20261110" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/" />
@@ -357,12 +357,14 @@ function toggleNews() {
     btn.innerHTML = 'Show all &darr;';
   }
 }
-// Atlas reel: drifts on its own, reacts to page scroll, can be dragged, pauses on hover
+// Atlas reel: vertical side rail on wide screens, horizontal strip otherwise.
+// Drifts on its own, reacts to page scroll, can be dragged, pauses on hover.
 (function() {
   var reel = document.getElementById('atlasReel');
   if (!reel) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var track = reel.querySelector('.atlas-track');
+  var n = track.children.length;
   Array.prototype.slice.call(track.children).forEach(function(p) {
     var c = p.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
@@ -370,16 +372,23 @@ function toggleNews() {
     track.appendChild(c);
   });
   reel.classList.add('is-live');
-  var x = 0, boost = 0, hover = false, drag = null, moved = false, visible = true, lastY = window.scrollY, last = 0;
+  var wide = window.matchMedia('(min-width: 1280px)');
+  var pos = 0, boost = 0, hover = false, drag = null, moved = false, visible = true, lastY = window.scrollY, last = 0;
+  function point(e) { return wide.matches ? e.clientY : e.clientX; }
+  function period() {
+    var a = track.children[0], b = track.children[n];
+    return wide.matches ? b.offsetTop - a.offsetTop : b.offsetLeft - a.offsetLeft;
+  }
   function loop(t) {
     var dt = Math.min(t - last, 50) || 16; last = t;
-    var half = track.scrollWidth / 2;
-    if (!drag && visible) x -= (hover ? 0 : 0.028 * dt) + boost;
+    var p = period();
+    if (!drag && visible) pos -= (hover ? 0 : (wide.matches ? 0.018 : 0.028) * dt) + boost;
     boost *= 0.92;
-    if (half) { x = x % half; if (x > 0) x -= half; }
-    track.style.transform = 'translate3d(' + x + 'px,0,0)';
+    if (p) { pos = pos % p; if (pos > 0) pos -= p; }
+    track.style.transform = wide.matches ? 'translate3d(0,' + pos + 'px,0)' : 'translate3d(' + pos + 'px,0,0)';
     requestAnimationFrame(loop);
   }
+  if (wide.addEventListener) wide.addEventListener('change', function() { pos = 0; });
   window.addEventListener('scroll', function() {
     var y = window.scrollY;
     if (visible) boost += (y - lastY) * 0.05;
@@ -389,14 +398,14 @@ function toggleNews() {
   new IntersectionObserver(function(es) { visible = es[0].isIntersecting; }).observe(reel);
   reel.addEventListener('mouseenter', function() { hover = true; });
   reel.addEventListener('mouseleave', function() { hover = false; });
-  reel.addEventListener('focusin', function(e) { hover = true; });
+  reel.addEventListener('focusin', function() { hover = true; });
   reel.addEventListener('focusout', function() { hover = false; });
-  reel.addEventListener('pointerdown', function(e) { drag = { px: e.clientX, x: x }; moved = false; });
+  reel.addEventListener('pointerdown', function(e) { drag = { p: point(e), pos: pos }; moved = false; });
   window.addEventListener('pointermove', function(e) {
     if (!drag) return;
-    var d = e.clientX - drag.px;
+    var d = point(e) - drag.p;
     if (Math.abs(d) > 5) { moved = true; reel.classList.add('is-dragging'); }
-    x = drag.x + d;
+    pos = drag.pos + d;
   });
   window.addEventListener('pointerup', function() { drag = null; reel.classList.remove('is-dragging'); });
   window.addEventListener('pointercancel', function() { drag = null; reel.classList.remove('is-dragging'); });
