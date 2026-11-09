@@ -93,17 +93,19 @@
     .mile-line { position: absolute; left: 0; top: -.5px; height: 1px; background: rgba(29,27,24,.5); transform-origin: 0 50%; pointer-events: none; }
     .mile-pin { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border: 2px solid #f8f6f1; border-radius: 50%; background: #b5533c; box-sizing: border-box; box-shadow: 0 1px 4px rgba(29,27,24,.35); pointer-events: none; }
     .mile-thumb { position: absolute; left: calc(var(--ox) * var(--k) * 1px - var(--t) / 2); top: calc(var(--oy) * var(--k) * 1px - var(--t) / 2); width: var(--t); height: var(--t); padding: 0; border: 3px solid #f8f6f1; border-radius: 12px; overflow: hidden; background: #e7e2d7; box-shadow: 0 6px 18px rgba(29,27,24,.3); cursor: pointer; transition: border-color .2s, opacity .2s; }
+    .mile-noimg { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #b5533c; color: #f8f6f1; font-size: 17px; font-weight: 600; }
     .mile-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .mile:hover .mile-thumb, .mile.active .mile-thumb, .mile-thumb:focus-visible { border-color: #b5533c; outline: 0; }
     .mile.dim .mile-thumb, .mile.dim .mile-chip { opacity: .45; }
     .mile-chip { position: absolute; left: calc(var(--ox) * var(--k) * 1px); top: calc(var(--oy) * var(--k) * 1px + var(--t) / 2 + 5px); transform: translateX(-50%); padding: 1px 7px; border-radius: 99px; background: #1d1b18; color: #f8f6f1; font-size: 11px; line-height: 17px; white-space: nowrap; pointer-events: none; transition: opacity .2s; }
     @media (max-width: 1200px) { .mile { --k: .62; --t: 44px; } .mile-thumb { border-width: 2px; border-radius: 9px; } }
-    .mile-box { position: absolute; z-index: 5; left: 0; top: 0; width: 330px; height: min(430px, calc(100% - 24px)); overflow: hidden; border-radius: 14px; background: #1d1b18; color: #fff; box-shadow: 0 18px 50px rgba(29,27,24,.34); visibility: hidden; opacity: 0; clip-path: inset(0 100% 0 0 round 14px); transition: clip-path .32s cubic-bezier(.2,.8,.2,1), opacity .18s, visibility .32s; }
+    .mile-box { position: absolute; z-index: 5; left: 0; top: 0; width: 330px; height: min(470px, calc(100% - 24px)); overflow: hidden; border-radius: 14px; background: #0e0c09; color: #fff; box-shadow: 0 18px 50px rgba(29,27,24,.34); visibility: hidden; opacity: 0; clip-path: inset(0 100% 0 0 round 14px); transition: clip-path .32s cubic-bezier(.2,.8,.2,1), opacity .18s, visibility .32s; }
     .mile-box.flip { clip-path: inset(0 0 0 100% round 14px); }
     .mile-box.show { visibility: visible; opacity: 1; clip-path: inset(0 0 0 0 round 14px); }
-    .mile-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .mile-box::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(14,12,9,.92) 0%, rgba(14,12,9,.78) 42%, rgba(14,12,9,.08) 76%, rgba(14,12,9,0) 100%); pointer-events: none; }
-    .mb-copy { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: 18px 20px 19px; }
+    .mile-box.plain { height: auto; }
+    .mile-box.plain .mb-copy { position: static; padding: 18px 48px 19px 20px; background: none; }
+    .mile-box img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .mb-copy { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: 36px 20px 19px; background: linear-gradient(to bottom, rgba(14,12,9,0) 0, #0e0c09 36px); }
     .mb-copy em { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: #f0b9a6; }
     .mb-copy b { display: block; margin-top: 3px; font-size: 21px; line-height: 1.18; font-weight: 600; color: #fff; }
     .mb-copy p { margin: 7px 0 0; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.92); }
@@ -121,6 +123,7 @@
       body.miles #map { inset: 170px 0 auto 0; height: 430px; }
       .mile-box { left: 12px !important; right: 12px; top: auto !important; bottom: 14px; width: auto; height: 62%; clip-path: inset(100% 0 0 0 round 14px); }
       .mile-box.flip { clip-path: inset(100% 0 0 0 round 14px); }
+      .mile-box.plain { height: auto; }
     }
     @media (prefers-reduced-motion: reduce) { .life-panel, .mile-box { transition: none; } .mile-thumb, .mile-chip { transition: none; } }
   </style>
@@ -338,10 +341,11 @@ var STOPS = [
 
 var MILES = [
   { when: "January 2020", city: "Nagoya", ox: -30, oy: -85, pos: "35% center", title: "First time abroad", text: "My first trip outside China began in Nagoya, Japan.", note: "My first time on foreign soil. All around me, people were speaking a language I could not follow, and yet most of the signs I could read — a strange and wonderful feeling. I wandered those bustling Japanese streets with no idea that, only a week later, something called Covid-19 would begin to change everything…", name: "Nagoya, Japan", lng: 136.91, lat: 35.18, photos: ["milestones/nagoya.jpg"] },
-  { when: "October 2020", city: "Munich", ox: 60, oy: -85, title: "Starting a PhD at TU Munich", text: "Arrived in Munich to begin my doctorate.", note: "I had barely reached Marienplatz, in front of the town hall, when a friend called out: “Quick — mask off, take the picture, mask back on!” And so I came by my first photograph in Germany, taken with a racing heart.", name: "Munich, Germany", lng: 11.58, lat: 48.14, photos: ["milestones/munich.jpg"] },
+  { when: "October 2020", city: "Munich", ox: 60, oy: -85, boxPos: "85% center", title: "Starting a PhD at TU Munich", text: "Arrived in Munich to begin my doctorate.", note: "I had barely reached Marienplatz, in front of the town hall, when a friend called out: “Quick — mask off, take the picture, mask back on!” And so I came by my first photograph in Germany, taken with a racing heart.", name: "Munich, Germany", lng: 11.58, lat: 48.14, photos: ["milestones/munich.jpg"] },
   { when: "October 2022", city: "Seattle", ox: -10, oy: 78, title: "First time in the United States", text: "Landed in Seattle for ACM SIGSPATIAL 2022.", note: "My first steps on American soil, and I fell in love at once — a love that, a few years later, would carry me back to live here. I have always loved the rain, and so I loved Seattle: the scent of damp earth drifting in from somewhere far away, after the rain had passed.", name: "Seattle, WA", lng: -122.33, lat: 47.61, photos: ["milestones/seattle.jpg"] },
   { when: "May 2023", city: "Oxford", ox: -60, oy: -85, title: "Visiting scholar at Oxford", text: "Arrived for a visiting scholarship at the University of Oxford.", note: "Drifting through Oxford’s narrow lanes and sitting down to Formal Hall, I sometimes felt I had stumbled into one grand, endless Harry Potter cosplay…", name: "Oxford, UK", lng: -1.26, lat: 51.75, photos: ["milestones/oxford-1.jpg", "milestones/oxford-2.jpg", "milestones/oxford-3.jpg"] },
   { when: "August 2023", city: "Cape Town", ox: 75, oy: -60, title: "First time in Africa", text: "Cape Town, for the International Cartographic Conference, ICC 2023.", note: "My first steps in the Southern Hemisphere, in a city unlike any I had known. But there was no time to linger. We dropped our bags and set off at once — for the wild, for the Cape of Good Hope!", name: "Cape Town, South Africa", lng: 18.42, lat: -33.92, photos: ["milestones/cape-town.jpg"], pos: "center 72%" },
+  { when: "June 2024", city: "Munich", ox: 135, oy: -40, boxPos: "center 42%", label: "PhD", title: "Defending my PhD", text: "PhD defense at TU Munich.", note: "Four years of a PhD gave me a few moments of the pure joy of discovery. But far more often, I was feeling my way forward in the dark, unable to see the road ahead. I cannot say what I carried with me when I left. But I walked out knowing myself far better than when I came in.", name: "Munich, Germany", lng: 11.58, lat: 48.14, photos: ["milestones/phd-defense.jpg"] },
   { when: "August 2024", city: "Boston", ox: 62, oy: 72, title: "Postdoc at MIT", text: "Arrived in Boston to begin my postdoc at MIT.", note: "From my very first day at MIT until, I suspect, forever, one thought has stayed with me: to have had the good fortune of working alongside some of the brightest people in the world is among the great treasures of my life.", name: "Boston, MA", lng: -71.06, lat: 42.36, photos: ["milestones/boston.jpg"] },
   { when: "August 2026", city: "Iowa City", ox: 0, oy: 80, title: "Tenure-track at the University of Iowa", text: "Arrived to begin as a tenure-track assistant professor.", note: "Sheer madness: the day after I got my driver’s license, a friend and I set out from Boston and drove all the way to Iowa City. I cannot wait for the new chapter that begins here.", name: "Iowa City, IA", lng: -91.53, lat: 41.66, photos: ["milestones/iowa-city.jpg"] }
 ];
@@ -464,9 +468,14 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     b.classList.toggle('flip', flip);
     b.style.left = Math.max(12, left) + 'px'; b.style.top = Math.max(12, Math.min(st.height - b.offsetHeight - 12, top)) + 'px';
   }
+  function fitBoxImg() {
+    var b = $('mileBox'), im = b.querySelector('img'), c = b.querySelector('.mb-copy');
+    if (im && c) im.style.height = Math.max(120, b.clientHeight - c.offsetHeight + 36) + 'px';
+  }
   function setBoxPhoto(n) {
-    var m = MILES[boxIdx], im = $('mileBox').querySelector('img'); if (!im) return;
-    boxPhoto = (n + m.photos.length) % m.photos.length; im.src = m.photos[boxPhoto]; im.style.objectPosition = m.pos || '';
+    if (boxIdx < 0) return;
+    var m = MILES[boxIdx], im = $('mileBox').querySelector('img'); if (!im || !m.photos.length) return;
+    boxPhoto = (n + m.photos.length) % m.photos.length; im.src = m.photos[boxPhoto]; im.style.objectPosition = m.boxPos || m.pos || '';
     [].forEach.call($('mileBox').querySelectorAll('.mb-dots i'), function (d, k) { d.classList.toggle('on', k === boxPhoto); });
   }
   function showBox(i, pin) {
@@ -476,11 +485,12 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     var b = $('mileBox'), m = MILES[i];
     mMarks.forEach(function (x, n) { x.classList.toggle('active', n === i); });
     boxIdx = i; boxPhoto = 0; boxManual = false; b.classList.remove('show');
-    b.innerHTML = '<img alt="" /><div class="mb-copy">' + (m.photos.length > 1 ? '<div class="mb-dots">' + m.photos.map(function () { return '<i></i>'; }).join('') + '</div>' : '') + '<em></em><b></b><p></p></div><button class="mb-x" aria-label="Close">&times;</button>' + (m.photos.length > 1 ? '<button class="mb-prev" aria-label="Previous photo">&#8249;</button><button class="mb-next" aria-label="Next photo">&#8250;</button>' : '');
+    b.classList.toggle('plain', !m.photos.length);
+    b.innerHTML = (m.photos.length ? '<img alt="" />' : '') + '<div class="mb-copy">' + (m.photos.length > 1 ? '<div class="mb-dots">' + m.photos.map(function () { return '<i></i>'; }).join('') + '</div>' : '') + '<em></em><b></b><p></p></div><button class="mb-x" aria-label="Close">&times;</button>' + (m.photos.length > 1 ? '<button class="mb-prev" aria-label="Previous photo">&#8249;</button><button class="mb-next" aria-label="Next photo">&#8250;</button>' : '');
     b.querySelector('em').textContent = m.when + ' \u00b7 ' + m.city; b.querySelector('b').textContent = m.title; b.querySelector('p').textContent = m.note || m.text;
     b.querySelector('.mb-x').onclick = hideBox;
     if (m.photos.length > 1) { b.querySelector('.mb-prev').onclick = function () { boxManual = true; setBoxPhoto(boxPhoto - 1); }; b.querySelector('.mb-next').onclick = function () { boxManual = true; setBoxPhoto(boxPhoto + 1); }; }
-    setBoxPhoto(0); placeBox(); void b.offsetWidth; b.classList.add('show');
+    setBoxPhoto(0); fitBoxImg(); placeBox(); void b.offsetWidth; b.classList.add('show');
   }
   function hideBox() {
     clearTimeout(boxTimer); boxIdx = -1; boxPinned = false;
@@ -493,7 +503,7 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
       m.photos.forEach(function (u) { new Image().src = u; });
       var el = document.createElement('div'), len = Math.sqrt(m.ox * m.ox + m.oy * m.oy), deg = Math.atan2(m.oy, m.ox) * 180 / Math.PI;
       el.className = 'mile'; el.style.setProperty('--ox', m.ox); el.style.setProperty('--oy', m.oy);
-      el.innerHTML = '<div class="mile-line" style="width:calc(' + len.toFixed(1) + 'px * var(--k));transform:rotate(' + deg.toFixed(1) + 'deg)"></div><div class="mile-pin"></div><button class="mile-thumb" aria-label="' + m.when + ', ' + m.city + ': ' + m.title + '"><img src="' + m.photos[0] + '" alt=""' + (m.pos ? ' style="object-position:' + m.pos + '"' : '') + ' /></button><span class="mile-chip">' + m.when.slice(-4) + ' ' + m.city + '</span>';
+      el.innerHTML = '<div class="mile-line" style="width:calc(' + len.toFixed(1) + 'px * var(--k));transform:rotate(' + deg.toFixed(1) + 'deg)"></div><div class="mile-pin"></div><button class="mile-thumb" aria-label="' + m.when + ', ' + m.city + ': ' + m.title + '">' + (m.photos.length ? '<img src="' + m.photos[0] + '" alt=""' + (m.pos ? ' style="object-position:' + m.pos + '"' : '') + ' />' : '<span class="mile-noimg">' + m.label + '</span>') + '</button><span class="mile-chip">' + m.when.slice(-4) + ' ' + m.city + '</span>';
       var btn = el.querySelector('.mile-thumb');
       btn.addEventListener('mouseenter', function () { boxPinned = false; showBox(i, false); });
       btn.addEventListener('mouseleave', laterHide);
