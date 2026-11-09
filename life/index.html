@@ -109,8 +109,13 @@
     .mb-copy p { margin: 7px 0 0; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.92); }
     .mile-box button { position: absolute; z-index: 2; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: rgba(14,12,9,.48); color: #fff; font-size: 16px; line-height: 1; cursor: pointer; }
     .mb-x { top: 10px; right: 10px; }
-    .mb-prev { top: 72px; left: 10px; }
-    .mb-next { top: 72px; right: 10px; }
+    .mile-box .mb-prev, .mile-box .mb-next { top: 30%; width: 36px; height: 36px; font-size: 24px; line-height: 32px; background: rgba(14,12,9,.55); transition: background .15s; }
+    .mile-box .mb-prev:hover, .mile-box .mb-next:hover { background: rgba(14,12,9,.82); }
+    .mb-prev { left: 10px; }
+    .mb-next { right: 10px; }
+    .mb-dots { display: flex; gap: 5px; margin-bottom: 9px; }
+    .mb-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.42); transition: background .15s; }
+    .mb-dots i.on { background: #fff; }
     @media (max-width: 720px) {
       .mile-chip { display: none; }
       body.miles #map { inset: 170px 0 auto 0; height: 430px; }
@@ -450,7 +455,7 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
   var mMarks = [], MILE_NAMES = {}, flat = false;
   MILES.forEach(function (m) { MILE_NAMES[m.name] = 1; });
   function compact() { return innerWidth <= 1200; }
-  var boxIdx = -1, boxPhoto = 0, boxPinned = false, boxTimer = 0;
+  var boxIdx = -1, boxPhoto = 0, boxPinned = false, boxTimer = 0, boxManual = false, boxX = null;
   function placeBox() {
     if (boxIdx < 0 || innerWidth <= 720) return;
     var b = $('mileBox'), st = b.parentNode.getBoundingClientRect(), t = mMarks[boxIdx].querySelector('.mile-thumb').getBoundingClientRect();
@@ -462,6 +467,7 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
   function setBoxPhoto(n) {
     var m = MILES[boxIdx], im = $('mileBox').querySelector('img'); if (!im) return;
     boxPhoto = (n + m.photos.length) % m.photos.length; im.src = m.photos[boxPhoto]; im.style.objectPosition = m.pos || '';
+    [].forEach.call($('mileBox').querySelectorAll('.mb-dots i'), function (d, k) { d.classList.toggle('on', k === boxPhoto); });
   }
   function showBox(i, pin) {
     clearTimeout(boxTimer);
@@ -469,11 +475,11 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     if (i === boxIdx) return;
     var b = $('mileBox'), m = MILES[i];
     mMarks.forEach(function (x, n) { x.classList.toggle('active', n === i); });
-    boxIdx = i; boxPhoto = 0; b.classList.remove('show');
-    b.innerHTML = '<img alt="" /><div class="mb-copy"><em></em><b></b><p></p></div><button class="mb-x" aria-label="Close">&times;</button>' + (m.photos.length > 1 ? '<button class="mb-prev" aria-label="Previous photo">&#8249;</button><button class="mb-next" aria-label="Next photo">&#8250;</button>' : '');
+    boxIdx = i; boxPhoto = 0; boxManual = false; b.classList.remove('show');
+    b.innerHTML = '<img alt="" /><div class="mb-copy">' + (m.photos.length > 1 ? '<div class="mb-dots">' + m.photos.map(function () { return '<i></i>'; }).join('') + '</div>' : '') + '<em></em><b></b><p></p></div><button class="mb-x" aria-label="Close">&times;</button>' + (m.photos.length > 1 ? '<button class="mb-prev" aria-label="Previous photo">&#8249;</button><button class="mb-next" aria-label="Next photo">&#8250;</button>' : '');
     b.querySelector('em').textContent = m.when + ' \u00b7 ' + m.city; b.querySelector('b').textContent = m.title; b.querySelector('p').textContent = m.note || m.text;
     b.querySelector('.mb-x').onclick = hideBox;
-    if (m.photos.length > 1) { b.querySelector('.mb-prev').onclick = function () { setBoxPhoto(boxPhoto - 1); }; b.querySelector('.mb-next').onclick = function () { setBoxPhoto(boxPhoto + 1); }; }
+    if (m.photos.length > 1) { b.querySelector('.mb-prev').onclick = function () { boxManual = true; setBoxPhoto(boxPhoto - 1); }; b.querySelector('.mb-next').onclick = function () { boxManual = true; setBoxPhoto(boxPhoto + 1); }; }
     setBoxPhoto(0); placeBox(); void b.offsetWidth; b.classList.add('show');
   }
   function hideBox() {
@@ -498,8 +504,14 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     });
     $('mileBox').addEventListener('mouseenter', function () { clearTimeout(boxTimer); });
     $('mileBox').addEventListener('mouseleave', laterHide);
+    $('mileBox').addEventListener('touchstart', function (e) { boxX = e.touches[0].clientX; }, { passive: true });
+    $('mileBox').addEventListener('touchend', function (e) {
+      if (boxX === null || boxIdx < 0) return;
+      var d = e.changedTouches[0].clientX - boxX; boxX = null;
+      if (Math.abs(d) > 40 && MILES[boxIdx].photos.length > 1) { boxManual = true; setBoxPhoto(boxPhoto + (d < 0 ? 1 : -1)); }
+    });
     map.on('click', hideBox); map.on('move', placeBox);
-    if (!reduce) setInterval(function () { if (boxIdx >= 0 && MILES[boxIdx].photos.length > 1 && !document.hidden) setBoxPhoto(boxPhoto + 1); }, 3600);
+    if (!reduce) setInterval(function () { if (boxIdx >= 0 && !boxManual && MILES[boxIdx].photos.length > 1 && !document.hidden) setBoxPhoto(boxPhoto + 1); }, 3600);
   }
 
   function view() { return mode === 'miles' ? (compact() ? { center: [7, 30], zoom: Math.log2((innerWidth - 60) / 0.72 / 512) } : { center: [-8, 35], zoom: 1.35 }) : HOME; }
@@ -613,6 +625,7 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
   $('stopNext').onclick = function () { if (selected >= 0 && selected < last) select(selected + 1); };
   addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && boxIdx >= 0) hideBox();
+    if (boxIdx >= 0 && MILES[boxIdx].photos.length > 1 && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { boxManual = true; setBoxPhoto(boxPhoto + (e.key === 'ArrowRight' ? 1 : -1)); }
     if (selected < 0) return;
     if (e.key === 'Escape') closePanel();
     if (e.key === 'ArrowRight') showPhoto(photo + 1);
