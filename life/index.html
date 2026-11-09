@@ -112,7 +112,7 @@
   <div class="life-head">
     <h1>Life</h1>
     <p>Places I have lived and travelled. Click a city for details.</p>
-    <div class="life-modes" id="modes" role="group" aria-label="Map view"><button data-m="cities">Cities</button><button data-m="visits">Countries: visits</button><button data-m="time">Countries: time</button><button data-m="journey">Journey</button></div>
+    <div class="life-modes" id="modes" role="group" aria-label="Map view"><button data-m="cities">Cities</button><button data-m="journey">Journey</button></div>
     <div class="life-legend" id="legend"></div>
   </div>
 
@@ -151,82 +151,82 @@
 // Each stop: when (label), year (timeline tick; '' = none),
 // name, type ('Lived' | 'Travelled'), lng/lat, text, photos (paths; empty = placeholders).
 var STOPS = [
-  {"when": "Until 2013", "year": "", "name": "Jining, Shandong", "type": "Lived", "lng": 116.59, "lat": 35.41, "text": "Where I grew up.", "photos": [], "cc": "156", "days": 6570, "vm": "L0"},
-  {"when": "2013–2017", "year": "2013", "name": "Qingdao, China", "type": "Lived", "lng": 120.38, "lat": 36.07, "text": "Student years.", "photos": [], "cc": "156", "days": 1460, "vm": "L1"},
-  {"when": "2017–2020", "year": "2017", "name": "Beijing, China", "type": "Lived", "lng": 116.4, "lat": 39.9, "text": "", "photos": [], "cc": "156", "days": 1190, "vm": "L2"},
-  {"when": "Jan 2020", "year": "2020", "name": "Nagoya, Japan", "type": "Travelled", "lng": 136.91, "lat": 35.18, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
-  {"when": "Jan 2020", "year": "2020", "name": "Matsuyama, Japan", "type": "Travelled", "lng": 132.77, "lat": 33.84, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
-  {"when": "Jan 2020", "year": "2020", "name": "Tokyo, Japan", "type": "Travelled", "lng": 139.69, "lat": 35.69, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
-  {"when": "Oct 2020–2024", "year": "2020", "name": "Munich, Germany", "type": "Lived", "lng": 11.58, "lat": 48.14, "text": "PhD years at TU Munich.", "photos": [], "cc": "276", "days": 1400, "vm": "L6"},
-  {"when": "Apr 2021", "year": "2021", "name": "Grainau, Germany", "type": "Travelled", "lng": 11.02, "lat": 47.48, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2021Apr"},
-  {"when": "Jul 2021", "year": "2021", "name": "Salzburg, Austria", "type": "Travelled", "lng": 13.04, "lat": 47.81, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2021Jul"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "Italy trip, stop 1 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "Italy trip, stop 2 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "Italy trip, stop 3 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "Italy trip, stop 4 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Milan, Italy", "type": "Travelled", "lng": 9.19, "lat": 45.46, "text": "Italy trip, stop 5 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Verona, Italy", "type": "Travelled", "lng": 10.99, "lat": 45.44, "text": "Italy trip, stop 6 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
-  {"when": "Nov 10, 2021", "year": "2021", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": [], "cc": "250", "days": 1, "vm": "2021Nov"},
-  {"when": "Nov 2021", "year": "2021", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": [], "cc": "208", "days": 3, "vm": "2021Nov"},
-  {"when": "Nov 2021", "year": "2021", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2021Nov"},
-  {"when": "Dec 12, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "", "photos": [], "cc": "380", "days": 1, "vm": "2021Dec"},
-  {"when": "Jan 2022", "year": "2022", "name": "Berlin, Germany", "type": "Travelled", "lng": 13.4, "lat": 52.52, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2022Jan"},
-  {"when": "Mar 2022", "year": "2022", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
-  {"when": "Mar 2022", "year": "2022", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
-  {"when": "Mar 2022", "year": "2022", "name": "Amalfi Coast, Italy", "type": "Travelled", "lng": 14.6, "lat": 40.63, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
-  {"when": "Mar 2022", "year": "2022", "name": "Capri, Italy", "type": "Travelled", "lng": 14.24, "lat": 40.55, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
-  {"when": "Apr 2022", "year": "2022", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": [], "cc": "208", "days": 3, "vm": "2022Apr"},
-  {"when": "Apr 2022", "year": "2022", "name": "Malmö, Sweden", "type": "Travelled", "lng": 13.0, "lat": 55.6, "text": "", "photos": [], "cc": "752", "days": 3, "vm": "2022Apr"},
-  {"when": "Apr 2022", "year": "2022", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2022Apr"},
-  {"when": "May 2022", "year": "2022", "name": "Vienna, Austria", "type": "Travelled", "lng": 16.37, "lat": 48.21, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2022May"},
-  {"when": "May 2022", "year": "2022", "name": "Budapest, Hungary", "type": "Travelled", "lng": 19.04, "lat": 47.5, "text": "", "photos": [], "cc": "348", "days": 3, "vm": "2022May"},
-  {"when": "May 2022", "year": "2022", "name": "Bratislava, Slovakia", "type": "Travelled", "lng": 17.11, "lat": 48.15, "text": "", "photos": [], "cc": "703", "days": 3, "vm": "2022May"},
-  {"when": "Jul 2022", "year": "2022", "name": "Lake Constance", "type": "Travelled", "lng": 9.18, "lat": 47.66, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2022Jul"},
-  {"when": "Oct–Nov 2022", "year": "2022", "name": "Seattle, WA", "type": "Travelled", "lng": -122.33, "lat": 47.61, "text": "", "photos": [], "cc": "840", "days": 6, "vm": "2022Oct"},
-  {"when": "Dec 2022", "year": "2022", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": [], "cc": "250", "days": 3, "vm": "2022Dec"},
-  {"when": "Dec 2022", "year": "2022", "name": "Rennes, France", "type": "Travelled", "lng": -1.68, "lat": 48.11, "text": "", "photos": [], "cc": "250", "days": 3, "vm": "2022Dec"},
-  {"when": "Dec 2022", "year": "2022", "name": "Mont-Saint-Michel, France", "type": "Travelled", "lng": -1.51, "lat": 48.64, "text": "", "photos": [], "cc": "250", "days": 3, "vm": "2022Dec"},
-  {"when": "Apr 2023", "year": "2023", "name": "Cologne, Germany", "type": "Travelled", "lng": 6.96, "lat": 50.94, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2023Apr"},
-  {"when": "Apr 2023", "year": "2023", "name": "Düsseldorf, Germany", "type": "Travelled", "lng": 6.77, "lat": 51.23, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2023Apr"},
-  {"when": "May 2023", "year": "2023", "name": "Innsbruck, Austria", "type": "Travelled", "lng": 11.4, "lat": 47.27, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2023May"},
-  {"when": "May–Oct 2023", "year": "2023", "name": "Oxford, UK", "type": "Lived", "lng": -1.26, "lat": 51.75, "text": "", "photos": [], "cc": "826", "days": 153, "vm": "L33"},
-  {"when": "May 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": [], "cc": "826", "days": 3, "vm": "2023May"},
-  {"when": "Jun 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": [], "cc": "826", "days": 3, "vm": "2023Jun"},
-  {"when": "Jun 2023", "year": "2023", "name": "Pisa, Italy", "type": "Travelled", "lng": 10.4, "lat": 43.72, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2023Jun"},
-  {"when": "Jun 2023", "year": "2023", "name": "Cinque Terre, Italy", "type": "Travelled", "lng": 9.72, "lat": 44.13, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2023Jun"},
-  {"when": "Jun 2023", "year": "2023", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2023Jun"},
-  {"when": "Jun 2023", "year": "2023", "name": "Bologna, Italy", "type": "Travelled", "lng": 11.34, "lat": 44.49, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2023Jun"},
-  {"when": "Jul 7–10, 2023", "year": "2023", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": [], "cc": "380", "days": 4, "vm": "2023Jul"},
-  {"when": "Jul 10–13, 2023", "year": "2023", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "", "photos": [], "cc": "380", "days": 4, "vm": "2023Jul"},
-  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Nice, France", "type": "Travelled", "lng": 7.27, "lat": 43.7, "text": "", "photos": [], "cc": "250", "days": 1, "vm": "2023Jul"},
-  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Èze, France", "type": "Travelled", "lng": 7.36, "lat": 43.73, "text": "", "photos": [], "cc": "250", "days": 1, "vm": "2023Jul"},
-  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Monaco", "type": "Travelled", "lng": 7.42, "lat": 43.74, "text": "", "photos": [], "cc": "492", "days": 1, "vm": "2023Jul"},
-  {"when": "Jul 16–17, 2023", "year": "2023", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": [], "cc": "250", "days": 2, "vm": "2023Jul"},
-  {"when": "Jul 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": [], "cc": "826", "days": 3, "vm": "2023Jul"},
-  {"when": "Aug 2023", "year": "2023", "name": "Cape Town, South Africa", "type": "Travelled", "lng": 18.42, "lat": -33.92, "text": "", "photos": [], "cc": "710", "days": 3, "vm": "2023Aug"},
-  {"when": "Nov 2023", "year": "2023", "name": "Brussels, Belgium", "type": "Travelled", "lng": 4.35, "lat": 50.85, "text": "", "photos": [], "cc": "056", "days": 3, "vm": "2023Nov"},
-  {"when": "Nov 2023", "year": "2023", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2023Nov"},
-  {"when": "Aug 2024–2026", "year": "2024", "name": "Boston, MA", "type": "Lived", "lng": -71.06, "lat": 42.36, "text": "Postdoc at the MIT Senseable City Lab.", "photos": [], "cc": "840", "days": 730, "vm": "L40"},
-  {"when": "Dec 2024", "year": "2024", "name": "New York, NY", "type": "Travelled", "lng": -74.01, "lat": 40.71, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
-  {"when": "Dec 2024", "year": "2024", "name": "Orlando, FL", "type": "Travelled", "lng": -81.38, "lat": 28.54, "text": "Universal and Walt Disney World.", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
-  {"when": "Dec 2024", "year": "2024", "name": "Miami, FL", "type": "Travelled", "lng": -80.19, "lat": 25.76, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
-  {"when": "Mar 2025", "year": "2025", "name": "Detroit, MI", "type": "Travelled", "lng": -83.05, "lat": 42.33, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Mar"},
-  {"when": "Aug 2025", "year": "2025", "name": "Gainesville, FL", "type": "Travelled", "lng": -82.32, "lat": 29.65, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Aug"},
-  {"when": "Aug 2025", "year": "2025", "name": "Chicago, IL", "type": "Travelled", "lng": -87.63, "lat": 41.88, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Aug"},
-  {"when": "Sep 19–21, 2025", "year": "2025", "name": "Bar Harbor, ME", "type": "Travelled", "lng": -68.2, "lat": 44.39, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Sep"},
-  {"when": "Oct 2025", "year": "2025", "name": "San Francisco, CA", "type": "Travelled", "lng": -122.42, "lat": 37.77, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Oct"},
-  {"when": "Oct 2025", "year": "2025", "name": "Los Angeles, CA", "type": "Travelled", "lng": -118.24, "lat": 34.05, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Oct"},
-  {"when": "Dec 2025", "year": "2025", "name": "Iowa City, IA", "type": "Travelled", "lng": -91.53, "lat": 41.66, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Dec"},
-  {"when": "Feb 2026", "year": "2026", "name": "New Orleans, LA", "type": "Travelled", "lng": -90.07, "lat": 29.95, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Feb"},
-  {"when": "Jun 4–14, 2026", "year": "2026", "name": "California and the Southwest", "type": "Travelled", "lng": -112.11, "lat": 36.05, "text": "San Francisco, the Pacific Coast, Los Angeles, Las Vegas, Page and the Grand Canyon.", "photos": [], "cc": "840", "days": 11, "vm": "2026Jun"},
-  {"when": "Jun 14–18, 2026", "year": "2026", "name": "Washington, D.C.", "type": "Travelled", "lng": -77.04, "lat": 38.91, "text": "", "photos": [], "cc": "840", "days": 5, "vm": "2026Jun"},
-  {"when": "Aug 2026", "year": "2026", "name": "Niagara Falls", "type": "Travelled", "lng": -79.07, "lat": 43.09, "text": "My first road trip, from Boston to Iowa City, right after getting my driver’s license on July 31.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
-  {"when": "Aug 2026", "year": "2026", "name": "West Lafayette, IN", "type": "Travelled", "lng": -86.91, "lat": 40.43, "text": "Road trip: Purdue University.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
-  {"when": "Aug 2026", "year": "2026", "name": "Urbana-Champaign, IL", "type": "Travelled", "lng": -88.23, "lat": 40.11, "text": "Road trip: University of Illinois.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
-  {"when": "Aug 2026–present", "year": "2026", "name": "Iowa City, IA", "type": "Lived", "lng": -91.53, "lat": 41.66, "text": "Assistant Professor at the University of Iowa.", "photos": [], "cc": "840", "days": 90, "vm": "L57"},
-  {"when": "Sep 2026", "year": "2026", "name": "St. Louis, MO", "type": "Travelled", "lng": -90.2, "lat": 38.63, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Sep"},
-  {"when": "Oct 2026", "year": "2026", "name": "Boston, MA", "type": "Travelled", "lng": -71.06, "lat": 42.36, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Oct"},
-  {"when": "Oct 2026", "year": "2026", "name": "Madison, WI", "type": "Travelled", "lng": -89.4, "lat": 43.07, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Oct"}
+  {"when": "Until 2013", "year": "", "name": "Jining, Shandong", "type": "Lived", "lng": 116.59, "lat": 35.41, "text": "Where I grew up.", "photos": []},
+  {"when": "2013–2017", "year": "2013", "name": "Qingdao, China", "type": "Lived", "lng": 120.38, "lat": 36.07, "text": "Student years.", "photos": []},
+  {"when": "2017–2020", "year": "2017", "name": "Beijing, China", "type": "Lived", "lng": 116.4, "lat": 39.9, "text": "", "photos": []},
+  {"when": "Jan 2020", "year": "2020", "name": "Nagoya, Japan", "type": "Travelled", "lng": 136.91, "lat": 35.18, "text": "", "photos": []},
+  {"when": "Jan 2020", "year": "2020", "name": "Matsuyama, Japan", "type": "Travelled", "lng": 132.77, "lat": 33.84, "text": "", "photos": []},
+  {"when": "Jan 2020", "year": "2020", "name": "Tokyo, Japan", "type": "Travelled", "lng": 139.69, "lat": 35.69, "text": "", "photos": []},
+  {"when": "Oct 2020–2024", "year": "2020", "name": "Munich, Germany", "type": "Lived", "lng": 11.58, "lat": 48.14, "text": "PhD years at TU Munich.", "photos": []},
+  {"when": "Apr 2021", "year": "2021", "name": "Grainau, Germany", "type": "Travelled", "lng": 11.02, "lat": 47.48, "text": "", "photos": []},
+  {"when": "Jul 2021", "year": "2021", "name": "Salzburg, Austria", "type": "Travelled", "lng": 13.04, "lat": 47.81, "text": "", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "Italy trip, stop 1 of 6.", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "Italy trip, stop 2 of 6.", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "Italy trip, stop 3 of 6.", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "Italy trip, stop 4 of 6.", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Milan, Italy", "type": "Travelled", "lng": 9.19, "lat": 45.46, "text": "Italy trip, stop 5 of 6.", "photos": []},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Verona, Italy", "type": "Travelled", "lng": 10.99, "lat": 45.44, "text": "Italy trip, stop 6 of 6.", "photos": []},
+  {"when": "Nov 10, 2021", "year": "2021", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": []},
+  {"when": "Nov 2021", "year": "2021", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": []},
+  {"when": "Nov 2021", "year": "2021", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": []},
+  {"when": "Dec 12, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "", "photos": []},
+  {"when": "Jan 2022", "year": "2022", "name": "Berlin, Germany", "type": "Travelled", "lng": 13.4, "lat": 52.52, "text": "", "photos": []},
+  {"when": "Mar 2022", "year": "2022", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": []},
+  {"when": "Mar 2022", "year": "2022", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "", "photos": []},
+  {"when": "Mar 2022", "year": "2022", "name": "Amalfi Coast, Italy", "type": "Travelled", "lng": 14.6, "lat": 40.63, "text": "", "photos": []},
+  {"when": "Mar 2022", "year": "2022", "name": "Capri, Italy", "type": "Travelled", "lng": 14.24, "lat": 40.55, "text": "", "photos": []},
+  {"when": "Apr 2022", "year": "2022", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": []},
+  {"when": "Apr 2022", "year": "2022", "name": "Malmö, Sweden", "type": "Travelled", "lng": 13.0, "lat": 55.6, "text": "", "photos": []},
+  {"when": "Apr 2022", "year": "2022", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": []},
+  {"when": "May 2022", "year": "2022", "name": "Vienna, Austria", "type": "Travelled", "lng": 16.37, "lat": 48.21, "text": "", "photos": []},
+  {"when": "May 2022", "year": "2022", "name": "Budapest, Hungary", "type": "Travelled", "lng": 19.04, "lat": 47.5, "text": "", "photos": []},
+  {"when": "May 2022", "year": "2022", "name": "Bratislava, Slovakia", "type": "Travelled", "lng": 17.11, "lat": 48.15, "text": "", "photos": []},
+  {"when": "Jul 2022", "year": "2022", "name": "Lake Constance", "type": "Travelled", "lng": 9.18, "lat": 47.66, "text": "", "photos": []},
+  {"when": "Oct–Nov 2022", "year": "2022", "name": "Seattle, WA", "type": "Travelled", "lng": -122.33, "lat": 47.61, "text": "", "photos": []},
+  {"when": "Dec 2022", "year": "2022", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": []},
+  {"when": "Dec 2022", "year": "2022", "name": "Rennes, France", "type": "Travelled", "lng": -1.68, "lat": 48.11, "text": "", "photos": []},
+  {"when": "Dec 2022", "year": "2022", "name": "Mont-Saint-Michel, France", "type": "Travelled", "lng": -1.51, "lat": 48.64, "text": "", "photos": []},
+  {"when": "Apr 2023", "year": "2023", "name": "Cologne, Germany", "type": "Travelled", "lng": 6.96, "lat": 50.94, "text": "", "photos": []},
+  {"when": "Apr 2023", "year": "2023", "name": "Düsseldorf, Germany", "type": "Travelled", "lng": 6.77, "lat": 51.23, "text": "", "photos": []},
+  {"when": "May 2023", "year": "2023", "name": "Innsbruck, Austria", "type": "Travelled", "lng": 11.4, "lat": 47.27, "text": "", "photos": []},
+  {"when": "May–Oct 2023", "year": "2023", "name": "Oxford, UK", "type": "Lived", "lng": -1.26, "lat": 51.75, "text": "", "photos": []},
+  {"when": "May 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": []},
+  {"when": "Jun 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": []},
+  {"when": "Jun 2023", "year": "2023", "name": "Pisa, Italy", "type": "Travelled", "lng": 10.4, "lat": 43.72, "text": "", "photos": []},
+  {"when": "Jun 2023", "year": "2023", "name": "Cinque Terre, Italy", "type": "Travelled", "lng": 9.72, "lat": 44.13, "text": "", "photos": []},
+  {"when": "Jun 2023", "year": "2023", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "", "photos": []},
+  {"when": "Jun 2023", "year": "2023", "name": "Bologna, Italy", "type": "Travelled", "lng": 11.34, "lat": 44.49, "text": "", "photos": []},
+  {"when": "Jul 7–10, 2023", "year": "2023", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": []},
+  {"when": "Jul 10–13, 2023", "year": "2023", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "", "photos": []},
+  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Nice, France", "type": "Travelled", "lng": 7.27, "lat": 43.7, "text": "", "photos": []},
+  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Èze, France", "type": "Travelled", "lng": 7.36, "lat": 43.73, "text": "", "photos": []},
+  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Monaco", "type": "Travelled", "lng": 7.42, "lat": 43.74, "text": "", "photos": []},
+  {"when": "Jul 16–17, 2023", "year": "2023", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": []},
+  {"when": "Jul 2023", "year": "2023", "name": "London, UK", "type": "Travelled", "lng": -0.13, "lat": 51.51, "text": "", "photos": []},
+  {"when": "Aug 2023", "year": "2023", "name": "Cape Town, South Africa", "type": "Travelled", "lng": 18.42, "lat": -33.92, "text": "", "photos": []},
+  {"when": "Nov 2023", "year": "2023", "name": "Brussels, Belgium", "type": "Travelled", "lng": 4.35, "lat": 50.85, "text": "", "photos": []},
+  {"when": "Nov 2023", "year": "2023", "name": "Hamburg, Germany", "type": "Travelled", "lng": 9.99, "lat": 53.55, "text": "", "photos": []},
+  {"when": "Aug 2024–2026", "year": "2024", "name": "Boston, MA", "type": "Lived", "lng": -71.06, "lat": 42.36, "text": "Postdoc at the MIT Senseable City Lab.", "photos": []},
+  {"when": "Dec 2024", "year": "2024", "name": "New York, NY", "type": "Travelled", "lng": -74.01, "lat": 40.71, "text": "", "photos": []},
+  {"when": "Dec 2024", "year": "2024", "name": "Orlando, FL", "type": "Travelled", "lng": -81.38, "lat": 28.54, "text": "Universal and Walt Disney World.", "photos": []},
+  {"when": "Dec 2024", "year": "2024", "name": "Miami, FL", "type": "Travelled", "lng": -80.19, "lat": 25.76, "text": "", "photos": []},
+  {"when": "Mar 2025", "year": "2025", "name": "Detroit, MI", "type": "Travelled", "lng": -83.05, "lat": 42.33, "text": "", "photos": []},
+  {"when": "Aug 2025", "year": "2025", "name": "Gainesville, FL", "type": "Travelled", "lng": -82.32, "lat": 29.65, "text": "", "photos": []},
+  {"when": "Aug 2025", "year": "2025", "name": "Chicago, IL", "type": "Travelled", "lng": -87.63, "lat": 41.88, "text": "", "photos": []},
+  {"when": "Sep 19–21, 2025", "year": "2025", "name": "Bar Harbor, ME", "type": "Travelled", "lng": -68.2, "lat": 44.39, "text": "", "photos": []},
+  {"when": "Oct 2025", "year": "2025", "name": "San Francisco, CA", "type": "Travelled", "lng": -122.42, "lat": 37.77, "text": "", "photos": []},
+  {"when": "Oct 2025", "year": "2025", "name": "Los Angeles, CA", "type": "Travelled", "lng": -118.24, "lat": 34.05, "text": "", "photos": []},
+  {"when": "Dec 2025", "year": "2025", "name": "Iowa City, IA", "type": "Travelled", "lng": -91.53, "lat": 41.66, "text": "", "photos": []},
+  {"when": "Feb 2026", "year": "2026", "name": "New Orleans, LA", "type": "Travelled", "lng": -90.07, "lat": 29.95, "text": "", "photos": []},
+  {"when": "Jun 4–14, 2026", "year": "2026", "name": "California and the Southwest", "type": "Travelled", "lng": -112.11, "lat": 36.05, "text": "San Francisco, the Pacific Coast, Los Angeles, Las Vegas, Page and the Grand Canyon.", "photos": []},
+  {"when": "Jun 14–18, 2026", "year": "2026", "name": "Washington, D.C.", "type": "Travelled", "lng": -77.04, "lat": 38.91, "text": "", "photos": []},
+  {"when": "Aug 2026", "year": "2026", "name": "Niagara Falls", "type": "Travelled", "lng": -79.07, "lat": 43.09, "text": "My first road trip, from Boston to Iowa City, right after getting my driver’s license on July 31.", "photos": []},
+  {"when": "Aug 2026", "year": "2026", "name": "West Lafayette, IN", "type": "Travelled", "lng": -86.91, "lat": 40.43, "text": "Road trip: Purdue University.", "photos": []},
+  {"when": "Aug 2026", "year": "2026", "name": "Urbana-Champaign, IL", "type": "Travelled", "lng": -88.23, "lat": 40.11, "text": "Road trip: University of Illinois.", "photos": []},
+  {"when": "Aug 2026–present", "year": "2026", "name": "Iowa City, IA", "type": "Lived", "lng": -91.53, "lat": 41.66, "text": "Assistant Professor at the University of Iowa.", "photos": []},
+  {"when": "Sep 2026", "year": "2026", "name": "St. Louis, MO", "type": "Travelled", "lng": -90.2, "lat": 38.63, "text": "", "photos": []},
+  {"when": "Oct 2026", "year": "2026", "name": "Boston, MA", "type": "Travelled", "lng": -71.06, "lat": 42.36, "text": "", "photos": []},
+  {"when": "Oct 2026", "year": "2026", "name": "Madison, WI", "type": "Travelled", "lng": -89.4, "lat": 43.07, "text": "", "photos": []}
 ];
 
 (function () {
@@ -258,7 +258,7 @@ var STOPS = [
     return [ROUTE[a][0] + (ROUTE[b][0] - ROUTE[a][0]) * t, ROUTE[a][1] + (ROUTE[b][1] - ROUTE[a][1]) * t];
   }
 
-  var mode = 'cities', popup = null, p = last, playing = false, selected = -1, photo = 0, lastLit = -2, lastSel = -2, flow = 0, prevT = 0, ready = false;
+  var mode = 'cities', p = last, playing = false, selected = -1, photo = 0, lastLit = -2, lastSel = -2, flow = 0, prevT = 0, ready = false;
   var scrub = $('scrub'); scrub.max = last; scrub.value = p;
 
   var track = $('track'), minGap = 42, seen = {}, ticks = [], lastLeft = -1e9;
@@ -295,11 +295,6 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     var empty = pts([]);
     ['route', 'done', 'dots', 'stops'].forEach(function (id) { map.addSource(id, { type: 'geojson', data: empty }); });
     map.getSource('route').setData(line(ROUTE));
-    map.addSource('countries', { type: 'geojson', data: pts([]) });
-    map.addLayer({ id: 'country-fill', type: 'fill', source: 'countries', layout: { visibility: 'none' }, paint: { 'fill-color': ['get', 'c'], 'fill-opacity': 0.78 } });
-    map.addLayer({ id: 'country-line', type: 'line', source: 'countries', layout: { visibility: 'none' }, paint: { 'line-color': '#f8f6f1', 'line-width': 0.8 } });
-    map.on('click', 'country-fill', countryClick);
-    fetch('countries.json').then(function (r) { return r.json(); }).then(function (g) { WORLD = g; if (mode === 'visits' || mode === 'time') paintCountries(); });
     map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#2d5a8e', 'line-opacity': 0.22, 'line-width': 1.2, 'line-dasharray': [2, 3] } });
     map.addLayer({ id: 'done', type: 'line', source: 'done', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#b5533c', 'line-width': 2.2 } });
     map.addLayer({ id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'lit'], true], paint: { 'circle-radius': ['case', ['get', 'sel'], 20, ['get', 'lived'], 13, 9], 'circle-color': ['case', ['get', 'lived'], '#2d5a8e', '#c9962e'], 'circle-opacity': 0.18, 'circle-pitch-alignment': 'map' } });
@@ -318,37 +313,6 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     requestAnimationFrame(tick);
   });
 
-  var WORLD = null, RAMP = ['#d6e2ec', '#b3cadd', '#86a9c7', '#5a86ae', '#2d5a8e'];
-  var SCALES = {
-    visits: { labels: ['1', '2', '3', '4\u20135', '6+'], bucket: function (c) { var v = c.visits; return v >= 6 ? 4 : v >= 4 ? 3 : v - 1; } },
-    time: { labels: ['< 1 week', '< 1 month', '< 1 year', '1\u20135 years', '5+ years'], bucket: function (c) { var d = c.days; return d >= 1825 ? 4 : d >= 365 ? 3 : d >= 30 ? 2 : d >= 7 ? 1 : 0; } }
-  };
-  function countryStats() {
-    var o = {};
-    STOPS.forEach(function (s) {
-      var c = o[s.cc] = o[s.cc] || { visits: 0, days: 0, seen: {}, cities: {} };
-      c.days += s.days; c.cities[s.name] = 1;
-      if (!c.seen[s.vm]) { c.seen[s.vm] = 1; c.visits++; }
-    });
-    return o;
-  }
-  function paintCountries() {
-    if (!WORLD) return;
-    var st = countryStats(), sc = SCALES[mode];
-    map.getSource('countries').setData({ type: 'FeatureCollection', features: WORLD.features.map(function (f) {
-      var c = st[f.properties.iso]; return c ? { type: 'Feature', geometry: f.geometry, properties: { iso: f.properties.iso, name: f.properties.name, c: RAMP[sc.bucket(c)] } } : null;
-    }).filter(Boolean) });
-  }
-  function fmtDays(d) { return d >= 365 ? Math.round(d / 365) + (Math.round(d / 365) === 1 ? ' year' : ' years') : d >= 60 ? Math.round(d / 30) + ' months' : d >= 14 ? Math.round(d / 7) + ' weeks' : d + (d === 1 ? ' day' : ' days'); }
-  function countryClick(e) {
-    if (map.queryRenderedFeatures(e.point, { layers: ['hit'] }).length) return;
-    var f = e.features[0].properties, c = countryStats()[f.iso], el = document.createElement('div');
-    var h = document.createElement('strong'); h.textContent = f.name; el.appendChild(h);
-    var m = document.createElement('div'); m.textContent = c.visits + (c.visits === 1 ? ' visit' : ' visits') + ' \u00b7 about ' + fmtDays(c.days); el.appendChild(m);
-    var t = document.createElement('div'); t.style.color = '#6f685c'; t.textContent = Object.keys(c.cities).join(', '); el.appendChild(t);
-    if (popup) popup.remove();
-    popup = new maplibregl.Popup({ closeButton: true, maxWidth: '260px' }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
-  }
   function stopsData(lit) {
     if (mode === 'journey') return pts(STOPS.map(function (s, i) { return pt([s.lng, s.lat], { i: i, lit: i <= lit, sel: i === selected, lived: s.type === 'Lived', name: s.name, n: 1 }); }));
     var by = {}, sn = selected >= 0 ? STOPS[selected].name : null;
@@ -356,23 +320,16 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
     return pts(Object.keys(by).map(function (k) { var c = by[k]; return pt([c.s.lng, c.s.lat], { i: c.i, lit: true, sel: k === sn, lived: c.lived, name: k, n: c.n }); }));
   }
   function setLegend() {
-    var el = $('legend');
-    if (mode === 'visits' || mode === 'time') {
-      el.innerHTML = SCALES[mode].labels.map(function (l, i) { return '<span><i style="width:11px;height:11px;background:' + RAMP[i] + '"></i>' + l + '</span>'; }).join('');
-    } else {
-      el.innerHTML = '<span><i class="dot" style="width:11px;height:11px;background:#2d5a8e"></i>Lived</span><span><i class="dot" style="width:8px;height:8px;background:#c9962e"></i>Travelled</span>';
-    }
+    $('legend').innerHTML = '<span><i class="dot" style="width:11px;height:11px;background:#2d5a8e"></i>Lived</span><span><i class="dot" style="width:8px;height:8px;background:#c9962e"></i>Travelled</span>';
   }
   function applyMode(m, first) {
     mode = m;
     [].forEach.call($('modes').children, function (b) { var on = b.dataset.m === m; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
-    var j = m === 'journey', c = m === 'visits' || m === 'time';
+    var j = m === 'journey';
     $('timebar').hidden = !j;
     ['route', 'done', 'dots'].forEach(function (id) { map.setLayoutProperty(id, 'visibility', j ? 'visible' : 'none'); });
-    ['country-fill', 'country-line'].forEach(function (id) { map.setLayoutProperty(id, 'visibility', c ? 'visible' : 'none'); });
-    if (popup) { popup.remove(); popup = null; }
     selected = -1; $('panel').classList.remove('open');
-    setLegend(); if (c) paintCountries();
+    setLegend();
     p = (j && !reduce) ? 0 : last; lastLit = -2; lastSel = -2;
     setPlaying(j && !reduce);
     map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -426,7 +383,7 @@ var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreem
   }
 
   function select(i) {
-    i = +i; selected = i; setPlaying(false); if (popup) { popup.remove(); popup = null; }
+    i = +i; selected = i; setPlaying(false);
     if (mode === 'journey') p = i;
     var s = STOPS[i];
     $('lpType').textContent = s.type; $('lpWhen').textContent = s.when; $('lpName').textContent = s.name; $('lpText').textContent = s.text;
