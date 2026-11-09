@@ -70,3 +70,4 @@ html, body { height: 100%; overflow: hidden; background: #12110e; }
 @media (max-width: 720px) { .shelf-insight, .shelf-credit { display: none; } .avatar { width: 36px; height: 36px; } }
 .pin.num { background: rgba(224,121,92,.88); border-color: #12110e; color: #12110e; font-size: 13px; }
 .pin.num:hover, .pin.num:focus-visible { border-color: #f1ece1; }
+#wall.m-time .badge:empty { display: none; }

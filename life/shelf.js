@@ -41,14 +41,15 @@
     Object.keys(m).forEach(function (k) { out.push({ key: k, items: m[k].sort(byDate) }); });
     return out.sort(rank);
   }
+  function nn(n) { return n + ' ' + (n === 1 ? cfg.noun.slice(0, -1) : cfg.noun); }
   function pct(n) { return Math.round(n / tiles.length * 100) + '%'; }
   function arrange() {
     if (mode === 'color') return null;
     var g;
-    if (mode === 'time') { g = bucket(function (t) { return t.it.d.slice(0, 4); }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = x.key; x.sub = x.items.length + ' ' + cfg.noun; }); return { groups: g, brk: true }; }
-    if (mode === 'rating') { g = bucket(function (t) { return t.it.r; }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = +x.key ? '★'.repeat(+x.key) : 'Unrated'; x.sub = x.items.length + ' ' + cfg.noun; }); return { groups: g, brk: true }; }
+    if (mode === 'time') { g = bucket(function (t) { return t.it.d.slice(0, 4); }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = x.key || 'Undated'; x.sub = nn(x.items.length); }); return { groups: g, brk: true }; }
+    if (mode === 'rating') { g = bucket(function (t) { return t.it.r; }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = +x.key ? '★'.repeat(+x.key) : 'Unrated'; x.sub = nn(x.items.length); }); return { groups: g, brk: true }; }
     if (mode === 'cat') { g = bucket(function (t) { return t.it.cat; }, function (a, b) { return cfg.cats.indexOf(a.key) - cfg.cats.indexOf(b.key); }); g.forEach(function (x) { x.title = x.key; x.sub = x.items.length + ' · ' + pct(x.items.length); }); return { groups: g, brk: true }; }
-    if (cfg.groupNum) { g = bucket(function (t) { return t.it.g; }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = x.key + 's'; x.sub = x.items.length + ' ' + cfg.noun; }); return { groups: g, brk: true }; }
+    if (cfg.groupNum) { g = bucket(function (t) { return t.it.g; }, function (a, b) { return b.key - a.key; }); g.forEach(function (x) { x.title = x.key + 's'; x.sub = nn(x.items.length); }); return { groups: g, brk: true }; }
     g = bucket(function (t) { return t.it.g; }, function (a, b) { return b.items.length - a.items.length || a.key.localeCompare(b.key); });
     g.forEach(function (x) { x.title = x.key; x.sub = x.items.length + (x.items.length > 1 ? ' books' : ' book'); x.author = true; });
     return { groups: g, brk: false };
@@ -118,7 +119,7 @@
     t.el.classList.add('focus');
     var it = t.it, st = it.r ? '<span class="stars">' + '★'.repeat(it.r) + '<i>' + '★'.repeat(5 - it.r) + '</i></span>' : '';
     cap.className = 'shelf-cap';
-    cap.innerHTML = '<b>' + esc(it.en) + '</b><span lang="zh">' + esc(it.zh) + '</span><span>' + esc(it.sub) + ' &middot; logged ' + it.d + '</span>' + st;
+    cap.innerHTML = '<b>' + esc(it.en) + '</b><span lang="zh">' + esc(it.zh) + '</span><span>' + esc(it.sub) + (it.d ? ' &middot; logged ' + it.d : '') + '</span>' + st;
   }
   function near(x, y) {
     var b = null, bd = Infinity;
