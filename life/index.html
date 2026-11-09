@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life — Peng Luo</title>
+  <link rel="stylesheet" href="../css/style.css?v=20261110" />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+  <link rel="canonical" href="https://peng-luo.com/life/" />
+  <meta name="description" content="Places Peng Luo has lived and travelled, shown on an interactive map." />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" />
+  <style>
+    :root { --paper: #f8f6f1; --ink: #1d1b18; --muted: #6f685c; --blue: #2d5a8e; --red: #b5533c; --line: rgba(29,27,24,.14); }
+    html, body { height: 100%; overflow: hidden; background: var(--paper); }
+    .life-stage { position: fixed; left: 0; right: 0; bottom: 0; top: var(--nav-h, 56px); background: var(--paper); overflow: hidden; }
+    #map { position: absolute; inset: 0; }
+    .maplibregl-ctrl-attrib { font-size: 10px; background: rgba(248,246,241,.7) !important; }
+
+    .life-head { position: absolute; left: 28px; top: 22px; z-index: 3; max-width: 340px; pointer-events: none; }
+    .life-head h1 { margin: 0; font-size: 34px; line-height: 1.1; color: var(--ink); }
+    .life-head p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+    .life-demo { display: inline-block; margin-top: 10px; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; color: var(--red); background: rgba(181,83,60,.1); }
+    .life-legend { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .life-modes { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; pointer-events: auto; }
+    .life-modes button { padding: 4px 10px; border: 1px solid var(--line); border-radius: 99px; background: rgba(248,246,241,.92); font: inherit; font-size: 12px; color: var(--muted); cursor: pointer; }
+    .life-modes button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .life-time[hidden] { display: none; }
+    .life-legend { flex-wrap: wrap; }
+    .life-legend i { border-radius: 2px; }
+    .life-legend i.dot { border-radius: 50%; }
+    .life-legend i { display: inline-block; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+    .life-time { position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 3; width: min(860px, calc(100% - 56px)); display: flex; align-items: flex-start; gap: 14px; padding: 12px 18px 8px; background: rgba(248,246,241,.9); border: 1px solid var(--line); border-radius: 12px; backdrop-filter: blur(6px); box-sizing: border-box; }
+    #play { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--ink); color: var(--paper); font-size: 12px; cursor: pointer; }
+    .life-now { flex: 0 0 150px; min-width: 0; font-size: 12.5px; line-height: 1.35; color: var(--muted); }
+    .life-now b, .life-now span { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .life-now b { color: var(--ink); font-weight: 600; }
+    .lp-also { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+    .lp-also button { margin-left: 6px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; background: none; font: inherit; color: var(--blue); cursor: pointer; }
+    .life-track { position: relative; flex: 1; min-width: 0; height: 46px; }
+    #scrub { position: absolute; left: 0; right: 0; top: 6px; width: 100%; margin: 0; accent-color: var(--blue); cursor: pointer; }
+    .tick { position: absolute; top: 25px; transform: translateX(-50%); padding: 2px 3px; border: 0; background: none; font: inherit; font-size: 11.5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+    .tick.lit { color: var(--ink); }
+    .tick.sel { color: var(--red); font-weight: 600; }
+
+    .life-panel { position: absolute; z-index: 4; top: 18px; right: 18px; bottom: 18px; width: 350px; display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 40px rgba(29,27,24,.14); transform: translateX(calc(100% + 30px)); transition: transform .4s cubic-bezier(.2,.8,.2,1); overflow: hidden; visibility: hidden; }
+    .life-panel.open { transform: none; visibility: visible; }
+    .life-panel.no-photo { bottom: auto; }
+    .life-panel.no-photo .lp-main { display: none; }
+    .life-panel.no-photo .lp-body { flex: none; padding-right: 44px; }
+    .life-panel .lp-x { display: none; position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: none; color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; }
+    .life-panel.no-photo .lp-x { display: block; }
+    .lp-main { position: relative; flex: none; aspect-ratio: 4 / 3; background: #e7e2d7; }
+    .lp-main img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .lp-close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(248,246,241,.92); color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; }
+    .lp-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(248,246,241,.85); color: var(--ink); cursor: pointer; }
+    .lp-arrow.l { left: 10px; } .lp-arrow.r { right: 10px; }
+    .lp-body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px; }
+    .lp-kicker { font-size: 12px; color: var(--muted); }
+    .lp-kicker b { color: var(--blue); font-weight: 600; }
+    .lp-body h2 { margin: 4px 0 8px; font-size: 25px; line-height: 1.2; color: var(--ink); border: 0; padding: 0; }
+    .lp-body p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--muted); }
+    .lp-thumbs { display: flex; gap: 8px; margin-top: 14px; }
+    .lp-thumbs button { width: 62px; height: 46px; padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; background: none; }
+    .lp-thumbs button.on { border-color: var(--blue); }
+    .lp-thumbs img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .lp-nav { flex: none; display: flex; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--line); }
+    .lp-nav button { border: 0; background: none; font: inherit; font-size: 13px; color: var(--blue); cursor: pointer; padding: 4px 6px; }
+    .lp-nav button:disabled { color: #bbb4a6; cursor: default; }
+
+    @media (min-width: 721px) { body.panel-open .life-time { left: 28px; transform: none; width: calc(100% - 424px); } }
+    @media (max-width: 720px) {
+      .life-panel.no-photo { height: auto; top: auto; bottom: 0; }
+      nav .nav-brand { flex: none; white-space: nowrap; }
+      nav .nav-links { flex: 1 1 auto; min-width: 0; overflow-x: auto; flex-wrap: nowrap; }
+      nav .nav-links li { flex: none; }
+      .life-head { left: 16px; top: 12px; right: 16px; }
+      .life-head h1 { font-size: 26px; }
+      .life-head p { display: none; }
+      .life-time { bottom: 14px; width: calc(100% - 24px); padding: 10px 12px 6px; }
+      .tick { font-size: 10.5px; }
+      .life-time { flex-wrap: wrap; gap: 6px 10px; }
+      .life-now { flex: 1 1 calc(100% - 50px); }
+      .life-track { flex: 1 1 100%; }
+      .life-panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 68%; border-radius: 16px 16px 0 0; transform: translateY(105%); }
+      .lp-main { aspect-ratio: auto; flex: 0 0 44%; }
+    }
+    @media (prefers-reduced-motion: reduce) { .life-panel { transition: none; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">Peng Luo</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../research.html">Research</a></li>
+      <li><a href="../publications.html">Publications</a></li>
+      <li><a href="../lab.html">Lab</a></li>
+      <li><a href="../opportunities.html">Opportunities</a></li>
+      <li><a href="../teaching.html">Teaching</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+      <li><a href="./" class="active">Life</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="life-stage">
+  <div id="map"></div>
+
+  <div class="life-head">
+    <h1>Life</h1>
+    <p>Places I have lived and travelled. Click a city for details.</p>
+    <div class="life-modes" id="modes" role="group" aria-label="Map view"><button data-m="cities">Cities</button><button data-m="visits">Countries: visits</button><button data-m="time">Countries: time</button><button data-m="journey">Journey</button></div>
+    <div class="life-legend" id="legend"></div>
+  </div>
+
+  <div class="life-time" id="timebar" hidden>
+    <button id="play" aria-label="Play or pause the journey">&#10073;&#10073;</button>
+    <div class="life-now" id="now" aria-live="off"></div>
+    <div class="life-track" id="track">
+      <input id="scrub" type="range" min="0" step="0.001" value="0" aria-label="Move through time" />
+    </div>
+  </div>
+
+  <aside class="life-panel" id="panel" aria-live="polite">
+    <button class="lp-x" id="lpX" aria-label="Close">&times;</button>
+    <div class="lp-main">
+      <img id="lpImg" alt="" />
+      <button class="lp-arrow l" id="imgPrev" aria-label="Previous photo">&#8249;</button>
+      <button class="lp-arrow r" id="imgNext" aria-label="Next photo">&#8250;</button>
+      <button class="lp-close" id="lpClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="lp-body">
+      <div class="lp-kicker"><b id="lpType"></b> &middot; <span id="lpWhen"></span></div>
+      <h2 id="lpName"></h2>
+      <p id="lpText"></p>
+      <div class="lp-thumbs" id="lpThumbs"></div>
+      <div class="lp-also" id="lpAlso"></div>
+    </div>
+    <div class="lp-nav">
+      <button id="stopPrev">&larr; Previous stop</button>
+      <button id="stopNext">Next stop &rarr;</button>
+    </div>
+  </aside>
+</main>
+
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<script>
+// Each stop: when (label), year (timeline tick; '' = none),
+// name, type ('Lived' | 'Travelled'), lng/lat, text, photos (paths; empty = placeholders).
+var STOPS = [
+  {"when": "Until 2013", "year": "", "name": "Jining, Shandong", "type": "Lived", "lng": 116.59, "lat": 35.41, "text": "Where I grew up.", "photos": [], "cc": "156", "days": 6570, "vm": "L0"},
+  {"when": "2013–2017", "year": "2013", "name": "Qingdao, China", "type": "Lived", "lng": 120.38, "lat": 36.07, "text": "Student years.", "photos": [], "cc": "156", "days": 1460, "vm": "L1"},
+  {"when": "2017–2020", "year": "2017", "name": "Beijing, China", "type": "Lived", "lng": 116.4, "lat": 39.9, "text": "", "photos": [], "cc": "156", "days": 1190, "vm": "L2"},
+  {"when": "Jan 2020", "year": "2020", "name": "Nagoya, Japan", "type": "Travelled", "lng": 136.91, "lat": 35.18, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
+  {"when": "Jan 2020", "year": "2020", "name": "Matsuyama, Japan", "type": "Travelled", "lng": 132.77, "lat": 33.84, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
+  {"when": "Jan 2020", "year": "2020", "name": "Tokyo, Japan", "type": "Travelled", "lng": 139.69, "lat": 35.69, "text": "", "photos": [], "cc": "392", "days": 3, "vm": "2020Jan"},
+  {"when": "Oct 2020–2024", "year": "2020", "name": "Munich, Germany", "type": "Lived", "lng": 11.58, "lat": 48.14, "text": "PhD years at TU Munich.", "photos": [], "cc": "276", "days": 1400, "vm": "L6"},
+  {"when": "Apr 2021", "year": "2021", "name": "Grainau, Germany", "type": "Travelled", "lng": 11.02, "lat": 47.48, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2021Apr"},
+  {"when": "Jul 2021", "year": "2021", "name": "Salzburg, Austria", "type": "Travelled", "lng": 13.04, "lat": 47.81, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2021Jul"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "Italy trip, stop 1 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "Italy trip, stop 2 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "Italy trip, stop 3 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "Italy trip, stop 4 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Milan, Italy", "type": "Travelled", "lng": 9.19, "lat": 45.46, "text": "Italy trip, stop 5 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Aug 14–23, 2021", "year": "2021", "name": "Verona, Italy", "type": "Travelled", "lng": 10.99, "lat": 45.44, "text": "Italy trip, stop 6 of 6.", "photos": [], "cc": "380", "days": 2, "vm": "2021Aug"},
+  {"when": "Nov 10, 2021", "year": "2021", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": [], "cc": "250", "days": 1, "vm": "2021Nov"},
+  {"when": "Nov 2021", "year": "2021", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": [], "cc": "208", "days": 3, "vm": "2021Nov"},
+  {"when": "Dec 12, 2021", "year": "2021", "name": "Florence, Italy", "type": "Travelled", "lng": 11.26, "lat": 43.77, "text": "", "photos": [], "cc": "380", "days": 1, "vm": "2021Dec"},
+  {"when": "Jan 2022", "year": "2022", "name": "Berlin, Germany", "type": "Travelled", "lng": 13.4, "lat": 52.52, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2022Jan"},
+  {"when": "Mar 2022", "year": "2022", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
+  {"when": "Mar 2022", "year": "2022", "name": "Naples, Italy", "type": "Travelled", "lng": 14.27, "lat": 40.85, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
+  {"when": "Mar 2022", "year": "2022", "name": "Amalfi Coast, Italy", "type": "Travelled", "lng": 14.6, "lat": 40.63, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
+  {"when": "Mar 2022", "year": "2022", "name": "Capri, Italy", "type": "Travelled", "lng": 14.24, "lat": 40.55, "text": "", "photos": [], "cc": "380", "days": 3, "vm": "2022Mar"},
+  {"when": "Apr 2022", "year": "2022", "name": "Copenhagen, Denmark", "type": "Travelled", "lng": 12.57, "lat": 55.68, "text": "", "photos": [], "cc": "208", "days": 3, "vm": "2022Apr"},
+  {"when": "Apr 2022", "year": "2022", "name": "Malmö, Sweden", "type": "Travelled", "lng": 13.0, "lat": 55.6, "text": "", "photos": [], "cc": "752", "days": 3, "vm": "2022Apr"},
+  {"when": "May 2022", "year": "2022", "name": "Vienna, Austria", "type": "Travelled", "lng": 16.37, "lat": 48.21, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2022May"},
+  {"when": "May 2022", "year": "2022", "name": "Budapest, Hungary", "type": "Travelled", "lng": 19.04, "lat": 47.5, "text": "", "photos": [], "cc": "348", "days": 3, "vm": "2022May"},
+  {"when": "May 2022", "year": "2022", "name": "Bratislava, Slovakia", "type": "Travelled", "lng": 17.11, "lat": 48.15, "text": "", "photos": [], "cc": "703", "days": 3, "vm": "2022May"},
+  {"when": "Jul 2022", "year": "2022", "name": "Lake Constance", "type": "Travelled", "lng": 9.18, "lat": 47.66, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2022Jul"},
+  {"when": "Oct–Nov 2022", "year": "2022", "name": "Seattle, WA", "type": "Travelled", "lng": -122.33, "lat": 47.61, "text": "", "photos": [], "cc": "840", "days": 6, "vm": "2022Oct"},
+  {"when": "Apr 2023", "year": "2023", "name": "Cologne, Germany", "type": "Travelled", "lng": 6.96, "lat": 50.94, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2023Apr"},
+  {"when": "Apr 2023", "year": "2023", "name": "Düsseldorf, Germany", "type": "Travelled", "lng": 6.77, "lat": 51.23, "text": "", "photos": [], "cc": "276", "days": 3, "vm": "2023Apr"},
+  {"when": "May 2023", "year": "2023", "name": "Innsbruck, Austria", "type": "Travelled", "lng": 11.4, "lat": 47.27, "text": "", "photos": [], "cc": "040", "days": 3, "vm": "2023May"},
+  {"when": "May–Oct 2023", "year": "2023", "name": "Oxford, UK", "type": "Lived", "lng": -1.26, "lat": 51.75, "text": "", "photos": [], "cc": "826", "days": 153, "vm": "L33"},
+  {"when": "Jul 7–10, 2023", "year": "2023", "name": "Rome, Italy", "type": "Travelled", "lng": 12.5, "lat": 41.9, "text": "", "photos": [], "cc": "380", "days": 4, "vm": "2023Jul"},
+  {"when": "Jul 10–13, 2023", "year": "2023", "name": "Venice, Italy", "type": "Travelled", "lng": 12.33, "lat": 45.44, "text": "", "photos": [], "cc": "380", "days": 4, "vm": "2023Jul"},
+  {"when": "Jul 14–15, 2023", "year": "2023", "name": "Èze, France", "type": "Travelled", "lng": 7.36, "lat": 43.73, "text": "", "photos": [], "cc": "250", "days": 2, "vm": "2023Jul"},
+  {"when": "Jul 16–17, 2023", "year": "2023", "name": "Paris, France", "type": "Travelled", "lng": 2.35, "lat": 48.86, "text": "", "photos": [], "cc": "250", "days": 2, "vm": "2023Jul"},
+  {"when": "Aug 2023", "year": "2023", "name": "Cape Town, South Africa", "type": "Travelled", "lng": 18.42, "lat": -33.92, "text": "", "photos": [], "cc": "710", "days": 3, "vm": "2023Aug"},
+  {"when": "Nov 2023", "year": "2023", "name": "Brussels, Belgium", "type": "Travelled", "lng": 4.35, "lat": 50.85, "text": "", "photos": [], "cc": "056", "days": 3, "vm": "2023Nov"},
+  {"when": "Aug 2024–2026", "year": "2024", "name": "Boston, MA", "type": "Lived", "lng": -71.06, "lat": 42.36, "text": "Postdoc at the MIT Senseable City Lab.", "photos": [], "cc": "840", "days": 730, "vm": "L40"},
+  {"when": "Dec 2024", "year": "2024", "name": "New York, NY", "type": "Travelled", "lng": -74.01, "lat": 40.71, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
+  {"when": "Dec 2024", "year": "2024", "name": "Orlando, FL", "type": "Travelled", "lng": -81.38, "lat": 28.54, "text": "Universal and Walt Disney World.", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
+  {"when": "Dec 2024", "year": "2024", "name": "Miami, FL", "type": "Travelled", "lng": -80.19, "lat": 25.76, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2024Dec"},
+  {"when": "Mar 2025", "year": "2025", "name": "Detroit, MI", "type": "Travelled", "lng": -83.05, "lat": 42.33, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Mar"},
+  {"when": "Aug 2025", "year": "2025", "name": "Gainesville, FL", "type": "Travelled", "lng": -82.32, "lat": 29.65, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Aug"},
+  {"when": "Aug 2025", "year": "2025", "name": "Chicago, IL", "type": "Travelled", "lng": -87.63, "lat": 41.88, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Aug"},
+  {"when": "Sep 19–21, 2025", "year": "2025", "name": "Bar Harbor, ME", "type": "Travelled", "lng": -68.2, "lat": 44.39, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Sep"},
+  {"when": "Oct 2025", "year": "2025", "name": "San Francisco, CA", "type": "Travelled", "lng": -122.42, "lat": 37.77, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Oct"},
+  {"when": "Oct 2025", "year": "2025", "name": "Los Angeles, CA", "type": "Travelled", "lng": -118.24, "lat": 34.05, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Oct"},
+  {"when": "Dec 2025", "year": "2025", "name": "Iowa City, IA", "type": "Travelled", "lng": -91.53, "lat": 41.66, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2025Dec"},
+  {"when": "Feb 2026", "year": "2026", "name": "New Orleans, LA", "type": "Travelled", "lng": -90.07, "lat": 29.95, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Feb"},
+  {"when": "Jun 4–14, 2026", "year": "2026", "name": "California and the Southwest", "type": "Travelled", "lng": -112.11, "lat": 36.05, "text": "San Francisco, the Pacific Coast, Los Angeles, Las Vegas, Page and the Grand Canyon.", "photos": [], "cc": "840", "days": 11, "vm": "2026Jun"},
+  {"when": "Jun 14–18, 2026", "year": "2026", "name": "Washington, D.C.", "type": "Travelled", "lng": -77.04, "lat": 38.91, "text": "", "photos": [], "cc": "840", "days": 5, "vm": "2026Jun"},
+  {"when": "Aug 2026", "year": "2026", "name": "Niagara Falls", "type": "Travelled", "lng": -79.07, "lat": 43.09, "text": "My first road trip, from Boston to Iowa City, right after getting my driver’s license on July 31.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
+  {"when": "Aug 2026", "year": "2026", "name": "West Lafayette, IN", "type": "Travelled", "lng": -86.91, "lat": 40.43, "text": "Road trip: Purdue University.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
+  {"when": "Aug 2026", "year": "2026", "name": "Urbana-Champaign, IL", "type": "Travelled", "lng": -88.23, "lat": 40.11, "text": "Road trip: University of Illinois.", "photos": [], "cc": "840", "days": 3, "vm": "2026Aug"},
+  {"when": "Aug 2026–present", "year": "2026", "name": "Iowa City, IA", "type": "Lived", "lng": -91.53, "lat": 41.66, "text": "Assistant Professor at the University of Iowa.", "photos": [], "cc": "840", "days": 90, "vm": "L57"},
+  {"when": "Sep 2026", "year": "2026", "name": "St. Louis, MO", "type": "Travelled", "lng": -90.2, "lat": 38.63, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Sep"},
+  {"when": "Oct 2026", "year": "2026", "name": "Boston, MA", "type": "Travelled", "lng": -71.06, "lat": 42.36, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Oct"},
+  {"when": "Oct 2026", "year": "2026", "name": "Madison, WI", "type": "Travelled", "lng": -89.4, "lat": 43.07, "text": "", "photos": [], "cc": "840", "days": 3, "vm": "2026Oct"}
+];
+
+(function () {
+  var SEG_MS = 550, STEPS = 64, HOME = { center: [-25, 38], zoom: 1.55 };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N = STOPS.length, last = N - 1;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function setNav() { document.documentElement.style.setProperty('--nav-h', document.querySelector('nav').offsetHeight + 'px'); }
+  setNav(); addEventListener('resize', setNav);
+
+
+  // Great-circle route through all stops, with continuous longitude.
+  function toV(s) { var a = s.lat * Math.PI / 180, o = s.lng * Math.PI / 180; return [Math.cos(a) * Math.cos(o), Math.cos(a) * Math.sin(o), Math.sin(a)]; }
+  var ROUTE = [];
+  for (var i = 0; i < last; i++) {
+    var A = toV(STOPS[i]), B = toV(STOPS[i + 1]);
+    var d = Math.max(1e-6, Math.acos(Math.min(1, A[0] * B[0] + A[1] * B[1] + A[2] * B[2])));
+    for (var k = i ? 1 : 0; k <= STEPS; k++) {
+      var t = k / STEPS, f = Math.sin((1 - t) * d) / Math.sin(d), g = Math.sin(t * d) / Math.sin(d);
+      var x = f * A[0] + g * B[0], y = f * A[1] + g * B[1], z = f * A[2] + g * B[2];
+      var lng = Math.atan2(y, x) * 180 / Math.PI, lat = Math.atan2(z, Math.sqrt(x * x + y * y)) * 180 / Math.PI;
+      if (ROUTE.length) { var prev = ROUTE[ROUTE.length - 1][0]; while (lng - prev > 180) lng -= 360; while (lng - prev < -180) lng += 360; }
+      ROUTE.push([lng, lat]);
+    }
+  }
+  function posAt(idx) {
+    var a = Math.min(Math.floor(idx), ROUTE.length - 1), b = Math.min(a + 1, ROUTE.length - 1), t = idx - a;
+    return [ROUTE[a][0] + (ROUTE[b][0] - ROUTE[a][0]) * t, ROUTE[a][1] + (ROUTE[b][1] - ROUTE[a][1]) * t];
+  }
+
+  var mode = 'cities', popup = null, p = last, playing = false, selected = -1, photo = 0, lastLit = -2, lastSel = -2, flow = 0, prevT = 0, ready = false;
+  var scrub = $('scrub'); scrub.max = last; scrub.value = p;
+
+  var track = $('track'), minGap = 42, seen = {}, ticks = [], lastLeft = -1e9;
+  STOPS.forEach(function (s, i) {
+    if (!s.year || seen[s.year]) return;
+    seen[s.year] = 1;
+    var left = (track.clientWidth - 16) * (last ? i / last : 0);
+    if (left - lastLeft < minGap) return;
+    lastLeft = left;
+    var b = document.createElement('button');
+    b.className = 'tick'; b.textContent = s.year; b.dataset.i = i; b.setAttribute('aria-label', s.year + ', ' + s.name);
+    b.style.left = 'calc(8px + (100% - 16px) * ' + (last ? i / last : 0) + ')';
+    b.onclick = function () { select(i); };
+    track.appendChild(b); ticks.push(b);
+  });
+
+var map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreemap.org/styles/positron', center: HOME.center, zoom: HOME.zoom, minZoom: 1, maxZoom: 12, attributionControl: { compact: true } });
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  map.on('style.load', function () { map.setProjection({ type: 'globe' }); });
+
+  function line(c) { return { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: c } }; }
+  function pts(list) { return { type: 'FeatureCollection', features: list }; }
+  function pt(c, props) { return { type: 'Feature', properties: props || {}, geometry: { type: 'Point', coordinates: c } }; }
+
+  map.on('load', function () {
+    map.getStyle().layers.forEach(function (l) {
+      if (l.type === 'background') map.setPaintProperty(l.id, 'background-color', '#f3efe6');
+      else if (l.type === 'fill' && /water/.test(l.id)) map.setPaintProperty(l.id, 'fill-color', '#dfe6e8');
+      else if (l.type === 'symbol' && l.layout && l.layout['text-field']) {
+        map.setLayoutProperty(l.id, 'text-field', ['coalesce', ['get', 'name:en'], ['get', 'name_en'], ['get', 'name']]);
+        map.setPaintProperty(l.id, 'text-color', '#9a9284');
+      }
+    });
+    var empty = pts([]);
+    ['route', 'done', 'dots', 'stops'].forEach(function (id) { map.addSource(id, { type: 'geojson', data: empty }); });
+    map.getSource('route').setData(line(ROUTE));
+    map.addSource('countries', { type: 'geojson', data: pts([]) });
+    map.addLayer({ id: 'country-fill', type: 'fill', source: 'countries', layout: { visibility: 'none' }, paint: { 'fill-color': ['get', 'c'], 'fill-opacity': 0.78 } });
+    map.addLayer({ id: 'country-line', type: 'line', source: 'countries', layout: { visibility: 'none' }, paint: { 'line-color': '#f8f6f1', 'line-width': 0.8 } });
+    map.on('click', 'country-fill', countryClick);
+    fetch('countries.json').then(function (r) { return r.json(); }).then(function (g) { WORLD = g; if (mode === 'visits' || mode === 'time') paintCountries(); });
+    map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#2d5a8e', 'line-opacity': 0.22, 'line-width': 1.2, 'line-dasharray': [2, 3] } });
+    map.addLayer({ id: 'done', type: 'line', source: 'done', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#b5533c', 'line-width': 2.2 } });
+    map.addLayer({ id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'lit'], true], paint: { 'circle-radius': ['case', ['get', 'sel'], 20, ['get', 'lived'], 13, 9], 'circle-color': ['case', ['get', 'lived'], '#2d5a8e', '#c9962e'], 'circle-opacity': 0.18, 'circle-pitch-alignment': 'map' } });
+    map.addLayer({ id: 'stop', type: 'circle', source: 'stops', paint: { 'circle-radius': ['+', ['case', ['get', 'lived'], 6, 4.5], ['min', 4, ['*', 1.2, ['-', ['get', 'n'], 1]]]], 'circle-color': ['case', ['!', ['get', 'lit']], '#c9c2b3', ['get', 'lived'], '#2d5a8e', '#c9962e'], 'circle-stroke-color': ['case', ['get', 'sel'], '#b5533c', '#f8f6f1'], 'circle-stroke-width': ['case', ['get', 'sel'], 2.5, 1.5], 'circle-pitch-alignment': 'map' } });
+    map.addLayer({ id: 'dots', type: 'circle', source: 'dots', paint: { 'circle-radius': ['case', ['get', 'head'], 5, 2.6], 'circle-color': '#b5533c', 'circle-stroke-color': '#f8f6f1', 'circle-stroke-width': ['case', ['get', 'head'], 1.5, 0], 'circle-pitch-alignment': 'map' } });
+    map.addLayer({ id: 'hit', type: 'circle', source: 'stops', paint: { 'circle-radius': 16, 'circle-opacity': 0 } });
+    map.on('click', 'hit', function (e) {
+      var lit = Math.floor(p + 0.001), ids = e.features.map(function (f) { return +f.properties.i; }), shown = ids.filter(function (i) { return i <= lit; });
+      select(Math.max.apply(null, shown.length ? shown : ids));
+    });
+    map.on('mouseenter', 'hit', function () { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'hit', function () { map.getCanvas().style.cursor = ''; });
+    map.on('dragstart', function () { setPlaying(false); });
+    ready = true;
+    applyMode('cities', true);
+    requestAnimationFrame(tick);
+  });
+
+  var WORLD = null, RAMP = ['#d6e2ec', '#b3cadd', '#86a9c7', '#5a86ae', '#2d5a8e'];
+  var SCALES = {
+    visits: { labels: ['1', '2', '3', '4\u20135', '6+'], bucket: function (c) { var v = c.visits; return v >= 6 ? 4 : v >= 4 ? 3 : v - 1; } },
+    time: { labels: ['< 1 week', '< 1 month', '< 1 year', '1\u20135 years', '5+ years'], bucket: function (c) { var d = c.days; return d >= 1825 ? 4 : d >= 365 ? 3 : d >= 30 ? 2 : d >= 7 ? 1 : 0; } }
+  };
+  function countryStats() {
+    var o = {};
+    STOPS.forEach(function (s) {
+      var c = o[s.cc] = o[s.cc] || { visits: 0, days: 0, seen: {}, cities: {} };
+      c.days += s.days; c.cities[s.name] = 1;
+      if (!c.seen[s.vm]) { c.seen[s.vm] = 1; c.visits++; }
+    });
+    return o;
+  }
+  function paintCountries() {
+    if (!WORLD) return;
+    var st = countryStats(), sc = SCALES[mode];
+    map.getSource('countries').setData({ type: 'FeatureCollection', features: WORLD.features.map(function (f) {
+      var c = st[f.properties.iso]; return c ? { type: 'Feature', geometry: f.geometry, properties: { iso: f.properties.iso, name: f.properties.name, c: RAMP[sc.bucket(c)] } } : null;
+    }).filter(Boolean) });
+  }
+  function fmtDays(d) { return d >= 365 ? Math.round(d / 365) + (Math.round(d / 365) === 1 ? ' year' : ' years') : d >= 60 ? Math.round(d / 30) + ' months' : d >= 14 ? Math.round(d / 7) + ' weeks' : d + (d === 1 ? ' day' : ' days'); }
+  function countryClick(e) {
+    if (map.queryRenderedFeatures(e.point, { layers: ['hit'] }).length) return;
+    var f = e.features[0].properties, c = countryStats()[f.iso], el = document.createElement('div');
+    var h = document.createElement('strong'); h.textContent = f.name; el.appendChild(h);
+    var m = document.createElement('div'); m.textContent = c.visits + (c.visits === 1 ? ' visit' : ' visits') + ' \u00b7 about ' + fmtDays(c.days); el.appendChild(m);
+    var t = document.createElement('div'); t.style.color = '#6f685c'; t.textContent = Object.keys(c.cities).join(', '); el.appendChild(t);
+    if (popup) popup.remove();
+    popup = new maplibregl.Popup({ closeButton: true, maxWidth: '260px' }).setLngLat(e.lngLat).setDOMContent(el).addTo(map);
+  }
+  function stopsData(lit) {
+    if (mode === 'journey') return pts(STOPS.map(function (s, i) { return pt([s.lng, s.lat], { i: i, lit: i <= lit, sel: i === selected, lived: s.type === 'Lived', name: s.name, n: 1 }); }));
+    var by = {}, sn = selected >= 0 ? STOPS[selected].name : null;
+    STOPS.forEach(function (s, i) { var c = by[s.name] = by[s.name] || { s: s, i: i, n: 0, lived: false }; c.i = i; c.n++; if (s.type === 'Lived') c.lived = true; });
+    return pts(Object.keys(by).map(function (k) { var c = by[k]; return pt([c.s.lng, c.s.lat], { i: c.i, lit: true, sel: k === sn, lived: c.lived, name: k, n: c.n }); }));
+  }
+  function setLegend() {
+    var el = $('legend');
+    if (mode === 'visits' || mode === 'time') {
+      el.innerHTML = SCALES[mode].labels.map(function (l, i) { return '<span><i style="width:11px;height:11px;background:' + RAMP[i] + '"></i>' + l + '</span>'; }).join('');
+    } else {
+      el.innerHTML = '<span><i class="dot" style="width:11px;height:11px;background:#2d5a8e"></i>Lived</span><span><i class="dot" style="width:8px;height:8px;background:#c9962e"></i>Travelled</span>';
+    }
+  }
+  function applyMode(m, first) {
+    mode = m;
+    [].forEach.call($('modes').children, function (b) { var on = b.dataset.m === m; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    var j = m === 'journey', c = m === 'visits' || m === 'time';
+    $('timebar').hidden = !j;
+    ['route', 'done', 'dots'].forEach(function (id) { map.setLayoutProperty(id, 'visibility', j ? 'visible' : 'none'); });
+    ['country-fill', 'country-line'].forEach(function (id) { map.setLayoutProperty(id, 'visibility', c ? 'visible' : 'none'); });
+    if (popup) { popup.remove(); popup = null; }
+    selected = -1; $('panel').classList.remove('open');
+    setLegend(); if (c) paintCountries();
+    p = (j && !reduce) ? 0 : last; lastLit = -2; lastSel = -2;
+    setPlaying(j && !reduce);
+    map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 });
+    if (!first && !(j && !reduce)) map.flyTo({ center: HOME.center, zoom: HOME.zoom, duration: reduce ? 0 : 1200, essential: false });
+    draw();
+  }
+  $('modes').addEventListener('click', function (e) { var m = e.target.dataset && e.target.dataset.m; if (m && m !== mode) applyMode(m); });
+
+  function setPlaying(v) { playing = v; $('play').innerHTML = v ? '&#10073;&#10073;' : '&#9654;'; }
+
+  function draw() {
+    if (!ready) return;
+    var idx = Math.min(p * STEPS, ROUTE.length - 1), floor = Math.floor(idx);
+    var coords = ROUTE.slice(0, floor + 1); coords.push(posAt(idx));
+    map.getSource('done').setData(coords.length > 1 ? line(coords) : pts([]));
+    var lit = Math.floor(p + 0.001);
+    if (lit !== lastLit || selected !== lastSel) {
+      lastLit = lit; lastSel = selected;
+      map.getSource('stops').setData(stopsData(lit));
+      ticks.forEach(function (b) { var i = +b.dataset.i; b.classList.toggle('lit', i <= lit); b.classList.toggle('sel', i === selected); });
+      var cur = STOPS[selected >= 0 ? selected : Math.min(lit, last)]; $('now').innerHTML = '<b></b><span></span>'; $('now').firstChild.textContent = cur.name; $('now').lastChild.textContent = cur.when;
+    }
+    var dots = [];
+    if (mode !== 'journey') { /* route layers are hidden */ }
+    else if (!reduce && p >= last - 1e-6) {
+      for (var m = 0; m < 24; m++) dots.push(pt(posAt(((flow + m / 24) % 1) * (ROUTE.length - 1)), { head: false }));
+    } else if (p < last) { dots.push(pt(posAt(idx), { head: true })); }
+    map.getSource('dots').setData(pts(dots));
+    scrub.value = p;
+    return idx;
+  }
+
+  function tick(now) {
+    var dt = prevT ? Math.min(now - prevT, 60) : 16; prevT = now;
+    if (playing) {
+      p += dt / SEG_MS;
+      if (p >= last) { p = last; setPlaying(false); if (selected < 0) map.flyTo({ center: HOME.center, zoom: HOME.zoom, duration: 2200 }); }
+      var idx = draw();
+      if (playing) map.jumpTo({ center: posAt(idx), zoom: 2.1 });
+    } else if (mode === 'journey' && !reduce && p >= last - 1e-6) {
+      flow = (flow + dt / 90000) % 1; draw();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function showPhoto(j) {
+    var ph = STOPS[selected].photos; photo = (j + ph.length) % ph.length;
+    $('lpImg').src = ph[photo]; $('lpImg').alt = 'Photo ' + (photo + 1) + ' from ' + STOPS[selected].name;
+    [].forEach.call($('lpThumbs').children, function (b, n) { b.classList.toggle('on', n === photo); });
+    var multi = ph.length > 1; $('imgPrev').style.display = $('imgNext').style.display = multi ? '' : 'none';
+  }
+
+  function select(i) {
+    i = +i; selected = i; setPlaying(false); if (popup) { popup.remove(); popup = null; }
+    if (mode === 'journey') p = i;
+    var s = STOPS[i];
+    $('lpType').textContent = s.type; $('lpWhen').textContent = s.when; $('lpName').textContent = s.name; $('lpText').textContent = s.text;
+    var th = $('lpThumbs'); th.innerHTML = '';
+    s.photos.forEach(function (src, n) { var b = document.createElement('button'); b.setAttribute('aria-label', 'Show photo ' + (n + 1)); var im = document.createElement('img'); im.src = src; im.alt = ''; b.appendChild(im); b.onclick = function () { showPhoto(n); }; th.appendChild(b); });
+    var hasPhotos = s.photos.length > 0; $('panel').classList.toggle('no-photo', !hasPhotos); if (hasPhotos) showPhoto(0);
+    var also = $('lpAlso'); also.innerHTML = ''; var others = []; STOPS.forEach(function (o, n) { if (n !== i && o.name === s.name) others.push(n); });
+    if (others.length) { also.appendChild(document.createTextNode('Also here:')); others.forEach(function (n) { var b = document.createElement('button'); b.textContent = STOPS[n].when; b.onclick = function () { select(n); }; also.appendChild(b); }); }
+    $('stopPrev').disabled = i === 0; $('stopNext').disabled = i === last;
+    $('panel').classList.add('open');
+    var wide = innerWidth > 720, pad = wide ? { right: 380, top: 0, bottom: 80, left: 0 } : { bottom: Math.round(innerHeight * 0.6), top: 0, left: 0, right: 0 };
+    map.flyTo({ center: [s.lng, s.lat], zoom: 5, padding: pad, duration: reduce ? 0 : 1800, essential: false });
+    draw();
+  }
+
+  function closePanel() {
+    selected = -1; $('panel').classList.remove('open');
+    map.flyTo({ center: HOME.center, zoom: HOME.zoom, padding: { top: 0, right: 0, bottom: 0, left: 0 }, duration: reduce ? 0 : 1600, essential: false });
+    draw();
+  }
+
+  $('play').onclick = function () {
+    if (playing) return setPlaying(false);
+    if (selected >= 0) closePanel();
+    if (p >= last) p = 0;
+    map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 });
+    setPlaying(true);
+  };
+  setPlaying(false);
+  scrub.oninput = function () { setPlaying(false); p = +scrub.value; if (selected >= 0) { selected = -1; $('panel').classList.remove('open'); } var i = Math.min(p * STEPS, ROUTE.length - 1); draw(); map.jumpTo({ center: posAt(i), zoom: 2.1, padding: { top: 0, right: 0, bottom: 0, left: 0 } }); };
+  $('lpClose').onclick = closePanel; $('lpX').onclick = closePanel;
+  new MutationObserver(function () { document.body.classList.toggle('panel-open', $('panel').classList.contains('open')); }).observe($('panel'), { attributes: true, attributeFilter: ['class'] });
+  $('imgPrev').onclick = function () { showPhoto(photo - 1); };
+  $('imgNext').onclick = function () { showPhoto(photo + 1); };
+  $('stopPrev').onclick = function () { if (selected > 0) select(selected - 1); };
+  $('stopNext').onclick = function () { if (selected < last) select(selected + 1); };
+  addEventListener('keydown', function (e) {
+    if (selected < 0) return;
+    if (e.key === 'Escape') closePanel();
+    if (e.key === 'ArrowRight') showPhoto(photo + 1);
+    if (e.key === 'ArrowLeft') showPhoto(photo - 1);
+  });
+  window.__life = { map: map, get p() { return p; } };
+})();
+</script>
+</body>
+</html>
