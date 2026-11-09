@@ -19,6 +19,9 @@
     .life-head { position: absolute; left: 28px; top: 22px; z-index: 3; max-width: 340px; pointer-events: none; }
     .life-head h1 { margin: 0; font-size: 34px; line-height: 1.1; color: var(--ink); }
     .life-head p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+    .life-tabs { display: flex; gap: 16px; margin-top: 8px; font-size: 14px; pointer-events: auto; }
+    .life-tabs a { padding-bottom: 2px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; }
+    .life-tabs a.on { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); }
     .life-demo { display: inline-block; margin-top: 10px; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; color: var(--red); background: rgba(181,83,60,.1); }
     .life-legend { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
     .life-modes { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; pointer-events: auto; }
@@ -111,6 +114,7 @@
 
   <div class="life-head">
     <h1>Life</h1>
+    <div class="life-tabs"><a href="./" class="on">Traveling</a><a href="reading.html">Reading</a><a href="watching.html">Watching</a></div>
     <p>Places I have lived and travelled. Click a city for details.</p>
     <div class="life-modes" id="modes" role="group" aria-label="Map view"><button data-m="cities">Cities</button><button data-m="journey">Journey</button><button data-m="quake">Earthquake project</button></div>
     <div class="life-legend" id="legend"></div>
