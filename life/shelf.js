@@ -146,7 +146,7 @@
         }
         if (focus && t !== focus) go = .3 + .7 * g;
       }
-      if (hl && !t.head && shown) go = t.it.cat === hl ? 1 : .12;
+      if (hl && !t.head && shown) go = (t.it.tags || [t.it.cat]).indexOf(hl) >= 0 ? 1 : .12;
       if (el < t.delay) { moving = true; return; }
       var f = function (p, g) { var v = t[p] + (g - t[p]) * k; if (Math.abs(g - v) > (p === 'x' || p === 'y' ? .05 : .002)) moving = true; else v = g; t[p] = v; };
       f('x', gx); f('y', gy); f('s', gs); f('o', go); f('rx', grx); f('ry', gry);
@@ -173,7 +173,7 @@
 
   function bars(rows, onHover) {
     var max = rows[0][1];
-    insight.innerHTML = '<div class="ins-title">' + (mode === 'cat' ? 'By category' : 'By author nationality') + '</div>' + rows.map(function (r) {
+    insight.innerHTML = '<div class="ins-title">' + (mode === 'cat' ? cfg.catTitle : cfg.placeTitle) + '</div>' + rows.map(function (r) {
       return '<button class="bar" data-k="' + esc(r[0]) + '"><span class="bl">' + esc(r[0]) + '</span><span class="bv">' + r[1] + '</span><span class="bt"><i style="width:' + (r[1] / max * 100).toFixed(1) + '%"></i></span></button>';
     }).join('');
     insight.querySelectorAll('.bar').forEach(function (b) {
@@ -184,11 +184,11 @@
   function insightFor() {
     insight.innerHTML = '';
     if (mode === 'cat') {
-      var c = {}; tiles.forEach(function (t) { c[t.it.cat] = (c[t.it.cat] || 0) + 1; });
+      var c = {}; tiles.forEach(function (t) { (t.it.tags || [t.it.cat]).forEach(function (k) { c[k] = (c[k] || 0) + 1; }); });
       bars(Object.keys(c).map(function (k) { return [k, c[k]]; }).sort(function (a, b) { return b[1] - a[1]; }), function (k) { hl = k; wake(); });
     }
     if (mode === 'places') {
-      var n = {}; tiles.forEach(function (t) { var x = (cfg.authors[t.it.g] || {}).country; n[x] = (n[x] || 0) + 1; });
+      var n = {}; tiles.forEach(function (t) { (t.it.ctry || [(cfg.authors[t.it.g] || {}).country]).forEach(function (x) { n[x] = (n[x] || 0) + 1; }); });
       bars(Object.keys(n).map(function (k) { return [k, n[k]]; }).sort(function (a, b) { return b[1] - a[1]; }), function (k) {
         document.querySelectorAll('.pin').forEach(function (p) { p.classList.toggle('dim', !!k && p.dataset.c !== k); });
       });
@@ -205,12 +205,24 @@
     cap.className = 'shelf-cap';
     cap.innerHTML = '<b>' + esc(n) + '</b><span>Born in ' + esc(a.place) + '</span><span>' + esc(a.country) + ' &middot; ' + books.length + (books.length > 1 ? ' books' : ' book') + '</span><span class="titles">' + books.slice(0, 4).map(function (t) { return esc(t.it.en); }).join(' · ') + (books.length > 4 ? ' …' : '') + '</span>';
   }
+  function countryPins() {
+    var by = {};
+    tiles.forEach(function (t) { t.it.ctry.forEach(function (c) { (by[c] = by[c] || []).push(t); }); });
+    Object.keys(by).sort(function (a, b) { return by[b].length - by[a].length; }).forEach(function (c) {
+      var p = cfg.countries[c], l = by[c], size = Math.round(24 + Math.min(62, 6.2 * Math.sqrt(l.length)));
+      var el = document.createElement('button'); el.className = 'pin num'; el.dataset.c = c; el.setAttribute('aria-label', c + ', ' + l.length + ' titles'); el.style.width = el.style.height = size + 'px'; el.textContent = l.length;
+      var show = function () { cap.className = 'shelf-cap'; cap.innerHTML = '<b>' + esc(c) + '</b><span>' + l.length + (l.length > 1 ? ' titles' : ' title') + '</span><span class="titles">' + l.slice().sort(function (a, b) { return b.it.r - a.it.r; }).slice(0, 4).map(function (t) { return esc(t.it.en); }).join(' · ') + (l.length > 4 ? ' …' : '') + '</span>'; }, hide = function () { cap.className = 'shelf-cap idle'; cap.innerHTML = idle; };
+      el.addEventListener('mouseenter', show); el.addEventListener('focus', show); el.addEventListener('click', show); el.addEventListener('mouseleave', hide); el.addEventListener('blur', hide);
+      new maplibregl.Marker({ element: el }).setLngLat([p[1], p[0]]).addTo(map);
+    });
+  }
   function buildMap() {
     var box = document.createElement('div'); box.id = 'shelfMap'; wall.appendChild(box);
     map = new maplibregl.Map({ container: box, style: 'https://tiles.openfreemap.org/styles/dark', center: [30, 28], zoom: 1, attributionControl: { compact: true }, renderWorldCopies: false });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.on('style.load', function () { map.getStyle().layers.forEach(function (l) { if (l.type === 'symbol') map.removeLayer(l.id); }); });
     map.fitBounds([[-125, -38], [148, 60]], { padding: 30, duration: 0 });
+    if (cfg.items[0].ctry) return countryPins();
     var by = {}; tiles.forEach(function (t) { (by[t.it.g] = by[t.it.g] || []).push(t); });
     var cl = {};
     Object.keys(by).sort(function (a, b) { return by[b].length - by[a].length; }).forEach(function (n) {
