@@ -103,10 +103,11 @@
         else place(x.t, ox + (x.col + .5) * cw, cy, cw, ch);
       });
     } else {
-      inner.style.height = H + 'px';
       for (c = 1; c <= N; c++) { var rw = Math.ceil(N / c); w = Math.min(W / c, H / rw / 1.5); if (w > best) { best = w; bc = c; } }
+      if (best < minW) { bc = Math.floor(W / minW); best = W / bc; }
       cw = best; ch = cw * 1.5; rows = Math.ceil(N / bc);
-      var ox2 = (W - bc * cw) / 2, oy = (H - rows * ch) / 2;
+      inner.style.height = Math.max(H, rows * ch + 8) + 'px';
+      var ox2 = (W - bc * cw) / 2, oy = Math.max(4, (H - rows * ch) / 2);
       colorOrder(rows).forEach(function (t, i) { place(t, ox2 + (Math.floor(i / rows) + .5) * cw, oy + (i % rows + .5) * ch, cw, ch); });
     }
     wake();
@@ -170,6 +171,14 @@
     touching = false; last = { x: e.clientX, y: e.clientY }; point(); setFocus(near(ptr.x, ptr.y)); wake();
   });
   wall.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { ptr = null; last = null; setFocus(null); wake(); } });
+  // The wheel scrolls the wall from anywhere on the page, including the side panel.
+  document.querySelector('.shelf-side').addEventListener('wheel', function (e) {
+    var box = e.target.closest && e.target.closest('.shelf-insight');
+    if (box && box.scrollHeight > box.clientHeight) return;
+    if (mode === 'places' || wall.scrollHeight <= wall.clientHeight) return;
+    e.preventDefault();
+    wall.scrollTop += e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? wall.clientHeight : 1);
+  }, { passive: false });
   wall.addEventListener('scroll', function () { if (last && mode !== 'places') { point(); setFocus(near(ptr.x, ptr.y)); wake(); } }, { passive: true });
 
   function bars(rows, onHover) {
