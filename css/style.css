@@ -1158,3 +1158,4 @@ footer {
 .opp-pdf-body { display: flex; flex-direction: column; gap: 2px; }
 .opp-pdf-body strong { font-size: 14px; color: #8f2c20; }
 .opp-pdf-body span { font-size: 12.5px; color: var(--text-muted); }
+.lab-alias { font-size: 12px !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint) !important; margin: -0.2rem 0 0.8rem !important; }
