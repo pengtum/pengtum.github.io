@@ -20,6 +20,50 @@
   <meta name="twitter:description" content="The Trustworthy GeoAI Lab (TrustGeoAI) at the University of Iowa, led by Peng Luo: students and mentees across GeoAI, spatial data science, and explainable spatial modeling." />
   <meta name="twitter:image" content="https://peng-luo.com/assets/photo.jpg" />
 
+  <style>
+    .lab-hero { margin-bottom: 3rem; }
+    .lab-kicker { font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.5rem; }
+    .lab-hero h1 { font-family: var(--font-serif); font-size: 40px; font-weight: 500; line-height: 1.1; margin-bottom: 1rem; }
+    .lab-lede { font-size: 16px; line-height: 1.75; color: var(--text); max-width: 640px; }
+    .lab-facts { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin-top: 1.1rem; font-size: 13px; color: var(--text-muted); }
+    .lab-facts a { font-weight: 500; }
+    .lab-themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .lab-theme { display: flex; flex-direction: column; gap: 0.35rem; padding: 1.1rem 1.1rem 1.2rem; border: 1px solid var(--border); border-radius: 10px; color: var(--text); text-decoration: none; transition: border-color .2s, transform .2s; }
+    .lab-theme:hover { border-color: var(--border-hover); transform: translateY(-2px); text-decoration: none; }
+    .lt-num { font-family: var(--font-serif); font-style: italic; color: var(--accent); font-size: 15px; }
+    .lt-title { font-family: var(--font-serif); font-size: 19px; line-height: 1.25; }
+    .lt-desc { font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+    .lab-pi { display: grid; grid-template-columns: 120px 1fr; gap: 1.5rem; align-items: start; }
+    .lab-pi-photo { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; }
+    .lab-pi-name { font-family: var(--font-serif); font-size: 22px; }
+    .lab-pi-role { font-size: 13px; color: var(--text-muted); margin-bottom: 0.6rem; }
+    .lab-pi-bio { font-size: 14px; line-height: 1.7; margin-bottom: 0.7rem; }
+    .lab-pi-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 13px; }
+    .lab-note { font-size: 13.5px; color: var(--text-muted); margin: -0.4rem 0 1.6rem; }
+    .lab-sub { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin: 2rem 0 0.9rem; color: var(--text); }
+    .lab-sub span { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--text-faint); margin-left: 0.5rem; font-size: 13px; }
+    .lm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
+    .lm-card { display: grid; grid-template-columns: 48px 1fr; gap: 0.9rem; align-items: center; padding: 0.9rem 1rem; border: 1px solid var(--border); border-radius: 10px; }
+    .lm-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); display: flex; align-items: center; justify-content: center; font-size: 12px; letter-spacing: 0.04em; color: var(--text-muted); }
+    .lm-name { font-size: 15px; font-weight: 500; }
+    .lm-topic { font-size: 13px; color: var(--text-muted); }
+    .lm-meta { font-size: 12px; color: var(--text-faint); margin-top: 0.15rem; }
+    .lm-aff.tum { color: #0065BD; } .lm-aff.mit { color: #A31F34; }
+    .lab-rows { list-style: none; padding: 0; border-top: 1px solid var(--border); }
+    .lab-rows li { display: grid; grid-template-columns: 11rem 1fr auto; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 13.5px; align-items: baseline; }
+    .lr-name { font-weight: 500; }
+    .lr-topic { color: var(--text-muted); }
+    .lr-yr, .lr-now { color: var(--text-faint); font-size: 12.5px; text-align: right; }
+    .lr-now { color: var(--accent); }
+    @media (max-width: 720px) {
+      .lab-hero h1 { font-size: 32px; }
+      .lab-themes, .lm-grid { grid-template-columns: 1fr; }
+      .lab-pi { grid-template-columns: 84px 1fr; gap: 1rem; }
+      .lab-pi-photo { width: 84px; height: 84px; }
+      .lab-rows li { grid-template-columns: 1fr; gap: 0.1rem; }
+      .lr-yr, .lr-now { text-align: left; }
+    }
+  </style>
 </head>
 <body>
 
@@ -46,207 +90,109 @@
   </div>
 </nav>
 
-<div class="page">
+<div class="page lab-page">
 
-  <div class="page-header">
+  <header class="lab-hero">
+    <p class="lab-kicker">TrustGeoAI &middot; University of Iowa</p>
     <h1>Trustworthy GeoAI Lab</h1>
-    <p class="lab-alias">TrustGeoAI &middot; University of Iowa</p>
-    <p>The Trustworthy GeoAI Lab (TrustGeoAI) develops GeoAI methods that know where they can be wrong: spatially explicit models, explainable and uncertainty-aware GeoAI, and methods that transfer across places. I am building the lab at the University of Iowa &mdash; current openings and current/past mentees are listed below.</p>
-  </div>
+    <p class="lab-lede">We build GeoAI that knows where it can be wrong. GeoAI now informs decisions about cities, health, and the environment, yet every model is uncertain, and that uncertainty varies across space. The lab develops spatially explicit, explainable, and uncertainty-aware methods so that maps made by models can be trusted, and so that users know where they cannot.</p>
+    <div class="lab-facts">
+      <span>School of Earth, Environment, and Sustainability</span>
+      <span>Iowa City, Iowa</span>
+      <a href="opportunities.html">Recruiting Ph.D. students for Fall 2027 &rarr;</a>
+    </div>
+  </header>
 
-  <!-- Hiring pointer -->
-  <div class="section">
+  <section class="section">
+    <div class="section-label">Research</div>
+    <div class="lab-themes">
+      <a class="lab-theme" href="research-spatial-explicit.html">
+        <span class="lt-num">01</span>
+        <span class="lt-title">Spatially explicit modeling</span>
+        <span class="lt-desc">Models that account for spatial heterogeneity and geographic context in prediction and association analysis.</span>
+      </a>
+      <a class="lab-theme" href="research-trustworthy-geoai.html">
+        <span class="lt-num">02</span>
+        <span class="lt-title">Trustworthy GeoAI</span>
+        <span class="lt-desc">Explainable AI and uncertainty quantification that show how reliable each prediction is, and where.</span>
+      </a>
+      <a class="lab-theme" href="research-generalization-geoai.html">
+        <span class="lt-num">03</span>
+        <span class="lt-title">Transferable &amp; scalable GeoAI</span>
+        <span class="lt-desc">Methods that generalize across regions, datasets, and tasks, including LLM agents for geospatial model discovery.</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Principal Investigator</div>
+    <div class="lab-pi">
+      <img class="lab-pi-photo" src="assets/photo.jpg" alt="Peng Luo">
+      <div>
+        <div class="lab-pi-name">Peng Luo</div>
+        <div class="lab-pi-role">Assistant Professor, School of Earth, Environment, and Sustainability</div>
+        <p class="lab-pi-bio">Before Iowa, Peng was a postdoctoral researcher at the MIT Senseable City Lab. He received his Ph.D. from the Chair of Cartography and Visual Analytics at the Technical University of Munich.</p>
+        <div class="lab-pi-links">
+          <a href="index.html">Homepage</a>
+          <a href="publications.html">Publications</a>
+          <a href="https://scholar.google.com/citations?user=Okwd550AAAAJ&amp;hl=en" target="_blank">Google Scholar</a>
+          <a href="assets/cv.pdf?v=20261111" target="_blank">CV</a>
+          <a href="mailto:peng-luo@uiowa.edu">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">People</div>
+    <p class="lab-note">The lab opened at Iowa in 2026. Listed here are the students Peng co-advises or has mentored at TU Munich and MIT.</p>
+
+    <h3 class="lab-sub">Ph.D. students <span>co-advised with Prof. Liqiu Meng, TU Munich</span></h3>
+    <div class="lm-grid">
+        <div class="lm-card"><div class="lm-avatar">YJ</div><div><div class="lm-name">Yuhan Jiang</div><div class="lm-topic">Spatial memory of LLMs</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2025&ndash;</div></div></div>
+        <div class="lm-card"><div class="lm-avatar">CC</div><div><div class="lm-name">Chuan Chen</div><div class="lm-topic">Explainable AI &amp; visual analytics</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2024&ndash;</div></div></div>
+        <div class="lm-card"><div class="lm-avatar">XL</div><div><div class="lm-name">Xiayin Lou</div><div class="lm-topic">Uncertainty of spatial modeling</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2024&ndash;</div></div></div>
+        <div class="lm-card"><div class="lm-avatar">HL</div><div><div class="lm-name">Hongyi Luo</div><div class="lm-topic">Spatial stratified modeling</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2024&ndash;</div></div></div>
+    </div>
+
+    <h3 class="lab-sub">Master&rsquo;s students <span>TU Munich</span></h3>
+    <div class="lm-grid">
+        <div class="lm-card"><div class="lm-avatar">CW</div><div><div class="lm-name">Chih-Chi Wang</div><div class="lm-topic">Slum mapping</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2025&ndash;</div></div></div>
+        <div class="lm-card"><div class="lm-avatar">RY</div><div><div class="lm-name">Ruyu Yan</div><div class="lm-topic">Spatial transfer learning</div><div class="lm-meta"><span class="lm-aff tum">TU Munich</span> &middot; 2025&ndash;</div></div></div>
+    </div>
+
+    <h3 class="lab-sub">Undergraduate researchers <span>MIT UROP</span></h3>
+    <ul class="lab-rows">
+        <li><span class="lr-name">Rena Wang</span><span class="lr-topic">XAI for risk analysis</span><span class="lr-yr">2025&ndash;</span></li>
+        <li><span class="lr-name">Victor Dominguez</span><span class="lr-topic">Spatial layout of informal settlements</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Rojina Adhikari</span><span class="lr-topic">Reliable spatial partitioning</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Jada Ogueh</span><span class="lr-topic">Bus accessibility in Rio&rsquo;s favelas</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Reese Long</span><span class="lr-topic">Distributional shift of spatial data</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Anfal Hosen</span><span class="lr-topic">Geo-foundation models</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Maggie Zhang</span><span class="lr-topic">Uncertainty quantification</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Michelle Li</span><span class="lr-topic">MAUP in GeoXAI</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Robert Romani</span><span class="lr-topic">Pitfalls of GeoXAI</span><span class="lr-yr">2024&ndash;25</span></li>
+        <li><span class="lr-name">Jiayi Li</span><span class="lr-topic">Spatial transfer learning</span><span class="lr-yr">2024&ndash;25</span></li>
+    </ul>
+
+    <h3 class="lab-sub">Alumni <span>M.Sc. theses, TU Munich</span></h3>
+    <ul class="lab-rows alumni">
+        <li><span class="lr-name">Yiqi Zhang</span><span class="lr-topic">Spatial explainable AI &middot; 2023&ndash;25</span><span class="lr-now">Now: PhD student, NTU</span></li>
+        <li><span class="lr-name">Chengyu Song</span><span class="lr-topic">Travel behaviour analysis &middot; 2022&ndash;24</span><span class="lr-now">Now: PhD student, University of Alabama</span></li>
+        <li><span class="lr-name">Yagiz Kara</span><span class="lr-topic">Dynamic community detection &middot; 2021&ndash;23</span><span class="lr-now">Now: University of Bayreuth</span></li>
+        <li><span class="lr-name">Tao Wu</span><span class="lr-topic">Building age prediction &middot; 2021&ndash;23</span><span class="lr-now">Now: Tencent</span></li>
+        <li><span class="lr-name">Lingjun Wang</span><span class="lr-topic">Bird species mapping &middot; 2021&ndash;23</span><span class="lr-now"></span></li>
+        <li><span class="lr-name">Zhuo Yang</span><span class="lr-topic">Population distribution mapping &middot; 2020&ndash;22</span><span class="lr-now">Now: Mercedes-Benz</span></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Join us</div>
     <a class="hiring-banner" href="opportunities.html">
       <span class="hiring-dot"></span>
-      <span><strong>I am hiring!</strong> Two fully-funded Ph.D. positions for Fall 2027 &mdash; see the Opportunities page &rarr;</span>
+      <span><strong>Two fully-funded Ph.D. positions for Fall 2027.</strong> Master&rsquo;s and undergraduate students at Iowa are also welcome &mdash; see how to reach out &rarr;</span>
     </a>
-  </div>
-
-  <!-- PhD Students -->
-  <div class="section">
-    <div class="section-label">PhD Students (co-mentored with Prof. Liqiu Meng, TUM)</div>
-    <div class="team-grid">
-
-      <div class="team-card">
-        <div class="team-avatar">YJ</div>
-        <div class="team-name">Yuhan Jiang</div>
-        <div class="team-role">Spatial Memory of LLMs &middot; 2025&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">CC</div>
-        <div class="team-name">Chuan Chen</div>
-        <div class="team-role">Explainable AI &amp; Visual Analytics &middot; 2024&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">XL</div>
-        <div class="team-name">Xiayin Lou</div>
-        <div class="team-role">Uncertainty of Spatial Modeling &middot; 2024&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">HL</div>
-        <div class="team-name">Hongyi Luo</div>
-        <div class="team-role">Spatial Stratified Modeling &middot; 2024&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Current Master Students -->
-  <div class="section">
-    <div class="section-label">Current Master Students (TUM)</div>
-    <div class="team-grid">
-
-      <div class="team-card">
-        <div class="team-avatar">CW</div>
-        <div class="team-name">Chih-Chi Wang</div>
-        <div class="team-role">SLUM Mapping &middot; 2025&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">RY</div>
-        <div class="team-name">Ruyu Yan</div>
-        <div class="team-role">Spatial Transfer Learning &middot; 2025&ndash;</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Undergraduate Students -->
-  <div class="section">
-    <div class="section-label">Undergraduate Students (MIT UROP)</div>
-    <div class="team-grid">
-
-      <div class="team-card">
-        <div class="team-avatar">RW</div>
-        <div class="team-name">Rena Wang</div>
-        <div class="team-role">XAI for Risk Analysis &middot; 2025&ndash;</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">VD</div>
-        <div class="team-name">Victor Dominguez</div>
-        <div class="team-role">Spatial Layout of Informal Settlements &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">RA</div>
-        <div class="team-name">Rojina Adhikari</div>
-        <div class="team-role">Reliable Spatial Partitioning &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">JO</div>
-        <div class="team-name">Jada Ogueh</div>
-        <div class="team-role">Bus Accessibility at Rio&rsquo;s Slums &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">RL</div>
-        <div class="team-name">Reese Long</div>
-        <div class="team-role">Distributional Shift of Spatial Data &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">AH</div>
-        <div class="team-name">Anfal Hosen</div>
-        <div class="team-role">Geo-Foundation Models &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">MZ</div>
-        <div class="team-name">Maggie Zhang</div>
-        <div class="team-role">Uncertainty Quantification &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">ML</div>
-        <div class="team-name">Michelle Li</div>
-        <div class="team-role">MAUP in GeoXAI &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">RR</div>
-        <div class="team-name">Robert Romani</div>
-        <div class="team-role">Pitfalls of GeoXAI &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">JL</div>
-        <div class="team-name">Jiayi Li</div>
-        <div class="team-role">Spatial Transfer Learning &middot; 2024&ndash;2025</div>
-        <div class="team-affil mit">MIT</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Alumni -->
-  <div class="section">
-    <div class="section-label">Alumni (Master Thesis)</div>
-    <div class="team-grid">
-
-      <div class="team-card">
-        <div class="team-avatar">YZ</div>
-        <div class="team-name">Yiqi Zhang</div>
-        <div class="team-role">Spatial Explainable AI &middot; 2023&ndash;2025<br><small style="color:var(--text-faint)">Now PhD at NTU</small></div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">CS</div>
-        <div class="team-name">Chengyu Song</div>
-        <div class="team-role">Travel Behaviour Analysis &middot; 2022&ndash;2024<br><small style="color:var(--text-faint)">Now PhD at U. Alabama</small></div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">YK</div>
-        <div class="team-name">Yagiz Kara</div>
-        <div class="team-role">Dynamic Community Detection &middot; 2021&ndash;2023<br><small style="color:var(--text-faint)">Now at U. Bayreuth</small></div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">TW</div>
-        <div class="team-name">Tao Wu</div>
-        <div class="team-role">Building Age Prediction &middot; 2021&ndash;2023<br><small style="color:var(--text-faint)">Now at Tencent</small></div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">LW</div>
-        <div class="team-name">Lingjun Wang</div>
-        <div class="team-role">Bird Species Mapping &middot; 2021&ndash;2023</div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">ZY</div>
-        <div class="team-name">Zhuo Yang</div>
-        <div class="team-role">Population Distribution Mapping &middot; 2020&ndash;2022<br><small style="color:var(--text-faint)">Now at Mercedes-Benz</small></div>
-        <div class="team-affil tum">TU Munich</div>
-      </div>
-
-    </div>
-  </div>
+  </section>
 
 </div>
 
