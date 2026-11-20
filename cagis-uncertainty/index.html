@@ -22,7 +22,6 @@ header.top{display:flex;justify-content:space-between;align-items:baseline;gap:1
 .kicker{font-weight:600;letter-spacing:3px;color:var(--accent);font-size:15px}
 .journal{color:var(--muted);font-size:16px}.journal em{color:var(--ink)}
 .hero{height:260px;margin:0 calc(50% - 50vw);overflow:hidden}
-#contours{display:block;width:100%;height:100%}
 .caption{font-size:13px;color:var(--muted);margin:6px 0 0}
 h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(44px,8vw,76px);line-height:1.04;letter-spacing:-1px;margin:28px 0 8px}
 .sub{font-size:clamp(20px,3vw,25px);line-height:1.3;color:var(--body);margin:0 0 28px}
@@ -41,21 +40,42 @@ ul{margin:0 0 8px;padding-left:20px;color:var(--body)}li{margin-bottom:4px}
 .pill{display:inline-block;margin-top:8px;background:#17212B;color:#fff;text-decoration:none;border-radius:999px;padding:5px 15px;font-size:15px}.pill:hover{background:#000;color:#fff}
 .back{margin:18px 0 0;font-size:14px}.back a{color:#6b6b6b;text-decoration:none}
 footer{border-top:1px solid var(--ink);margin:48px 0 40px;padding-top:12px;font-size:15px;color:var(--muted)}
-@media print{.hero{margin:0;height:200px}h2{break-after:avoid}}
+
+body{background:#FFFFFF}
+#bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;pointer-events:none}
+.page{position:relative;z-index:1}
+.back{margin:18px 0 0;font-size:14px}.back a{color:#6b6b6b;text-decoration:none}
+header.top{background:transparent}
+.spacer{height:42vh;min-height:220px}
+.panel{padding:28px 0 8px}
+
+.notice{background:rgba(243,246,249,.55)}
+.panel h1{margin-top:0}
+.pill{display:inline-block;margin-top:8px;background:#17212B;color:#fff;text-decoration:none;border-radius:999px;padding:5px 15px;font-size:15px}.pill:hover{background:#000;color:#fff}
+#story{position:fixed;left:20px;bottom:18px;z-index:2;max-width:380px;margin:0;font-size:14px;line-height:1.4;color:#33404D;background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid #DCE3EA;border-radius:8px;padding:8px 12px}
+#story .hint{color:#6b6b6b;font-size:12.5px;display:block;margin-top:2px}
+footer.site{margin:24px 0 90px;padding:14px 0;border-top:1px solid rgba(23,33,43,.35)}
+@media (max-width:760px){.panel{padding:22px 0 4px}footer.site{margin:20px 0 90px}#story{left:10px;right:10px;bottom:10px;max-width:none;font-size:13px}.spacer{height:32vh;min-height:160px}}
+
+#veil{position:fixed;inset:0;z-index:0;pointer-events:none;background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(2.5px);backdrop-filter:blur(2.5px);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,transparent calc(50% - 780px),#000 calc(50% - 470px),#000 calc(50% + 470px),transparent calc(50% + 780px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,transparent calc(50% - 780px),#000 calc(50% - 470px),#000 calc(50% + 470px),transparent calc(50% + 780px),transparent 100%)}
+@media (max-width:760px){#veil{background:rgba(255,255,255,.78);-webkit-mask-image:none;mask-image:none}}
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="veil" aria-hidden="true"></div>
+<div class="page">
 <div class="wrap">
 <p class="back"><a href="https://peng-luo.com/">&larr; peng-luo.com</a></p>
 <header class="top"><div class="kicker">CALL FOR PAPERS</div><div class="journal">Special Issue of <em>Cartography and Geographic Information Science</em></div></header>
-</div>
-<div class="hero"><canvas id="contours" role="img" aria-label="Animated contour map: lines stay sharp near observation points and blur where data are sparse"></canvas></div>
-<div class="wrap">
-<p class="caption">Contours are sharp near observations and blur where data are sparse.</p>
+<div class="spacer"></div>
+<div class="panel">
 <h1>Seeing Uncertainty</h1>
 <p class="sub">Modeling, Visualizing, and Communicating Uncertainty in Spatial Analysis and GeoAI</p>
 
-<div class="notice"><strong>Full papers due 30 September 2027.</strong> Submissions open January 2027 through the CaGIS online submission system. <br><a class="pill" href="CaGIS_Seeing_Uncertainty_CfP.pdf">Download the call (PDF)</a> <!-- When the T&F special issue page is live, replace this sentence with: <a href="URL">View the official call and submit</a>. --></div>
+<div class="notice"><strong>Full papers due 30 September 2027.</strong> Submissions open January 2027 through the CaGIS online submission system.<br><a class="pill" href="CaGIS_Seeing_Uncertainty_CfP.pdf">Download the call (PDF)</a> <!-- When the T&F special issue page is live, add: <a class="pill" href="URL">Submit</a> --></div>
 
 <h2>Rationale and scope</h2>
 <p>Spatial analyses and GeoAI models now drive decisions in disaster response, urban planning, public health, and environmental management, yet most of their outputs reach users as a single map with no indication of how much to trust it. A flood extent, a land-use classification, or a predicted risk surface looks equally certain everywhere, even when its reliability varies sharply across space.</p>
@@ -112,84 +132,124 @@ footer{border-top:1px solid var(--ink);margin:48px 0 40px;padding-top:12px;font-
 <div><div class="n">Xiaobai Angela Yao</div><div class="a">Department of Geography, University of Georgia, USA · Editor-in-Chief, <em>Cartography and Geographic Information Science</em></div><div class="m"><a href="mailto:xyao@uga.edu">xyao@uga.edu</a></div></div>
 </div>
 
-<footer>Questions about the special issue are welcome by email to any of the guest editors.</footer>
 </div>
+<footer class="site">Questions about the special issue are welcome by email to any of the guest editors.</footer>
+</div>
+</div>
+<p id="story" aria-live="polite"><span id="storytext">This map looks equally certain everywhere.</span><span class="hint">Scroll to see where it really is.</span></p>
 <script>
 (function(){
-  var cv=document.getElementById('contours'); if(!cv||!cv.getContext) return;
+  var cv=document.getElementById('bg'); if(!cv||!cv.getContext) return;
   var ctx=cv.getContext('2d');
   var sharp=document.createElement('canvas'), soft=document.createElement('canvas'), mask=document.createElement('canvas');
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var COL='rgba(47,102,144,', DOT='#17212B';
-  // design space 1080 x 330; everything below is in those units
-  var DW=1080, DH=330;
-  var PTS=[[70,120],[150,250],[230,90],[300,200],[360,60],[420,280],[480,150],[560,230],[610,95],[690,180],[820,250]];
-  var HILLS=[[790,140,170,115,1.0,0.9],[980,280,150,105,0.7,1.3],[560,300,210,90,0.45,0.7],[300,70,230,140,0.38,1.1],[90,250,160,110,0.3,0.8]];
-  var NX=200, NY=62, LEVELS=15, W=0, H=0, S=1, OX=0, OY=0, dpr=1, zmin=0, zmax=1;
+  var story=document.getElementById('storytext'), hint=document.querySelector('#story .hint');
+  // Design space: 1600 x 1000, scaled to cover the viewport.
+  var DW=1600, DH=1000;
+  // Observations: dense in the west and south-west, sparse in the east.
+  var PTS=[[90,180],[210,420],[150,700],[320,250],[380,560],[300,880],[470,130],[520,400],[600,700],
+           [690,260],[760,520],[640,920],[860,350],[930,760],[1120,210],[1480,430]];
+  var HILLS=[[1180,300,260,190,1.0,0.9],[1420,780,240,190,0.75,1.3],[820,820,320,170,0.5,0.7],
+             [420,220,330,230,0.42,1.1],[160,700,230,200,0.33,0.8],[900,460,180,140,0.35,1.2]];
+  var NX=160, NY=100, LEVELS=22, W=0, H=0, S=1, OX=0, OY=0, dpr=1, SOFT=0.5;
+  var grid=new Float32Array((NX+1)*(NY+1));
   function field(x,y,t){
     var z=0;
     for(var i=0;i<HILLS.length;i++){var h=HILLS[i];
-      var cx=h[0]+28*Math.sin(t*0.11*h[5]+i), cy=h[1]+14*Math.cos(t*0.09*h[5]+2*i);
-      var a=h[4]*(1+0.06*Math.sin(t*0.13+i));
+      var cx=h[0]+40*Math.sin(t*0.10*h[5]+i), cy=h[1]+24*Math.cos(t*0.08*h[5]+2*i);
+      var a=h[4]*(1+0.06*Math.sin(t*0.12+i));
       var dx=(x-cx)/h[2], dy=(y-cy)/h[3]; z+=a*Math.exp(-(dx*dx+dy*dy));}
-    return z+0.07*Math.sin(x/70+t*0.05)*Math.cos(y/55-t*0.04);
+    return z+0.07*Math.sin(x/95+t*0.05)*Math.cos(y/80-t*0.04);
   }
   function resize(){
-    var r=cv.getBoundingClientRect(); dpr=Math.min(window.devicePixelRatio||1,2);
-    W=Math.max(1,Math.round(r.width)); H=Math.max(1,Math.round(r.height));
-    [cv,sharp,soft,mask].forEach(function(c){c.width=W*dpr;c.height=H*dpr;});
-    S=Math.max(W/DW,H/DH); OX=(W-DW*S)/2; OY=(H-DH*S)/2;   // cover, like the static image
-    buildMask();
+    dpr=Math.min(window.devicePixelRatio||1,1.5);
+    W=window.innerWidth; H=window.innerHeight;
+    cv.width=sharp.width=mask.width=Math.round(W*dpr); cv.height=sharp.height=mask.height=Math.round(H*dpr);
+    soft.width=Math.round(W*SOFT); soft.height=Math.round(H*SOFT);
+    S=Math.max(W/DW,H/DH); OX=(W-DW*S)/2; OY=(H-DH*S)/2;
   }
-  function buildMask(){
-    var m=mask.getContext('2d'); m.setTransform(dpr,0,0,dpr,0,0); m.clearRect(0,0,W,H);
-    var R=95*S;
-    PTS.forEach(function(p){var x=OX+p[0]*S,y=OY+p[1]*S;
-      var g=m.createRadialGradient(x,y,0,x,y,R); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(0.45,'rgba(0,0,0,1)'); g.addColorStop(1,'rgba(0,0,0,0)');
-      m.fillStyle=g; m.fillRect(x-R,y-R,2*R,2*R);});
-  }
-  var grid=new Float32Array((NX+1)*(NY+1));
-  function contours(c,t,lw,alpha){
-    var x0=-30,x1=DW+30,y0=-30,y1=DH+30, dx=(x1-x0)/NX, dy=(y1-y0)/NY, i,j,k;
-    zmin=1e9; zmax=-1e9;
+  function contours(c,t,lw,stroke,k0){
+    var x0=-40,x1=DW+40,y0=-40,y1=DH+40, dx=(x1-x0)/NX, dy=(y1-y0)/NY, i,j,k, zmin=1e9, zmax=-1e9;
     for(j=0;j<=NY;j++)for(i=0;i<=NX;i++){var v=field(x0+i*dx,y0+j*dy,t);grid[j*(NX+1)+i]=v;if(v<zmin)zmin=v;if(v>zmax)zmax=v;}
-    c.lineWidth=lw; c.strokeStyle=COL+alpha+')'; c.lineCap='round'; c.beginPath();
+    c.lineWidth=lw; c.strokeStyle=stroke; c.lineCap='round'; c.beginPath();
     for(k=0;k<LEVELS;k++){
-      var L=zmin+0.04+(zmax-0.03-zmin-0.04)*k/(LEVELS-1);
+      var L=zmin+0.04+(zmax-0.07-zmin)*k/(LEVELS-1);
       for(j=0;j<NY;j++)for(i=0;i<NX;i++){
         var a=grid[j*(NX+1)+i],b=grid[j*(NX+1)+i+1],cc=grid[(j+1)*(NX+1)+i+1],d=grid[(j+1)*(NX+1)+i];
         var code=(a>L?8:0)|(b>L?4:0)|(cc>L?2:0)|(d>L?1:0); if(code===0||code===15) continue;
         var X=x0+i*dx, Y=y0+j*dy, p=[];
-        if((a>L)!==(b>L)) p.push([X+dx*(L-a)/(b-a),Y]);
-        if((b>L)!==(cc>L)) p.push([X+dx,Y+dy*(L-b)/(cc-b)]);
-        if((d>L)!==(cc>L)) p.push([X+dx*(L-d)/(cc-d),Y+dy]);
-        if((a>L)!==(d>L)) p.push([X,Y+dy*(L-a)/(d-a)]);
-        for(var q=0;q+1<p.length;q+=2){
-          c.moveTo(OX+p[q][0]*S,OY+p[q][1]*S); c.lineTo(OX+p[q+1][0]*S,OY+p[q+1][1]*S);}
+        if((a>L)!==(b>L)) p.push(X+dx*(L-a)/(b-a),Y);
+        if((b>L)!==(cc>L)) p.push(X+dx,Y+dy*(L-b)/(cc-b));
+        if((d>L)!==(cc>L)) p.push(X+dx*(L-d)/(cc-d),Y+dy);
+        if((a>L)!==(d>L)) p.push(X,Y+dy*(L-a)/(d-a));
+        for(var q=0;q+3<p.length;q+=4){
+          c.moveTo(k0*(OX+p[q]*S),k0*(OY+p[q+1]*S)); c.lineTo(k0*(OX+p[q+2]*S),k0*(OY+p[q+3]*S));}
       }
     }
     c.stroke();
   }
-  function frame(t){
-    var s=sharp.getContext('2d'), f=soft.getContext('2d');
-    [s,f,ctx].forEach(function(c){c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);c.globalCompositeOperation='source-over';c.filter='none';});
-    contours(s,t,1.3,0.9);
-    f.filter='blur('+(3.2*S).toFixed(2)+'px)'; contours(f,t,2.2,0.55); f.filter='none';
-    s.setTransform(1,0,0,1,0,0); s.globalCompositeOperation='destination-in'; s.drawImage(mask,0,0);
-    f.setTransform(1,0,0,1,0,0); f.globalCompositeOperation='destination-out'; f.drawImage(mask,0,0);
-    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(soft,0,0); ctx.drawImage(sharp,0,0);
-    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=DOT;
-    PTS.forEach(function(p){ctx.beginPath();ctx.arc(OX+p[0]*S,OY+p[1]*S,3.6*Math.min(1.2,Math.max(0.8,S)),0,6.2832);ctx.fill();});
+  function progress(){
+    var max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
+    var p=Math.min(1,Math.max(0,window.scrollY/max));
+    var u=Math.min(1,Math.max(0,(p-0.03)/0.45));
+    return u*u*(3-2*u);   // smoothstep
   }
-  var visible=true, last=0, t0=performance.now();
-  if('IntersectionObserver' in window){new IntersectionObserver(function(e){visible=e[0].isIntersecting;}).observe(cv);}
+  function drawMask(u){
+    var m=mask.getContext('2d'); m.setTransform(dpr,0,0,dpr,0,0); m.clearRect(0,0,W,H);
+    if(u<0.001){ m.fillStyle='#000'; m.fillRect(0,0,W,H); return; }
+    var R=(130+2200*Math.pow(1-u,2.2))*S;   // the sharp zone shrinks to the neighbourhood of the data
+    PTS.forEach(function(pt){var x=OX+pt[0]*S,y=OY+pt[1]*S;
+      var g=m.createRadialGradient(x,y,0,x,y,R); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(0.45,'rgba(0,0,0,1)'); g.addColorStop(1,'rgba(0,0,0,0)');
+      m.fillStyle=g; m.fillRect(x-R,y-R,2*R,2*R);});
+  }
+  var lastU=-1, lastText='';
+  function frame(t){
+    var u=progress();
+    var s=sharp.getContext('2d'), f=soft.getContext('2d');
+    s.setTransform(dpr,0,0,dpr,0,0); s.globalCompositeOperation='source-over'; s.clearRect(0,0,W,H);
+    contours(s,t,1.1,'rgba(47,102,144,0.5)',1);
+    drawMask(u);
+    s.setTransform(1,0,0,1,0,0); s.globalCompositeOperation='destination-in'; s.drawImage(mask,0,0);
+    ctx.setTransform(1,0,0,1,0,0); ctx.globalCompositeOperation='source-over'; ctx.clearRect(0,0,cv.width,cv.height);
+    if(u>0.001){
+      f.setTransform(1,0,0,1,0,0); f.globalCompositeOperation='source-over'; f.filter='none'; f.clearRect(0,0,soft.width,soft.height);
+      f.filter='blur('+(0.5+2.6*u*S).toFixed(2)+'px)';
+      contours(f,t,1.8*SOFT*1.6,'rgba(47,102,144,'+(0.36*Math.min(1,u*1.5)).toFixed(3)+')',SOFT);
+      f.filter='none';
+      ctx.drawImage(soft,0,0,cv.width,cv.height);
+      // keep the blurred lines out of the sharp zones
+      ctx.globalCompositeOperation='destination-out'; ctx.drawImage(mask,0,0); ctx.globalCompositeOperation='source-over';
+    }
+    ctx.drawImage(sharp,0,0);
+    if(u>0.02){
+      ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle='rgba(23,33,43,'+Math.min(1,u*1.6).toFixed(3)+')';
+      var r=Math.max(2.6,3.4*Math.min(1.3,S));
+      PTS.forEach(function(pt){ctx.beginPath();ctx.arc(OX+pt[0]*S,OY+pt[1]*S,r,0,6.2832);ctx.fill();});
+    }
+    if(story){
+      var txt=u<0.12?'This map looks equally certain everywhere.':(u<0.75?'But a model only knows what its data tell it.':'Sharp near observations, blurred where data are sparse. That is the uncertainty.');
+      if(txt!==lastText){story.textContent=txt; lastText=txt;}
+      if(hint) hint.style.display=u<0.12?'block':'none';
+    }
+    lastU=u;
+  }
+  var t0=performance.now(), last=0;
   function loop(now){
     requestAnimationFrame(loop);
-    if(!visible||document.hidden||now-last<33) return;   // ~30 fps, paused off-screen
-    last=now; frame((now-t0)/1000);
+    if(document.hidden||now-last<40) return;   // ~25 fps
+    last=now; frame(reduce?0:(now-t0)/1000);
   }
-  resize(); window.addEventListener('resize',function(){resize(); if(reduce) frame(0);});
-  if(reduce) frame(0); else requestAnimationFrame(loop);
+  resize();
+  window.addEventListener('resize',resize);
+  if(reduce){ frame(0); window.addEventListener('scroll',function(){frame(0);},{passive:true}); window.addEventListener('resize',function(){frame(0);}); }
+  else requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+(function(){ var v=document.getElementById('veil'); if(!v) return;
+  function upd(){ var k=Math.min(1,Math.max(0,window.scrollY/(window.innerHeight*0.35))); v.style.opacity=(0.35+0.65*k).toFixed(3); }
+  upd(); window.addEventListener('scroll',upd,{passive:true}); window.addEventListener('resize',upd);
 })();
 </script>
 <script data-goatcounter="https://pengluo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
