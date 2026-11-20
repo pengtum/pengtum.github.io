@@ -1159,3 +1159,30 @@ footer {
 .opp-pdf-body strong { font-size: 14px; color: #8f2c20; }
 .opp-pdf-body span { font-size: 12.5px; color: var(--text-muted); }
 .lab-alias { font-size: 12px !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint) !important; margin: -0.2rem 0 0.8rem !important; }
+
+/* Call-for-papers variant of the hero banner */
+.cfp-banner { background: #eef3f9; border-color: #cfdcec; border-left-color: var(--accent); }
+.cfp-banner:hover { background: #e5edf7; }
+.cfp-banner strong { color: var(--accent); }
+.cfp-banner .hiring-dot { background: var(--accent); animation-name: cfpPulse; }
+@keyframes cfpPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(45,90,142,0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(45,90,142,0); }
+  100% { box-shadow: 0 0 0 0 rgba(45,90,142,0); }
+}
+
+/* Homepage hero: drifting contour background (js/hero-contours.js) */
+.hero-bg {
+  position: absolute;
+  top: var(--nav-h);
+  left: 0;
+  width: 100%;
+  height: 640px;
+  z-index: 0;
+  pointer-events: none;
+}
+.has-hero-bg .page { position: relative; z-index: 1; }
+@media (max-width: 720px) { .hero-bg { height: 520px; opacity: 0.7; } }
+
+/* Multi-paragraph homepage bio: tighter gaps between paragraphs */
+.hero-bio:not(:last-of-type) { margin-bottom: 0.9rem; }

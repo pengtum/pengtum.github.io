@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Peng Luo</title>
   <meta name="description" content="Peng Luo — Assistant Professor at the University of Iowa, School of Earth, Environment, and Sustainability. Trustworthy GeoAI, Explainable AI, Uncertainty Quantification." />
-  <link rel="stylesheet" href="css/style.css?v=20261112" />
+  <link rel="stylesheet" href="css/style.css?v=20261120b" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/" />
@@ -21,7 +21,8 @@
   <meta name="twitter:image" content="https://peng-luo.com/assets/photo.jpg" />
 
 </head>
-<body>
+<body class="has-hero-bg">
+<canvas id="hero-bg" class="hero-bg" aria-hidden="true"></canvas>
 
 <nav>
   <div class="nav-inner">
@@ -57,12 +58,21 @@
       <div class="hero-name">Peng Luo</div>
       <div class="hero-role">Assistant Professor</div>
       <div class="hero-affil"><a href="https://sees.uiowa.edu/" target="_blank">School of Earth, Environment, and Sustainability</a>, University of Iowa</div>
-      <p class="hero-bio">
-        I am a tenure-track Assistant Professor in the <a href="https://sees.uiowa.edu/" target="_blank">School of Earth, Environment, and Sustainability</a> at the <a href="https://uiowa.edu/" target="_blank">University of Iowa</a>, where I lead the <a href="lab.html">Trustworthy GeoAI Lab (TrustGeoAI)</a>, working at the intersection of GIScience, GeoAI, and spatial data science. Previously, I was a postdoctoral researcher at the <a href="https://senseable.mit.edu/" target="_blank">MIT Senseable City Lab</a>, and I received my Ph.D. from the <a href="https://www.asg.ed.tum.de/en/lfk/home/" target="_blank">Chair of Cartography and Visual Analytics</a> at the <a href="https://www.tum.de/" target="_blank">Technical University of Munich</a>. My research focuses on Trustworthy GeoAI, with particular interests in spatial explicit modeling, geospatial explainable AI, uncertainty quantification for GeoAI models, and multi-agent GeoAI.
+      <p class="hero-bio hero-philosophy">
+        I want to tell pattern from noise in spatial data. I look for simple questions and try to answer them with the simplest method that works. And I want trust to carry through the whole chain of spatial analysis, from the data and the model to its outputs and how they are communicated to the public.
       </p>
-      <a class="hiring-banner" href="opportunities.html">
+      <p class="hero-bio">
+        I developed a family of model-agnostic methods that quantify the uncertainty of any GeoAI model: <a href="https://doi.org/10.1080/24694452.2025.2516091" target="_blank">GeoCP</a>, <a href="geoxcp/">GeoXCP</a>, <a href="https://doi.org/10.1080/24694452.2026.2639721" target="_blank">GeoSIMCP</a>, and <a href="wbcp/">WBCP</a>. I built <a href="https://arxiv.org/abs/2509.21593" target="_blank">GeoEvolve</a> and <a href="sega/">SEGA</a>, LLM-driven frameworks that let geospatial algorithms discover and improve themselves. Earlier, I developed models that detect complex interactions among geographical variables and uncover the patterns behind spatial data (<a href="https://doi.org/10.1016/j.isprsjprs.2022.01.009" target="_blank">GOZH</a>, <a href="https://doi.org/10.1080/15481603.2024.2448283" target="_blank">Robust GOZH</a>, <a href="https://doi.org/10.1080/17538947.2023.2271883" target="_blank">LESH</a>, <a href="https://doi.org/10.1080/13658816.2025.2526042" target="_blank">GPI</a>, and <a href="https://doi.org/10.1016/j.compenvurbsys.2025.102336" target="_blank">GIP</a>), and models that make accurate spatial predictions from small samples (<a href="https://doi.org/10.1080/13658816.2022.2147530" target="_blank">GHM</a> and <a href="https://doi.org/10.1016/j.isprsjprs.2025.02.003" target="_blank">MSAM</a>).
+      </p>
+      <p class="hero-bio">
+        I am also interested in using these models to solve real-world problems, such as land-use classification, population health, and human mobility, although I am not an expert in any single application domain. That is why I really enjoy talking with experts from any field and learning about the real-world problems they face.
+      </p>
+      <p class="hero-bio">
+        I lead the <a href="lab.html">Trustworthy GeoAI Lab (TrustGeoAI)</a> at the <a href="https://uiowa.edu/" target="_blank">University of Iowa</a>. Before that, I was a postdoctoral researcher at the <a href="https://senseable.mit.edu/" target="_blank">MIT Senseable City Lab</a>, and I received my Ph.D. from the <a href="https://www.asg.ed.tum.de/en/lfk/home/" target="_blank">Chair of Cartography and Visual Analytics</a> at the <a href="https://www.tum.de/" target="_blank">Technical University of Munich</a>.
+      </p>
+      <a class="hiring-banner cfp-banner" href="cagis-uncertainty/">
         <span class="hiring-dot"></span>
-        <span><strong>I am hiring!</strong> Two fully-funded Ph.D. positions for Fall 2027 &mdash; see openings &rarr;</span>
+        <span><strong>Call for Papers:</strong> <em>Seeing Uncertainty: Modeling, Visualizing, and Communicating Uncertainty in Spatial Analysis and GeoAI</em>, a special issue of <em>Cartography and Geographic Information Science</em>. Full papers due Sept 30, 2027 &rarr;</span>
       </a>
       <div class="hero-links">
         <a href="mailto:peng-luo@uiowa.edu">Email</a>
@@ -122,6 +132,14 @@
   <!-- News -->
   <div class="section">
     <div class="section-label">News</div>
+
+    <div class="news-item">
+      <div class="news-date">Nov 2026</div>
+      <div class="news-text">
+        <span class="badge badge-news">Special Issue</span>
+        Call for papers: <a href="cagis-uncertainty/"><em>Seeing Uncertainty: Modeling, Visualizing, and Communicating Uncertainty in Spatial Analysis and GeoAI</em></a>, a special issue of <em>Cartography and Geographic Information Science</em>. Full papers due Sept 30, 2027.
+      </div>
+    </div>
 
     <div class="news-item">
       <div class="news-date">Nov 2026</div>
@@ -425,6 +443,7 @@ function toggleNews() {
   requestAnimationFrame(loop);
 })();
 </script>
+<script src="js/hero-contours.js" defer></script>
 <script data-goatcounter="https://pengluo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
