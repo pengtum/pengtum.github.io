@@ -474,9 +474,12 @@ function methodMeans(key, { p = null, y = null } = {}) {
   let cur = 0, t = 0, last = performance.now();
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  let shownIdx = -1;
   function draw(mix) {
     const S = cv.width / N;
     const a = frames[cur][1], b = frames[(cur + 1) % frames.length][1];
+    const nowShowing = mix < 0.5 ? cur : (cur + 1) % frames.length;   // keep the caption on the geometry actually drawn
+    if (nowShowing !== shownIdx) { shownIdx = nowShowing; name.textContent = frames[nowShowing][0]; }
     ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, cv.width, cv.height);
     for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
       const ca = pal[a[i * N + j]], cb = pal[b[i * N + j]];
@@ -491,11 +494,11 @@ function methodMeans(key, { p = null, y = null } = {}) {
   function loop(now) {
     const dt = (now - last) / 1000; last = now;
     t += dt / 4.2;
-    if (t >= 1) { t = 0; cur = (cur + 1) % frames.length; name.textContent = frames[cur][0]; }
+    if (t >= 1) { t = 0; cur = (cur + 1) % frames.length; }
     draw(t < 0.75 ? 0 : (t - 0.75) * 4);
     requestAnimationFrame(loop);
   }
-  if (reduce) { draw(0); name.textContent = frames[0][0]; }
+  if (reduce) { draw(0); }
   else requestAnimationFrame(loop);
 })();
 
