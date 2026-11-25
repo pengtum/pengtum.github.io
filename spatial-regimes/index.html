@@ -102,7 +102,24 @@ section + section { border-top: 1px solid var(--rule); }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); gap: clamp(20px, 4vw, 48px); align-items: center; }
 .hero-copy { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .hero-art { min-width: 0; }
-#heroCanvas { width: 100%; height: auto; display: block; aspect-ratio: 3 / 2; }
+#heroCanvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+
+/* map plates */
+.maps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.maps.two-up { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+figure.map { margin: 0; }
+figure.map canvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; }
+figure.map figcaption { border-top: 1px solid var(--rule); padding: 9px 12px; display: flex;
+  flex-direction: column; gap: 2px; }
+figure.map figcaption b { font-size: 13px; font-weight: 600; }
+figure.map figcaption span { font-size: 11.5px; color: var(--ink-3); font-family: var(--font-mono); }
+.ramps { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; font-size: 12px;
+  color: var(--ink-3); font-family: var(--font-mono); align-items: center; }
+.ramps i { display: inline-block; width: 86px; height: 9px; border-radius: 2px; margin: 0 7px;
+  vertical-align: -1px; border: 1px solid var(--rule); }
+.ramps i.div { background: linear-gradient(90deg, var(--reg), #efeae0, var(--xai)); }
+.ramps i.seq { background: linear-gradient(90deg, var(--seq-0), var(--seq-5)); }
+.ramps i.cat { background: linear-gradient(90deg, var(--r1) 0 33.3%, var(--r2) 33.3% 66.6%, var(--r3) 66.6%); }
 #geoCanvas { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; max-width: 100%; }
 .plate-cap { display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid var(--rule);
   padding: 8px 12px; font-size: 12.5px; color: var(--ink-3); font-family: var(--font-mono); }
@@ -265,6 +282,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 }
 @media (max-width: 860px) {
   .hero-grid, .two, .two.wide-left { grid-template-columns: minmax(0, 1fr); }
+  .maps, .maps.two-up { grid-template-columns: minmax(0, 1fr); }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .quad { grid-template-columns: minmax(0, 1fr); }
   .quad-frame { grid-template-columns: minmax(0, 1fr); }
@@ -303,10 +321,11 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
       </div>
       <p class="tagline">Which method finds spatial regimes, and when?</p>
       <h1>The relationship changes across space. Most models assume it does not.</h1>
-      <p class="lede">Where the process that generates an outcome differs from place to place, a single
-      global model returns an average that may describe no location at all. <em>Spatial regimes</em> are the
-      discrete form of that problem: contiguous zones, each with its own mechanism. This page is about how
-      to find them — and about a benchmark of 3,564 controlled runs that says which methods actually do.</p>
+      <p class="lede">The map on the right is the thing at stake: the effect of a covariate on an
+      outcome, which here is one value in the north, another in the middle and a third in the south. A
+      single global model replaces that map with one number. <em>Spatial regimes</em> put the geography
+      back — contiguous zones, each with its own mechanism. This page is about how to find them, and about
+      a benchmark of 3,564 controlled runs that says which methods actually do.</p>
       <div class="links-row">
         <a class="btn" href="#why">Start with the problem</a>
         <a class="btn ghost" href="#results">Skip to the results</a>
@@ -320,8 +339,8 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
     </div>
     <div class="hero-art">
       <div class="plate">
-        <canvas id="heroCanvas" width="900" height="600" aria-label="Animation: one global regression line through three regimes bends into three separate regime lines"></canvas>
-        <div class="plate-cap"><span id="heroPhase">one global fit</span><span>R² <b id="heroR2">—</b></span></div>
+        <canvas id="heroCanvas" width="640" height="640" aria-label="Map of the local effect of X on Y, alternating between one flat coefficient and a three-zone mosaic"></canvas>
+        <div class="plate-cap"><span id="heroPhase">what a global model assumes</span><span id="heroRead">β = 0.10 everywhere</span></div>
       </div>
     </div>
   </div>
@@ -330,44 +349,67 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 <!-- ───────────────────────── 01 the problem ───────────────────────── -->
 <section id="why"><div class="wrap">
   <div class="eyebrow reveal"><s>01</s> The problem</div>
-  <h2 class="reveal">A global fit can be right on average and wrong everywhere</h2>
-  <p class="lede reveal" style="margin-top:10px">Three zones, one covariate. In the north an extra unit of
-  X raises Y; in the south it lowers it. Fit one line to all of it and the slope lands near zero — a number
-  that describes none of the three zones. Drag the contrast to see the global coefficient dissolve while
-  the regime coefficients stay sharp.</p>
+  <h2 class="reveal">The mechanism has a geography. A global model flattens it.</h2>
+  <p class="lede reveal" style="margin-top:10px">Read these three maps left to right. The first is the
+  thing that actually varies: the local effect of X₁ on Y, which here takes three values over three zones.
+  The second is what a single global regression puts in its place — one number, everywhere. The third is
+  what that costs, and the point is that the cost is <em>not</em> spread evenly: it reassembles the map
+  you started from.</p>
 
   <div class="controls reveal" style="margin-top:20px">
     <label class="ctrl"><span>Contrast between regimes</span>
       <input type="range" id="contrast" min="0" max="100" value="100" aria-label="Contrast between regimes">
     </label>
-    <label class="ctrl"><span>Show</span>
-      <div class="seg" id="fitSeg" role="group" aria-label="Which fit to show">
-        <button type="button" data-v="both" aria-pressed="true">Both fits</button>
-        <button type="button" data-v="global" aria-pressed="false">Global only</button>
-        <button type="button" data-v="local" aria-pressed="false">Regimes only</button>
+    <label class="ctrl"><span>Regime geometry</span>
+      <div class="seg" id="geoSeg" role="group" aria-label="Regime geometry">
+        <button type="button" data-v="rect" aria-pressed="false">Bands</button>
+        <button type="button" data-v="voronoi" aria-pressed="false">Cells</button>
+        <button type="button" data-v="arbitrary" aria-pressed="true">Patches</button>
       </div>
     </label>
   </div>
 
-  <div class="two wide-left reveal">
+  <div class="maps reveal">
+    <figure class="plate map">
+      <canvas id="mapBeta" width="440" height="440" role="img" aria-label="Map of the local coefficient, a mosaic of three zones"></canvas>
+      <figcaption><b>The mechanism</b><span>β₁(s) · what varies</span></figcaption>
+    </figure>
+    <figure class="plate map">
+      <canvas id="mapFlat" width="440" height="440" role="img" aria-label="Map of the single global coefficient, uniform everywhere"></canvas>
+      <figcaption><b>What one global model assumes</b><span id="capFlat">β̄ everywhere</span></figcaption>
+    </figure>
+    <figure class="plate map">
+      <canvas id="mapErr" width="440" height="440" role="img" aria-label="Map of the local error of the global model, higher in the zones whose mechanism departs most from the average"></canvas>
+      <figcaption><b>Where that assumption fails</b><span>local error of the global fit</span></figcaption>
+    </figure>
+  </div>
+  <div class="ramps reveal">
+    <span>β₁ <i class="div"></i> −3 &nbsp;0 &nbsp;+3</span>
+    <span>local error <i class="seq"></i> low &nbsp;high</span>
+    <span>white lines: regime boundaries</span>
+  </div>
+
+  <div class="two reveal" style="margin-top:28px">
     <div class="chart-wrap">
-      <div class="chart-title">X₁ against Y, coloured by regime</div>
-      <div class="chart-sub">900 observations drawn from three zones that share one covariate distribution.</div>
-      <svg class="chart" id="whyScatter" viewBox="0 0 580 360" role="img" aria-label="Scatter of the covariate against the outcome with a global regression line and three regime lines"></svg>
+      <div class="chart-title">The same data without the geography</div>
+      <div class="chart-sub">Every location pooled into one scatter — supporting evidence, not the argument.</div>
+      <svg class="chart" id="whyScatter" viewBox="0 0 560 320" role="img" aria-label="Scatter of the covariate against the outcome with a global regression line and three regime lines"></svg>
     </div>
     <div class="chart-wrap">
-      <div class="chart-title">Where each regime sits</div>
-      <div class="chart-sub">Each zone carries its own slope, printed on the map.</div>
-      <svg class="chart" id="whyMap" viewBox="0 0 320 200" role="img" aria-label="Map of three horizontal regimes, each labelled with its own slope"></svg>
+      <div class="chart-title">What the pooling costs</div>
+      <div class="chart-sub">Read with the maps above.</div>
       <div class="readout hi">
         <div><span>Global slope</span><b id="roGlobal">—</b></div>
         <div><span>Regime slopes</span><b id="roLocal">—</b></div>
         <div><span>R², one global model</span><b id="roRG">—</b></div>
         <div><span>R², one model per regime</span><b id="roRL">—</b></div>
+        <div><span>Moran's I of the global model's error</span><b id="roMoran">—</b></div>
       </div>
-      <p class="note" style="margin-top:10px">At full contrast the global model explains almost nothing, yet
-      it is not detectably broken: its residuals look like noise unless you already know where the
-      boundaries are.</p>
+      <p class="note" style="margin-top:10px">The last line is the spatial tell. A correctly specified
+      model leaves error with no geography, so Moran's I sits near zero; here the error is strongly
+      clustered, because what the model omitted was itself a map. Note also what the error map cannot do:
+      the two zones with opposite slopes are both dark, because error says <em>where</em> the global model
+      is wrong, never <em>how</em>. Recovering the how is the job of the methods benchmarked below.</p>
     </div>
   </div>
 
@@ -382,7 +424,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
       <div class="mk">Decisions</div>
       <h3>Interventions land in the wrong places</h3>
       <p>Policies calibrated on a global elasticity over- or under-shoot wherever the local mechanism
-      departs from the average — usually in the places that differ most.</p>
+      departs from the average — and the error map shows exactly where that is.</p>
     </article>
     <article>
       <div class="mk">Transfer</div>
@@ -392,16 +434,14 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
     </article>
   </div>
 </div></section>
-
-<!-- ───────────────────────── 02 why it is hard ───────────────────────── -->
 <section id="trap"><div class="wrap">
   <div class="eyebrow reveal"><s>02</s> Why it is hard</div>
-  <h2 class="reveal">Finding regimes is harder than finding high and low values</h2>
-  <p class="lede reveal" style="margin-top:10px">A method can look like it recovered regimes when it has
-  only sorted the outcome into large and small. Most benchmarks cannot tell the two apart, because their
-  regimes differ in level as well as in mechanism. Ours removes the shortcut: under <em>strict process</em>
-  heterogeneity the intercept is dropped and every regime's slope vector is normalised, so the regimes
-  share the marginal distribution of Y and differ only in how X maps to Y.</p>
+  <h2 class="reveal">The regimes are on the map. They are not always in the outcome.</h2>
+  <p class="lede reveal" style="margin-top:10px">Here is the trap most benchmarks fall into. Map the
+  outcome and, in the usual setting, the regimes are already visible in it — so a method that simply
+  clusters Y looks like a regime detector. Switch to <em>strict process</em> heterogeneity, where the
+  intercept is dropped and every regime's slope vector is normalised, and the outcome map goes quiet while
+  the regimes underneath are completely unchanged.</p>
 
   <div class="controls reveal" style="margin-top:20px">
     <label class="ctrl"><span>Heterogeneity mode</span>
@@ -418,29 +458,42 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
     </label>
   </div>
 
-  <div class="two wide-left reveal">
+  <div class="maps two-up reveal">
+    <figure class="plate map">
+      <canvas id="mapY" width="520" height="520" role="img" aria-label="Map of the outcome variable"></canvas>
+      <figcaption><b>The outcome you can map</b><span id="capY">Y(s)</span></figcaption>
+    </figure>
+    <figure class="plate map">
+      <canvas id="mapTruth" width="520" height="520" role="img" aria-label="Map of the three ground-truth regimes"></canvas>
+      <figcaption><b>The regimes you are after</b><span>ground truth · identical in both modes</span></figcaption>
+    </figure>
+  </div>
+  <div class="ramps reveal">
+    <span>Y <i class="div"></i> low &nbsp;high</span>
+    <span>regimes <i class="cat"></i> 1 &nbsp;2 &nbsp;3</span>
+  </div>
+
+  <div class="two reveal" style="margin-top:28px">
     <div class="chart-wrap">
-      <div class="chart-title">Mechanism: X₁ against Y, by regime</div>
-      <div class="chart-sub">Two regimes, 2,000 points, drawn live from the benchmark's generator.</div>
-      <svg class="chart" id="demoScatter" viewBox="0 0 560 330" role="img" aria-label="Scatter of the first covariate against the outcome, coloured by regime"></svg>
+      <div class="chart-title">The mechanisms, pooled</div>
+      <div class="chart-sub">X₁ against Y by regime. They differ in both modes — that is the point.</div>
+      <svg class="chart" id="demoScatter" viewBox="0 0 560 320" role="img" aria-label="Scatter of the first covariate against the outcome, coloured by regime"></svg>
     </div>
     <div class="chart-wrap">
-      <div class="chart-title">Outcome distribution, by regime</div>
-      <div class="chart-sub">What a method sees if it clusters on Y alone.</div>
-      <svg class="chart" id="demoHist" viewBox="0 0 420 330" role="img" aria-label="Histogram of the outcome for each regime"></svg>
+      <div class="chart-title">The outcome, pooled</div>
+      <div class="chart-sub">What is left for a method that clusters Y alone.</div>
+      <svg class="chart" id="demoHist" viewBox="0 0 420 240" role="img" aria-label="Histogram of the outcome for each regime"></svg>
       <div class="readout">
-        <div><span>Separation of regime means</span><b id="roMean">—</b></div>
+        <div><span>Spread of regime means</span><b id="roMean">—</b></div>
         <div><span>Largest pairwise KS statistic</span><b id="roKS">—</b></div>
         <div><span>ARI from clustering on Y alone</span><b id="roARI">—</b></div>
       </div>
-      <p class="note" style="margin-top:10px">Switch to <em>strict process</em> and the outcome stops
-      carrying the regime label, exactly as in Table A1 of the paper. A method that scored well by
-      clustering Y now has nothing to hold on to.</p>
+      <p class="note" style="margin-top:10px">Under <em>strict process</em> the three distributions lie on
+      top of one another and the ARI collapses, exactly as in Table A1 of the paper. The map on the right
+      has not moved.</p>
     </div>
   </div>
 </div></section>
-
-<!-- ───────────────────────── 03 the benchmark ───────────────────────── -->
 <section id="benchmark"><div class="wrap">
   <div class="eyebrow reveal"><s>03</s> What we built</div>
   <h2 class="reveal">A benchmark that varies the ground truth, not just the method</h2>
@@ -744,7 +797,7 @@ const state = {
   cell: { p: 2, y: 1 },          // nonlinear, process-only
   metric: "ari", view: "chart",
   demoMode: "mixed", demoProc: "linear",
-  contrast: 1, fit: "both"
+  contrast: 1
 };
 
 function rowsFor({ m = null, p = null, y = null } = {}) {
@@ -794,111 +847,144 @@ function ols(pts) {                      // pts: [[x, y], ...] -> {a, b, r2}
   return { a, b, r2: syy ? 1 - ss / syy : 0 };
 }
 
-/* ---------- hero: one global fit bending into three ---------- */
-(function heroArt() {
-  const cv = document.getElementById("heroCanvas"), ctx = cv.getContext("2d");
-  const phaseEl = document.getElementById("heroPhase"), r2El = document.getElementById("heroR2");
-  const W = cv.width, H = cv.height, M = { t: 26, r: 26, b: 34, l: 34 };
-  const SLOPE = [3.1, 0.15, -2.8], K = 3;
-  const g = makeRng(987654321);
-  const pts = [];
-  for (let k = 0; k < K; k++)
-    for (let i = 0; i < 150; i++) {
-      const x = g.uni();
-      pts.push({ k, x, y: SLOPE[k] * x + g.gauss() * 0.72 });
-    }
-  const G = ols(pts.map(p => [p.x, p.y]));
-  const L = [0, 1, 2].map(k => ols(pts.filter(p => p.k === k).map(p => [p.x, p.y])));
-  const sseG = pts.reduce((s, p) => s + (p.y - (G.a + G.b * p.x)) ** 2, 0);
-  const sseL = pts.reduce((s, p) => s + (p.y - (L[p.k].a + L[p.k].b * p.x)) ** 2, 0);
-  const my = pts.reduce((s, p) => s + p.y, 0) / pts.length;
-  const sst = pts.reduce((s, p) => s + (p.y - my) ** 2, 0);
-  const R2G = 1 - sseG / sst, R2L = 1 - sseL / sst;
+/* ---------- shared lattice: the regime field everything spatial is drawn from ---------- */
+const mixHex = (c1, c2, t) => {
+  const pc = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const [r1, g1, b1] = pc(c1), [r2, g2, b2] = pc(c2);
+  const L = (a, b) => Math.round(a + (b - a) * t);
+  return `rgb(${L(r1, r2)},${L(g1, g2)},${L(b1, b2)})`;
+};
+const SEQ = ["#eef3fb", "#c5d9f2", "#8fb7e4", "#4f8ed2", "#2a6ab4", "#17457d"];
+const divCol = (v, m) => {
+  const t = Math.max(-1, Math.min(1, v / m));
+  return t >= 0 ? mixHex("#f0ece4", "#2a78d6", t) : mixHex("#f0ece4", "#eb6834", -t);
+};
+const seqCol = t => SEQ[Math.max(0, Math.min(5, Math.floor(t * 6)))];
 
-  const xs = v => M.l + (v + 1) / 2 * (W - M.l - M.r);
-  const ymax = 4.2, ys = v => M.t + (ymax - v) / (2 * ymax) * (H - M.t - M.b);
+function regimeGrid(kind, N, K, rnd) {
+  const g = new Int8Array(N * N);
+  if (kind === "rect") {
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) g[i * N + j] = Math.min(K - 1, Math.floor(i / N * K));
+    return g;
+  }
+  if (kind === "voronoi") {
+    const seeds = Array.from({ length: K }, () => [rnd() * N, rnd() * N]);
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      let best = 0, bd = Infinity;
+      seeds.forEach(([si, sj], k) => { const d = (i - si) ** 2 + (j - sj) ** 2; if (d < bd) { bd = d; best = k; } });
+      g[i * N + j] = best;
+    }
+    return g;
+  }
+  g.fill(-1);
+  const front = [];
+  for (let k = 0; k < K; k++) {                      // spread the seeds so no region is a sliver
+    const ang = 6.2832 * (k / K + 0.11 * rnd()), rad = N * (0.26 + 0.1 * rnd());
+    const i = Math.max(1, Math.min(N - 2, Math.round(N / 2 + rad * Math.sin(ang))));
+    const j = Math.max(1, Math.min(N - 2, Math.round(N / 2 + rad * Math.cos(ang))));
+    g[i * N + j] = k; front.push([i, j, k]);
+  }
+  while (front.length) {
+    const idx = (rnd() * front.length) | 0, [i, j, k] = front[idx];
+    front.splice(idx, 1);
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([di, dj]) => {
+      const a = i + di, b = j + dj;
+      if (a >= 0 && b >= 0 && a < N && b < N && g[a * N + b] === -1) { g[a * N + b] = k; front.push([a, b, k]); }
+    });
+  }
+  return g;
+}
+
+function paintGrid(cv, N, colorOf) {
+  const ctx = cv.getContext("2d"), S = cv.width / N;
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    ctx.fillStyle = colorOf(i * N + j);
+    ctx.fillRect(j * S, i * S, Math.ceil(S), Math.ceil(S));
+  }
+}
+function paintBorders(cv, N, reg, width = 1.6, color = "#ffffff") {
+  const ctx = cv.getContext("2d"), S = cv.width / N;
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const k = reg[i * N + j];
+    if (j + 1 < N && reg[i * N + j + 1] !== k) { ctx.moveTo((j + 1) * S, i * S); ctx.lineTo((j + 1) * S, (i + 1) * S); }
+    if (i + 1 < N && reg[(i + 1) * N + j] !== k) { ctx.moveTo(j * S, (i + 1) * S); ctx.lineTo((j + 1) * S, (i + 1) * S); }
+  }
+  ctx.stroke();
+}
+/* rook-contiguity Moran's I, the spatial signature of a misspecified model */
+function moransI(v, N) {
+  const n = v.length;
+  const mean = v.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0, W = 0;
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const a = v[i * N + j] - mean;
+    den += a * a;
+    [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(([di, dj]) => {
+      const p = i + di, q = j + dj;
+      if (p < 0 || q < 0 || p >= N || q >= N) return;
+      num += a * (v[p * N + q] - mean); W++;
+    });
+  }
+  return den ? (n / W) * (num / den) : 0;
+}
+function boxBlur(v, N, r) {
+  const out = new Float64Array(v.length);
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    let s = 0, c = 0;
+    for (let a = Math.max(0, i - r); a <= Math.min(N - 1, i + r); a++)
+      for (let b = Math.max(0, j - r); b <= Math.min(N - 1, j + r); b++) { s += v[a * N + b]; c++; }
+    out[i * N + j] = s / c;
+  }
+  return out;
+}
+/* ---------- hero: the coefficient map, flattened and restored ---------- */
+(function heroArt() {
+  const cv = document.getElementById("heroCanvas");
+  const phaseEl = document.getElementById("heroPhase"), readEl = document.getElementById("heroRead");
+  const N = 64, K = 3, BETA = [2.6, 0.9, -2.4];
+  const g = makeRng(20260402);
+  const reg = regimeGrid("arbitrary", N, K, g.rnd);
+  let n = 0, sum = 0;
+  for (let i = 0; i < reg.length; i++) { sum += BETA[reg[i]]; n++; }
+  const BAR = sum / n;
   const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
-  const lerp = (a, b, t) => a + (b - a) * t;
-  const mixHex = (c1, c2, t) => {
-    const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-    const [r1, g1, b1] = p(c1), [r2, g2, b2] = p(c2);
-    return `rgb(${Math.round(lerp(r1, r2, t))},${Math.round(lerp(g1, g2, t))},${Math.round(lerp(b1, b2, t))})`;
-  };
 
   let shown = -1;
-  function draw(t) {                                  // t = 0 global, 1 regimes
+  function draw(t) {
     const e = ease(t);
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
-    // frame
-    ctx.strokeStyle = "#dedacf"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(M.l, M.t); ctx.lineTo(M.l, H - M.b); ctx.lineTo(W - M.r, H - M.b); ctx.stroke();
-    ctx.strokeStyle = "#f0ece3";
-    for (let i = -3; i <= 3; i++) { const y = ys(i * 1.2); ctx.beginPath(); ctx.moveTo(M.l, y); ctx.lineTo(W - M.r, y); ctx.stroke(); }
-    // residuals to the current fitted line
-    ctx.lineWidth = 1;
-    for (const p of pts) {
-      const yhat = lerp(G.a + G.b * p.x, L[p.k].a + L[p.k].b * p.x, e);
-      ctx.strokeStyle = mixHex("#b9b4a8", REGC[p.k], e);
-      ctx.globalAlpha = 0.22;
-      ctx.beginPath(); ctx.moveTo(xs(p.x), ys(p.y)); ctx.lineTo(xs(p.x), ys(yhat)); ctx.stroke();
+    paintGrid(cv, N, i => divCol(BAR + (BETA[reg[i]] - BAR) * e, 3));
+    const ctx = cv.getContext("2d"), S = cv.width / N;
+    ctx.strokeStyle = "rgba(23,25,29,.055)"; ctx.lineWidth = 1;   // a lattice of places, not a blank
+    ctx.beginPath();
+    for (let k = 0; k <= N; k += 4) {
+      ctx.moveTo(k * S, 0); ctx.lineTo(k * S, cv.height);
+      ctx.moveTo(0, k * S); ctx.lineTo(cv.width, k * S);
     }
-    ctx.globalAlpha = 1;
-    // points
-    for (const p of pts) {
-      ctx.fillStyle = mixHex("#8a8578", REGC[p.k], e);
-      ctx.globalAlpha = 0.55 + 0.25 * e;
-      ctx.beginPath(); ctx.arc(xs(p.x), ys(p.y), 2.7, 0, 6.2832); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    // fitted lines, morphing
-    ctx.lineWidth = 3; ctx.lineCap = "round";
-    for (let k = 0; k < K; k++) {
-      ctx.strokeStyle = mixHex("#6f6a5e", REGC[k], e);
-      ctx.globalAlpha = e < .04 && k !== 1 ? 0 : 1;
-      ctx.beginPath();
-      for (let i = 0; i <= 40; i++) {
-        const x = -1 + i / 20;
-        const y = lerp(G.a + G.b * x, L[k].a + L[k].b * x, e);
-        i ? ctx.lineTo(xs(x), ys(y)) : ctx.moveTo(xs(x), ys(y));
-      }
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    // regime labels once separated
-    if (e > .45) {
-      ctx.globalAlpha = (e - .45) / .55;
-      ctx.font = "500 15px 'IBM Plex Mono', monospace"; ctx.textAlign = "right";
-      ctx.lineJoin = "round"; ctx.lineWidth = 4; ctx.strokeStyle = "#ffffff";
-      for (let k = 0; k < K; k++) {
-        const tx = W - M.r - 6, ty = ys(L[k].a + L[k].b * 0.93) - 10;
-        ctx.strokeText(`β = ${L[k].b.toFixed(2)}`, tx, ty);
-        ctx.fillStyle = REGC[k];
-        ctx.fillText(`β = ${L[k].b.toFixed(2)}`, tx, ty);
-      }
+    ctx.stroke();
+    if (e < .98) {                                                 // the one number it replaced the map with
+      ctx.globalAlpha = 1 - e;
+      ctx.font = "500 44px 'IBM Plex Mono', monospace";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(23,25,29,.38)";
+      ctx.fillText(`β = ${BAR.toFixed(2)}`, cv.width / 2, cv.height / 2);
       ctx.globalAlpha = 1;
     }
-    ctx.fillStyle = "#7b8089"; ctx.font = "400 13px 'IBM Plex Mono', monospace";
-    ctx.textAlign = "center"; ctx.fillText("X₁", (M.l + W - M.r) / 2, H - 10);
-    ctx.save(); ctx.translate(14, (M.t + H - M.b) / 2); ctx.rotate(-Math.PI / 2);
-    ctx.fillText("Y", 0, 0); ctx.restore();
-
+    if (e > 0.02) paintBorders(cv, N, reg, 1.8, `rgba(255,255,255,${e})`);
     const st = e < .5 ? 0 : 1;
     if (st !== shown) {
       shown = st;
-      phaseEl.textContent = st ? "three regime fits" : "one global fit";
+      phaseEl.textContent = st ? "what is actually there" : "what a global model assumes";
+      readEl.textContent = st ? "β = +2.6 / +0.9 / −2.4" : `β = ${BAR.toFixed(2)} everywhere`;
     }
-    r2El.textContent = lerp(R2G, R2L, e).toFixed(2);
   }
-
   if (REDUCE) { draw(1); return; }
-  const PERIOD = 7000, HOLD = 1700;
+  const PERIOD = 7200, HOLD = 1800;
   let t0 = null;
   function loop(now) {
     if (t0 === null) t0 = now;
     const u = ((now - t0) % PERIOD) / PERIOD;
-    const span = (PERIOD - 2 * HOLD) / 2 / PERIOD;
-    const h = HOLD / PERIOD;
+    const span = (PERIOD - 2 * HOLD) / 2 / PERIOD, h = HOLD / PERIOD;
     let t;
     if (u < h) t = 0;
     else if (u < h + span) t = (u - h) / span;
@@ -909,96 +995,123 @@ function ols(pts) {                      // pts: [[x, y], ...] -> {a, b, r2}
   }
   requestAnimationFrame(loop);
 })();
-
-/* ---------- 01: global vs regime fits ---------- */
+/* ---------- 01: the mechanism map, the flat assumption, and the error it leaves ---------- */
 (function whyDemo() {
-  const scatterEl = document.getElementById("whyScatter"), mapEl = document.getElementById("whyMap");
-  const BASE = [2.8, 0.1, -2.6];
-  let cache = null, cachedC = null;
+  const N = 56, K = 3, BASE = [2.6, 0.9, -2.4];
+  const cvBeta = document.getElementById("mapBeta"),
+        cvFlat = document.getElementById("mapFlat"),
+        cvErr  = document.getElementById("mapErr");
+  let geo = "arbitrary", field = null, fieldGeo = null;
 
-  function build(c) {
-    if (cachedC === c && cache) return cache;
-    const g = makeRng(13579);
-    const slopes = BASE.map(b => b * c + 0.6 * (1 - c));   // collapse toward a common slope
-    const pts = [];
-    for (let k = 0; k < 3; k++)
-      for (let i = 0; i < 300; i++) {
-        const x = g.uni();
-        pts.push({ k, x, y: slopes[k] * x + g.gauss() * 0.7 });
-      }
-    const G = ols(pts.map(p => [p.x, p.y]));
-    const L = [0, 1, 2].map(k => ols(pts.filter(p => p.k === k).map(p => [p.x, p.y])));
-    const my = d3.mean(pts, p => p.y);
-    const sst = d3.sum(pts, p => (p.y - my) ** 2);
-    const sseG = d3.sum(pts, p => (p.y - (G.a + G.b * p.x)) ** 2);
-    const sseL = d3.sum(pts, p => (p.y - (L[p.k].a + L[p.k].b * p.x)) ** 2);
-    cachedC = c;
-    cache = { pts, G, L, slopes, r2g: 1 - sseG / sst, r2l: 1 - sseL / sst };
-    return cache;
+  function makeField(kind) {
+    if (fieldGeo === kind && field) return field;
+    const g = makeRng(20260815);
+    const reg = regimeGrid(kind, N, K, g.rnd);
+    const x1 = new Float64Array(N * N), eps = new Float64Array(N * N);
+    for (let i = 0; i < N * N; i++) { x1[i] = g.uni(); eps[i] = g.gauss() * 0.55; }
+    fieldGeo = kind; field = { reg, x1, eps };
+    return field;
+  }
+
+  function solve(c) {
+    const { reg, x1, eps } = makeField(geo);
+    const slope = BASE.map(b => b * c + 0.45 * (1 - c));
+    const n = N * N, y = new Float64Array(n);
+    for (let i = 0; i < n; i++) y[i] = slope[reg[i]] * x1[i] + eps[i];
+    // pooled OLS through the origin-free form
+    let mx = 0, my = 0;
+    for (let i = 0; i < n; i++) { mx += x1[i]; my += y[i]; }
+    mx /= n; my /= n;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) { sxy += (x1[i] - mx) * (y[i] - my); sxx += (x1[i] - mx) ** 2; syy += (y[i] - my) ** 2; }
+    const bG = sxx ? sxy / sxx : 0, aG = my - bG * mx;
+    // per-regime OLS
+    const loc = [];
+    for (let k = 0; k < K; k++) {
+      let sx = 0, sy = 0, m = 0;
+      for (let i = 0; i < n; i++) if (reg[i] === k) { sx += x1[i]; sy += y[i]; m++; }
+      const mkx = sx / m, mky = sy / m;
+      let cxy = 0, cxx = 0;
+      for (let i = 0; i < n; i++) if (reg[i] === k) { cxy += (x1[i] - mkx) * (y[i] - mky); cxx += (x1[i] - mkx) ** 2; }
+      const b = cxx ? cxy / cxx : 0;
+      loc.push({ a: mky - b * mkx, b });
+    }
+    const resid = new Float64Array(n);
+    let sseG = 0, sseL = 0;
+    for (let i = 0; i < n; i++) {
+      const rG = y[i] - (aG + bG * x1[i]);
+      resid[i] = rG; sseG += rG * rG;
+      const rL = y[i] - (loc[reg[i]].a + loc[reg[i]].b * x1[i]);
+      sseL += rL * rL;
+    }
+    const err = boxBlur(Array.from(resid, v => Math.abs(v)), N, 4);
+    return { reg, x1, y, slope, loc, aG, bG, resid, err,
+             r2g: syy ? 1 - sseG / syy : 0, r2l: syy ? 1 - sseL / syy : 0,
+             moran: moransI(Array.from(err), N) };
   }
 
   function render() {
-    const { pts, G, L, r2g, r2l } = build(state.contrast);
-    const W = 580, H = 360, M = { t: 14, r: 16, b: 36, l: 48 };
+    const d = solve(state.contrast);
+    paintGrid(cvBeta, N, i => divCol(d.slope[d.reg[i]], 3));
+    paintBorders(cvBeta, N, d.reg);
+    paintGrid(cvFlat, N, () => divCol(d.bG, 3));
+    (() => {                                         // one number, written where the pattern would be
+      const ctx = cvFlat.getContext("2d");
+      ctx.font = "500 34px 'IBM Plex Mono', monospace";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(23,25,29,.42)";
+      ctx.fillText(`β = ${d.bG.toFixed(2)}`, cvFlat.width / 2, cvFlat.height / 2);
+    })();
+    const srt = Array.from(d.err).sort(d3.ascending);
+    const lo = d3.quantile(srt, 0.02), hi = d3.quantile(srt, 0.98);
+    paintGrid(cvErr, N, i => seqCol(hi > lo ? Math.max(0, Math.min(1, (d.err[i] - lo) / (hi - lo))) : 0));
+    paintBorders(cvErr, N, d.reg, 1.4, "rgba(255,255,255,.85)");
+    document.getElementById("capFlat").textContent = `β̄ = ${d.bG.toFixed(2)} everywhere`;
+
+    /* supporting scatter: the same data with the geography thrown away */
+    const W = 560, H = 320, M = { t: 14, r: 16, b: 36, l: 48 };
     const x = d3.scaleLinear([-1, 1], [M.l, W - M.r]);
-    const y = d3.scaleLinear([-4.4, 4.4], [H - M.b, M.t]);
-    const s = d3.select(scatterEl); s.selectAll("*").remove();
-    s.append("g").attr("class", "grid").selectAll("line").data(y.ticks(6)).join("line")
-      .attr("x1", M.l).attr("x2", W - M.r).attr("y1", d => y(d)).attr("y2", d => y(d));
-    s.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(5));
-    s.append("g").attr("class", "axis").attr("transform", `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(6));
-    s.append("text").attr("x", (M.l + W - M.r) / 2).attr("y", H - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("X₁");
-    s.append("text").attr("transform", `translate(13,${(M.t + H - M.b) / 2}) rotate(-90)`).attr("text-anchor", "middle").attr("class", "mlabel").text("Y");
+    const yS = d3.scaleLinear([-4.2, 4.2], [H - M.b, M.t]);
+    const sv = d3.select("#whyScatter"); sv.selectAll("*").remove();
+    sv.append("g").attr("class", "grid").selectAll("line").data(yS.ticks(6)).join("line")
+      .attr("x1", M.l).attr("x2", W - M.r).attr("y1", v => yS(v)).attr("y2", v => yS(v));
+    sv.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(5));
+    sv.append("g").attr("class", "axis").attr("transform", `translate(${M.l},0)`).call(d3.axisLeft(yS).ticks(6));
+    sv.append("text").attr("x", (M.l + W - M.r) / 2).attr("y", H - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("X₁");
+    sv.append("text").attr("transform", `translate(13,${(M.t + H - M.b) / 2}) rotate(-90)`).attr("text-anchor", "middle").attr("class", "mlabel").text("Y");
+    const step = 7;
+    for (let k = 0; k < K; k++) {
+      const pts = [];
+      for (let i = 0; i < N * N; i += step) if (d.reg[i] === k) pts.push([d.x1[i], d.y[i]]);
+      sv.append("g").attr("fill", REGC[k]).attr("fill-opacity", .42)
+        .selectAll("circle").data(pts).join("circle")
+        .attr("cx", p => x(p[0])).attr("cy", p => yS(Math.max(-4.2, Math.min(4.2, p[1])))).attr("r", 2);
+    }
+    const seg = (a, b, col, dash, w) => sv.append("line")
+      .attr("x1", x(-1)).attr("y1", yS(a - b)).attr("x2", x(1)).attr("y2", yS(a + b))
+      .attr("stroke", col).attr("stroke-width", w).attr("stroke-linecap", "round").attr("stroke-dasharray", dash);
+    seg(d.aG, d.bG, "#3f3b33", "7 5", 2.6);
+    for (let k = 0; k < K; k++) seg(d.loc[k].a, d.loc[k].b, REGC[k], null, 2.4);
+    sv.append("text").attr("class", "vlabel").attr("x", x(-0.97)).attr("y", yS(d.aG - d.bG * 0.97) - 10)
+      .attr("text-anchor", "start").style("fill", "#3f3b33").text("one global fit");
+    for (let k = 0; k < K; k++)
+      sv.append("text").attr("class", "vlabel").attr("x", x(0.97))
+        .attr("y", yS(Math.max(-4, Math.min(4, d.loc[k].a + d.loc[k].b * 0.97))) - 8)
+        .attr("text-anchor", "end").style("fill", REGC[k]).text(`Regime ${k + 1}`);
 
-    const dim = state.fit === "global" ? 0.22 : 0.5;
-    [0, 1, 2].forEach(k => {
-      s.append("g").attr("fill", REGC[k]).attr("fill-opacity", dim)
-        .selectAll("circle").data(pts.filter(p => p.k === k && p.x !== undefined).filter((_, i) => i % 2 === 0)).join("circle")
-        .attr("cx", d => x(d.x)).attr("cy", d => y(d.y)).attr("r", 2.3);
-    });
-    const seg = (a, b, col, dash, wdt) => s.append("line")
-      .attr("x1", x(-1)).attr("y1", y(a + b * -1)).attr("x2", x(1)).attr("y2", y(a + b * 1))
-      .attr("stroke", col).attr("stroke-width", wdt).attr("stroke-linecap", "round")
-      .attr("stroke-dasharray", dash);
-    if (state.fit !== "local") seg(G.a, G.b, "#3f3b33", "7 5", 2.6);
-    if (state.fit !== "global") [0, 1, 2].forEach(k => seg(L[k].a, L[k].b, REGC[k], null, 2.6));
-    if (state.fit !== "local")
-      s.append("text").attr("class", "vlabel").attr("x", x(-0.97)).attr("y", y(G.a - G.b * 0.97) - 10)
-        .attr("text-anchor", "start").style("fill", "#3f3b33").text("one global fit");
-    if (state.fit !== "global")
-      [0, 1, 2].forEach(k => s.append("text").attr("class", "vlabel")
-        .attr("x", x(0.97)).attr("y", y(L[k].a + L[k].b * 0.97) - 8).attr("text-anchor", "end")
-        .style("fill", REGC[k]).text(`Regime ${k + 1}`));
-
-    /* map */
-    const MW = 320, MH = 200;
-    const m = d3.select(mapEl); m.selectAll("*").remove();
-    [0, 1, 2].forEach(k => {
-      const h = MH / 3;
-      m.append("rect").attr("x", 0).attr("y", k * h).attr("width", MW).attr("height", h)
-        .attr("fill", REGC[k]).attr("fill-opacity", .9);
-      m.append("text").attr("x", 14).attr("y", k * h + h / 2 - 2).attr("class", "vlabel")
-        .style("fill", "#fff").style("font-size", "13px").text(`Regime ${k + 1}`);
-      m.append("text").attr("x", 14).attr("y", k * h + h / 2 + 15).attr("class", "vlabel")
-        .style("fill", "#fff").style("font-size", "12px").style("fill-opacity", .9)
-        .text(`β = ${L[k].b.toFixed(2)}`);
-    });
-    m.append("g").attr("stroke", "#fff").attr("stroke-width", 2).attr("fill", "none")
-      .selectAll("line").data([1, 2]).join("line")
-      .attr("x1", 0).attr("x2", MW).attr("y1", d => d * MH / 3).attr("y2", d => d * MH / 3);
-
-    document.getElementById("roGlobal").textContent = G.b.toFixed(2);
-    document.getElementById("roLocal").textContent = L.map(l => l.b.toFixed(2)).join(" / ");
-    document.getElementById("roRG").textContent = r2g.toFixed(2);
-    document.getElementById("roRL").textContent = r2l.toFixed(2);
+    document.getElementById("roGlobal").textContent = d.bG.toFixed(2);
+    document.getElementById("roLocal").textContent = d.loc.map(l => l.b.toFixed(2)).join(" / ");
+    document.getElementById("roRG").textContent = d.r2g.toFixed(2);
+    document.getElementById("roRL").textContent = d.r2l.toFixed(2);
+    document.getElementById("roMoran").textContent = d.moran.toFixed(2);
   }
 
   document.getElementById("contrast").addEventListener("input", e => {
     state.contrast = +e.target.value / 100; render();
   });
-  document.getElementById("fitSeg").addEventListener("click", e => {
+  document.getElementById("geoSeg").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
-    state.fit = b.dataset.v; setPressed("fitSeg", b.dataset.v); render();
+    geo = b.dataset.v; setPressed("geoSeg", b.dataset.v); render();
   });
   window.__renderWhy = render;
   render();
@@ -1009,39 +1122,11 @@ function ols(pts) {                      // pts: [[x, y], ...] -> {a, b, r2}
   const cv = document.getElementById("geoCanvas"), ctx = cv.getContext("2d");
   const N = 72, K = 5, name = document.getElementById("geoName");
   const pal = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#6250d6"];
-  let rng = 1234567;
-  const rnd = () => (rng = (rng * 48271) % 2147483647) / 2147483647;
+  const g5 = makeRng(1234567), rnd = g5.rnd;
 
-  function rectangular() {
-    const g = new Int8Array(N * N);
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) g[i * N + j] = Math.min(K - 1, Math.floor(i / N * K));
-    return g;
-  }
-  function voronoi() {
-    const seeds = Array.from({ length: K }, () => [rnd() * N, rnd() * N]);
-    const g = new Int8Array(N * N);
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-      let best = 0, bd = Infinity;
-      seeds.forEach(([si, sj], k) => { const d = (i - si) ** 2 + (j - sj) ** 2; if (d < bd) { bd = d; best = k; } });
-      g[i * N + j] = best;
-    }
-    return g;
-  }
-  function arbitrary() {
-    const g = new Int8Array(N * N).fill(-1);
-    const front = [];
-    for (let k = 0; k < K; k++) { const i = (rnd() * N) | 0, j = (rnd() * N) | 0; g[i * N + j] = k; front.push([i, j, k]); }
-    while (front.length) {
-      const idx = (rnd() * front.length) | 0, [i, j, k] = front[idx];
-      front.splice(idx, 1);
-      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([di, dj]) => {
-        const a = i + di, b = j + dj;
-        if (a >= 0 && b >= 0 && a < N && b < N && g[a * N + b] === -1) { g[a * N + b] = k; front.push([a, b, k]); }
-      });
-    }
-    return g;
-  }
-  const frames = [["rectangular", rectangular()], ["voronoi", voronoi()], ["arbitrary", arbitrary()]];
+  const frames = [["rectangular", regimeGrid("rect", N, K, rnd)],
+                  ["voronoi", regimeGrid("voronoi", N, K, rnd)],
+                  ["arbitrary", regimeGrid("arbitrary", N, K, rnd)]];
   let cur = 0, t = 0, last = performance.now(), shownIdx = -1;
 
   function draw(mix) {
@@ -1083,108 +1168,148 @@ function ols(pts) {                      // pts: [[x, y], ...] -> {a, b, r2}
   }
 })();
 
-/* ---------- 02: mechanism demo ---------- */
+/* ---------- 02: the outcome map against the truth map ---------- */
 (function mechanism() {
-  const scatter = document.getElementById("demoScatter"), hist = document.getElementById("demoHist");
-  let seed = 20260101;
-  const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
-  const uni = () => rnd() * 2 - 1;
-  const gauss = () => { let u = 0, v = 0; while (!u) u = rnd(); while (!v) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2832 * v); };
+  const N = 52, K = 3;
+  const cvY = document.getElementById("mapY"), cvT = document.getElementById("mapTruth");
+  const B = [[3, -2], [-2, 3], [1.4, 2.6]];          // slopes on x1, x2 per regime
+  const B2 = [[2, -1], [-1, 2], [1.5, -1.8]];        // quadratic bases, nonlinear case
+  const LEVEL = [7, 0, -7];
+
+  let base = null;
+  function makeBase() {
+    if (base) return base;
+    const g = makeRng(20260101);
+    const reg = regimeGrid("voronoi", N, K, g.rnd);
+    const x1 = new Float64Array(N * N), x2 = new Float64Array(N * N), eps = new Float64Array(N * N);
+    for (let i = 0; i < N * N; i++) { x1[i] = g.uni(); x2[i] = g.uni(); eps[i] = g.gauss() * 0.45; }
+    base = { reg, x1, x2, eps };
+    return base;
+  }
 
   function generate(mode, proc) {
-    seed = 20260101;
-    const betas = proc === "linear"
-      ? [[0, 3, -2], [0, -2, 3]]                     // intercept, x1, x2
-      : [[0, 3, -2, 2, -1], [0, -2, 3, -1, 2]];      // + x1^2, x2^2
-    const inter = [10, -8];                          // level shift under the mixed mode
-    const pts = [[], []];
-    for (let k = 0; k < 2; k++) {
-      let b = betas[k].slice(1);
-      let b0 = mode === "mixed" ? inter[k] : 0;
-      if (mode === "strict") { const n = Math.hypot(...b); b = b.map(v => v / n * 4); }
-      for (let i = 0; i < 1000; i++) {
-        const x1 = uni(), x2 = uni();
-        const basis = proc === "linear" ? [x1, x2] : [x1, x2, x1 * x1, x2 * x2];
-        let y = b0 + basis.reduce((s, v, j) => s + v * b[j], 0) + gauss() * 0.45;
-        pts[k].push([x1, y]);
+    const { reg, x1, x2, eps } = makeBase();
+    const n = N * N, y = new Float64Array(n);
+    const b = [], q = [];
+    for (let k = 0; k < K; k++) {
+      let lin = B[k].slice(), quad = proc === "nonlinear" ? B2[k].slice() : [0, 0];
+      if (mode === "strict") {                        // drop the level, normalise the slope vector
+        const all = lin.concat(quad), nrm = Math.hypot(...all);
+        lin = lin.map(v => v / nrm * 4); quad = quad.map(v => v / nrm * 4);
       }
+      b.push(lin); q.push(quad);
     }
-    return pts;
+    for (let i = 0; i < n; i++) {
+      const k = reg[i];
+      const lvl = mode === "mixed" ? LEVEL[k] : 0;
+      y[i] = lvl + b[k][0] * x1[i] + b[k][1] * x2[i]
+                 + q[k][0] * x1[i] * x1[i] + q[k][1] * x2[i] * x2[i] + eps[i];
+    }
+    return { reg, x1, y };
   }
-  function stats(pts) {
-    const mean = k => pts[k].reduce((s, p) => s + p[1], 0) / pts[k].length;
-    const m0 = mean(0), m1 = mean(1);
-    const a = pts[0].map(p => p[1]).sort((x, y) => x - y), b = pts[1].map(p => p[1]).sort((x, y) => x - y);
-    let i = 0, j = 0, ks = 0;
-    while (i < a.length && j < b.length) {
-      const v = Math.min(a[i], b[j]);
-      while (i < a.length && a[i] <= v) i++;
-      while (j < b.length && b[j] <= v) j++;
-      ks = Math.max(ks, Math.abs(i / a.length - j / b.length));
+
+  function ari(labels, truth, K) {
+    const t = Array.from({ length: K }, () => new Array(K).fill(0));
+    for (let i = 0; i < labels.length; i++) t[truth[i]][labels[i]]++;
+    const c2 = v => v * (v - 1) / 2;
+    const sIJ = t.flat().reduce((a, v) => a + c2(v), 0);
+    const sI = t.map(r => c2(r.reduce((a, v) => a + v, 0))).reduce((a, v) => a + v, 0);
+    const sJ = Array.from({ length: K }, (_, j) => c2(t.reduce((a, r) => a + r[j], 0))).reduce((a, v) => a + v, 0);
+    const tot = c2(labels.length), exp = sI * sJ / tot;
+    return (sIJ - exp) / ((sI + sJ) / 2 - exp);
+  }
+  function kmeans1d(v, K) {                           // Jenks-free, good enough for a readout
+    const sorted = Array.from(v).sort(d3.ascending);
+    let cen = Array.from({ length: K }, (_, k) => d3.quantile(sorted, (k + 0.5) / K));
+    const lab = new Int8Array(v.length);
+    for (let it = 0; it < 30; it++) {
+      for (let i = 0; i < v.length; i++) {
+        let best = 0, bd = Infinity;
+        for (let k = 0; k < K; k++) { const d = Math.abs(v[i] - cen[k]); if (d < bd) { bd = d; best = k; } }
+        lab[i] = best;
+      }
+      const s = new Array(K).fill(0), c = new Array(K).fill(0);
+      for (let i = 0; i < v.length; i++) { s[lab[i]] += v[i]; c[lab[i]]++; }
+      for (let k = 0; k < K; k++) if (c[k]) cen[k] = s[k] / c[k];
     }
-    // 1-D k-means on Y with K=2, then ARI against the true labels
-    const all = pts[0].map(p => [p[1], 0]).concat(pts[1].map(p => [p[1], 1]));
-    let c0 = d3.quantile(all.map(d => d[0]).sort(d3.ascending), 0.25);
-    let c1 = d3.quantile(all.map(d => d[0]).sort(d3.ascending), 0.75);
-    for (let it = 0; it < 25; it++) {
-      const s = [0, 0], n = [0, 0];
-      for (const [v] of all) { const g = Math.abs(v - c0) <= Math.abs(v - c1) ? 0 : 1; s[g] += v; n[g]++; }
-      if (n[0]) c0 = s[0] / n[0]; if (n[1]) c1 = s[1] / n[1];
-    }
-    const t = [[0, 0], [0, 0]];
-    for (const [v, lab] of all) t[lab][Math.abs(v - c0) <= Math.abs(v - c1) ? 0 : 1]++;
-    const nC2 = x => x * (x - 1) / 2;
-    const sumIJ = t.flat().reduce((s, v) => s + nC2(v), 0);
-    const sumI = t.map(r => nC2(r[0] + r[1])).reduce((s, v) => s + v, 0);
-    const sumJ = [0, 1].map(j => nC2(t[0][j] + t[1][j])).reduce((s, v) => s + v, 0);
-    const tot = nC2(all.length), exp = sumI * sumJ / tot;
-    const ari = (sumIJ - exp) / ((sumI + sumJ) / 2 - exp);
-    return { dm: Math.abs(m0 - m1), ks, ari: Math.max(0, ari) };
+    return lab;
   }
 
   function render() {
-    const pts = generate(state.demoMode, state.demoProc);
-    const W = 560, H = 330, M = { t: 10, r: 14, b: 34, l: 46 };
-    const ally = pts.flat().map(p => p[1]);
-    const yd = d3.extent(ally), pad = (yd[1] - yd[0]) * 0.06;
-    const x = d3.scaleLinear([-1, 1], [M.l, W - M.r]);
-    const y = d3.scaleLinear([yd[0] - pad, yd[1] + pad], [H - M.b, M.t]);
-    const s = d3.select(scatter); s.selectAll("*").remove();
-    s.append("g").attr("class", "grid").selectAll("line").data(y.ticks(5)).join("line")
-      .attr("x1", M.l).attr("x2", W - M.r).attr("y1", d => y(d)).attr("y2", d => y(d));
-    s.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(5));
-    s.append("g").attr("class", "axis").attr("transform", `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5));
-    s.append("text").attr("x", (M.l + W - M.r) / 2).attr("y", H - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("X₁");
-    s.append("text").attr("transform", `translate(12,${(M.t + H - M.b) / 2}) rotate(-90)`).attr("text-anchor", "middle").attr("class", "mlabel").text("Y");
-    [0, 1].forEach(k => {
-      s.append("g").attr("fill", k ? FAMC.reg : FAMC.xai).attr("fill-opacity", .45)
-        .selectAll("circle").data(pts[k].filter((_, i) => i % 2 === 0)).join("circle")
-        .attr("cx", d => x(d[0])).attr("cy", d => y(d[1])).attr("r", 2.1);
-      s.append("text").attr("x", W - M.r).attr("y", M.t + 14 + k * 17).attr("text-anchor", "end")
-        .attr("class", "vlabel").style("fill", k ? FAMC.reg : FAMC.xai).text(`Regime ${k + 1}`);
-    });
+    const { reg, x1, y } = generate(state.demoMode, state.demoProc);
+    const n = N * N;
+    const lo = d3.quantile(Array.from(y).sort(d3.ascending), 0.01);
+    const hi = d3.quantile(Array.from(y).sort(d3.ascending), 0.99);
+    const mid = (lo + hi) / 2, half = Math.max(1e-6, (hi - lo) / 2);
+    paintGrid(cvY, N, i => divCol(y[i] - mid, half));
+    paintGrid(cvT, N, i => REGC[reg[i]]);
+    paintBorders(cvT, N, reg, 1.6, "rgba(255,255,255,.9)");
+    document.getElementById("capY").textContent =
+      state.demoMode === "mixed" ? "Y(s) · mixed heterogeneity" : "Y(s) · strict process";
 
-    const HW = 420, HH = 330, HM = { t: 10, r: 12, b: 34, l: 44 };
-    const bins = d3.bin().domain(y.domain()).thresholds(26);
-    const h = d3.select(hist); h.selectAll("*").remove();
-    const b0 = bins(pts[0].map(p => p[1])), b1 = bins(pts[1].map(p => p[1]));
-    const hx = d3.scaleLinear([0, d3.max([...b0, ...b1], d => d.length)], [HM.l, HW - HM.r]);
-    const hy = d3.scaleLinear(y.domain(), [HH - HM.b, HM.t]);
-    h.append("g").attr("class", "axis").attr("transform", `translate(0,${HH - HM.b})`).call(d3.axisBottom(hx).ticks(4));
-    h.append("g").attr("class", "axis").attr("transform", `translate(${HM.l},0)`).call(d3.axisLeft(hy).ticks(5));
-    h.append("text").attr("x", (HM.l + HW - HM.r) / 2).attr("y", HH - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("count");
-    [[b0, FAMC.xai], [b1, FAMC.reg]].forEach(([bins_, col]) => {
-      h.append("g").attr("fill", col).attr("fill-opacity", .5)
-        .selectAll("rect").data(bins_).join("rect")
-        .attr("x", HM.l + 1).attr("y", d => hy(d.x1))
-        .attr("width", d => Math.max(0, hx(d.length) - HM.l - 1))
-        .attr("height", d => Math.max(1, hy(d.x0) - hy(d.x1) - 2));
+    /* pooled views, kept small */
+    const W = 560, H = 320, M = { t: 14, r: 16, b: 36, l: 48 };
+    const yl = [d3.min(y), d3.max(y)];
+    const x = d3.scaleLinear([-1, 1], [M.l, W - M.r]);
+    const ys = d3.scaleLinear(yl, [H - M.b, M.t]);
+    const sv = d3.select("#demoScatter"); sv.selectAll("*").remove();
+    sv.append("g").attr("class", "grid").selectAll("line").data(ys.ticks(5)).join("line")
+      .attr("x1", M.l).attr("x2", W - M.r).attr("y1", v => ys(v)).attr("y2", v => ys(v));
+    sv.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(5));
+    sv.append("g").attr("class", "axis").attr("transform", `translate(${M.l},0)`).call(d3.axisLeft(ys).ticks(5));
+    sv.append("text").attr("x", (M.l + W - M.r) / 2).attr("y", H - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("X₁");
+    sv.append("text").attr("transform", `translate(13,${(M.t + H - M.b) / 2}) rotate(-90)`).attr("text-anchor", "middle").attr("class", "mlabel").text("Y");
+    for (let k = 0; k < K; k++) {
+      const pts = [];
+      for (let i = 0; i < n; i += 5) if (reg[i] === k) pts.push([x1[i], y[i]]);
+      sv.append("g").attr("fill", REGC[k]).attr("fill-opacity", .4)
+        .selectAll("circle").data(pts).join("circle")
+        .attr("cx", p => x(p[0])).attr("cy", p => ys(p[1])).attr("r", 1.9);
+      sv.append("text").attr("x", W - M.r).attr("y", M.t + 13 + k * 16).attr("text-anchor", "end")
+        .attr("class", "vlabel").style("fill", REGC[k]).text(`Regime ${k + 1}`);
+    }
+
+    const HW = 420, HH = 240, HM = { t: 10, r: 12, b: 32, l: 44 };
+    const h = d3.select("#demoHist"); h.selectAll("*").remove();
+    const bins = d3.bin().domain(yl).thresholds(30);
+    const byReg = [0, 1, 2].map(k => {
+      const v = []; for (let i = 0; i < n; i++) if (reg[i] === k) v.push(y[i]); return bins(v);
     });
-    const st = stats(pts);
-    document.getElementById("roMean").textContent = fmt(st.dm, 2);
-    document.getElementById("roKS").textContent = fmt(st.ks, 2);
-    document.getElementById("roARI").textContent = fmt(st.ari, 3);
+    const hx = d3.scaleLinear(yl, [HM.l, HW - HM.r]);
+    const hy = d3.scaleLinear([0, d3.max(byReg.flat(), d => d.length)], [HH - HM.b, HM.t]);
+    h.append("g").attr("class", "axis").attr("transform", `translate(0,${HH - HM.b})`).call(d3.axisBottom(hx).ticks(5));
+    h.append("g").attr("class", "axis").attr("transform", `translate(${HM.l},0)`).call(d3.axisLeft(hy).ticks(4));
+    h.append("text").attr("x", (HM.l + HW - HM.r) / 2).attr("y", HH - 4).attr("text-anchor", "middle").attr("class", "mlabel").text("Y");
+    byReg.forEach((bs, k) => h.append("g").attr("fill", REGC[k]).attr("fill-opacity", .45)
+      .selectAll("rect").data(bs).join("rect")
+      .attr("x", d => hx(d.x0) + 1).attr("y", d => hy(d.length))
+      .attr("width", d => Math.max(1, hx(d.x1) - hx(d.x0) - 2))
+      .attr("height", d => Math.max(0, hy(0) - hy(d.length))));
+
+    const means = [0, 1, 2].map(k => {
+      let s = 0, m = 0; for (let i = 0; i < n; i++) if (reg[i] === k) { s += y[i]; m++; } return s / m;
+    });
+    const sortedBy = [0, 1, 2].map(k => {
+      const v = []; for (let i = 0; i < n; i++) if (reg[i] === k) v.push(y[i]); return v.sort(d3.ascending);
+    });
+    let ks = 0;
+    for (let a = 0; a < K; a++) for (let b2 = a + 1; b2 < K; b2++) {
+      const A = sortedBy[a], B_ = sortedBy[b2];
+      let i = 0, j = 0, m = 0;
+      while (i < A.length && j < B_.length) {
+        const v = Math.min(A[i], B_[j]);
+        while (i < A.length && A[i] <= v) i++;
+        while (j < B_.length && B_[j] <= v) j++;
+        m = Math.max(m, Math.abs(i / A.length - j / B_.length));
+      }
+      ks = Math.max(ks, m);
+    }
+    const lab = kmeans1d(y, K);
+    document.getElementById("roMean").textContent = fmt(d3.max(means) - d3.min(means), 2);
+    document.getElementById("roKS").textContent = fmt(ks, 2);
+    document.getElementById("roARI").textContent = fmt(Math.max(0, ari(lab, reg, K)), 3);
   }
+
   document.getElementById("demoMode").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     state.demoMode = b.dataset.v; setPressed("demoMode", b.dataset.v); render();
