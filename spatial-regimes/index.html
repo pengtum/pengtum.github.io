@@ -1089,14 +1089,18 @@ function boxBlur(v, N, r) {
     ctx.globalAlpha = 1;
   }
   function overlay(ctx, valueAt, alpha) {
+    ctx.save();
+    ctx.beginPath();                                  // clip to the land, so the coast stays a curve
+    ctx.moveTo(W, 0);
+    for (let y = 0; y <= H; y += 4) ctx.lineTo(coast(y), y);
+    ctx.lineTo(W, H); ctx.closePath(); ctx.clip();
     ctx.globalAlpha = alpha;
     for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
       const k = i * N + j;
-      if (reg[k] < 0) continue;
       ctx.fillStyle = divCol(warp(valueAt(k)), 100);
       ctx.fillRect(j * S, i * S, Math.ceil(S), Math.ceil(S));
     }
-    ctx.globalAlpha = 1;
+    ctx.restore();
   }
   function borders(ctx, alpha) {
     ctx.globalAlpha = alpha; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 3.4;
@@ -1126,14 +1130,14 @@ function boxBlur(v, N, r) {
         zoneLabel(ctx, k, "~" + money(smooth[Math.round(anchorY[k] / S) * N +
           Math.round(anchorX[k](anchorY[k]) / S)]), (e - .5) / .5, 22);
     } else if (beat === 3) {
-      overlay(ctx, k => smooth[k] + (VALUE[reg[k]] - smooth[k]) * e, A);
+      overlay(ctx, k => { const v = VALUE[Math.max(0, reg[k])]; return smooth[k] + (v - smooth[k]) * e; }, A);
       borders(ctx, e);
       for (let k = 0; k < 3; k++) {
         const sm = smooth[Math.round(anchorY[k] / S) * N + Math.round(anchorX[k](anchorY[k]) / S)];
         zoneLabel(ctx, k, e < .5 ? "~" + money(sm) : money(VALUE[k]), 1, 22);
       }
     } else {
-      overlay(ctx, k => VALUE[reg[k]], A * (1 - e));
+      overlay(ctx, k => VALUE[Math.max(0, reg[k])], A * (1 - e));
       borders(ctx, 1 - e);
       for (let k = 0; k < 3; k++) zoneLabel(ctx, k, money(VALUE[k]), 1 - e, 22);
     }
