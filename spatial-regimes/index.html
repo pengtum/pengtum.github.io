@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Spatial Regime Benchmark</title>
+<title>RegimeBench — Which method finds spatial regimes, and when?</title>
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="canonical" href="https://peng-luo.com/spatial-regimes/">
-<meta name="description" content="Why spatial regimes matter, how nine methods try to find them, and what 3,564 controlled benchmark runs say about which one to use. Interactive companion to the IJGIS paper 'Modeling Nonlinear Spatial Regimes'.">
-<meta property="og:title" content="Spatial Regime Benchmark">
-<meta property="og:description" content="A global coefficient can be right on average and wrong everywhere. An interactive account of spatial regimes, nine detection methods and 3,564 benchmark runs.">
+<meta name="description" content="RegimeBench — Which method finds spatial regimes, and when? Why spatial regimes matter, how nine methods try to find them, and what 3,564 controlled runs say about which one to use. Interactive companion to the IJGIS paper 'Modeling Nonlinear Spatial Regimes'.">
+<meta property="og:title" content="RegimeBench">
+<meta property="og:description" content="Which method finds spatial regimes, and when? A global coefficient can be right on average and wrong everywhere — an interactive account of spatial regimes, nine detection methods and 3,564 benchmark runs.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,10 +56,16 @@ em { font-style: italic; }
 header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9;
   background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--rule); }
-header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 10px; }
-.brand { font-family: var(--font-display); font-size: 15px; letter-spacing: .02em; }
-.brand b { color: var(--xai); }
-nav.links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13.5px; }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding-block: 10px; flex-wrap: wrap; }
+.brand { font-family: var(--font-display); font-size: 16px; letter-spacing: .01em; display: flex;
+  align-items: baseline; gap: 12px; flex: 0 0 auto; white-space: nowrap; }
+.brand b { color: var(--xai); font-weight: 600; }
+.brand-tag { font-family: var(--font-body); font-size: 12.5px; color: var(--ink-3); white-space: nowrap;
+  padding-left: 12px; border-left: 1px solid var(--rule); }
+@media (max-width: 1100px) { .brand-tag { display: none; } }
+nav.links { display: flex; gap: 10px 16px; flex-wrap: wrap; font-size: 13.5px;
+  flex: 1 1 auto; justify-content: flex-end; min-width: 0; }
 nav.links a { color: var(--ink-2); text-decoration: none; }
 nav.links a:hover { color: var(--ink); text-decoration: underline; }
 nav.links a.on { color: var(--ink); border-bottom: 1.5px solid var(--xai); }
@@ -80,6 +86,14 @@ section + section { border-top: 1px solid var(--rule); }
 
 /* hero */
 .hero { padding-top: clamp(30px, 5vw, 62px); position: relative; overflow: hidden; }
+.lockup { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lockup .mark { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em;
+  font-size: clamp(1.3rem, 2.1vw, 1.6rem); }
+.lockup .mark b { color: var(--xai); font-weight: 600; }
+.lockup .chip { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-3); border: 1px solid var(--rule-2); border-radius: 999px; padding: 3px 9px; }
+.tagline { font-family: var(--font-mono); font-size: clamp(12px, 1.25vw, 13.5px); letter-spacing: .02em;
+  color: var(--ink-2); margin-top: -8px; padding-bottom: 4px; border-bottom: 1px solid var(--rule); }
 .hero::before { content: ""; position: absolute; inset: -40% -10% auto -10%; height: 150%;
   background: radial-gradient(60% 55% at 72% 18%, rgba(42,120,214,.10), transparent 70%),
               radial-gradient(45% 45% at 18% 85%, rgba(235,104,52,.08), transparent 70%);
@@ -272,7 +286,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 <body>
 <div class="prog" id="prog"></div>
 <header class="top"><div class="wrap">
-  <div class="brand">Spatial <b>regime</b> benchmark</div>
+  <div class="brand"><span>Regime<b>Bench</b></span><span class="brand-tag">Which method finds spatial regimes, and when?</span></div>
   <nav class="links" aria-label="Sections">
     <a href="#why">The problem</a><a href="#trap">Why it is hard</a><a href="#benchmark">The benchmark</a>
     <a href="#results">Results</a><a href="#methods">Methods</a><a href="#data">Data &amp; code</a>
@@ -283,7 +297,11 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 <section class="hero"><div class="wrap">
   <div class="hero-grid">
     <div class="hero-copy">
-      <div class="eyebrow"><s>IJGIS</s> interactive companion</div>
+      <div class="lockup">
+        <span class="mark">Regime<b>Bench</b></span>
+        <span class="chip">IJGIS companion</span>
+      </div>
+      <p class="tagline">Which method finds spatial regimes, and when?</p>
       <h1>The relationship changes across space. Most models assume it does not.</h1>
       <p class="lede">Where the process that generates an outcome differs from place to place, a single
       global model returns an average that may describe no location at all. <em>Spatial regimes</em> are the
@@ -692,7 +710,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 </div></section>
 
 <footer><div class="wrap">
-  <span>Companion page to the IJGIS paper &middot; built from the public benchmark table</span>
+  <span>RegimeBench &middot; companion to the IJGIS paper, built from the public benchmark table</span>
   <span><a href="https://peng-luo.com/">peng-luo.com</a> &middot; Trustworthy GeoAI Lab</span>
 </div></footer>
 
