@@ -320,15 +320,15 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
         <span class="chip">IJGIS companion</span>
       </div>
       <p class="tagline">Which method finds spatial regimes, and when?</p>
-      <h1>The relationship changes across space. Most models assume it does not.</h1>
-      <p class="lede">Ask a housing model what one more room is worth and it answers with a number:
-      <span class="num" id="ledeBar">+$33k</span>, everywhere in the region. Look zone by zone and that number falls
-      apart — near the water a room is worth three times as much, and out in the cheap rural fringe an
-      extra room is a sign of a big old farmhouse and is worth nothing at all. <em>Spatial regimes</em> are
-      those zones. This page is about how to find them, and about a benchmark of 3,564 controlled runs
-      that says which methods actually do.</p>
-      <p class="note">The panel is a worked illustration. The benchmark behind it runs on controlled
-      simulations with known regimes, plus two real datasets.</p>
+      <h1>Spatial heterogeneity has edges. Most methods only draw gradients.</h1>
+      <p class="lede">That spatial relationships vary is not in dispute — geographically weighted
+      regression and attribution maps have modelled drifting coefficients for years. The open question is
+      the <em>shape</em> of the variation. Walk from the waterfront villas through the apartment blocks to
+      the farms and what one more room is worth does not drift: it jumps, at a street you could point to.
+      A smooth surface cannot put a line there. <em>Spatial regimes</em> can. This page is about finding
+      them, and about a benchmark of 3,564 controlled runs that says which methods actually do.</p>
+      <p class="note">Panel: an illustration. The benchmark behind it runs on controlled simulations with
+      known regimes, plus two real datasets.</p>
       <div class="links-row">
         <a class="btn" href="#why">Start with the problem</a>
         <a class="btn ghost" href="#results">Skip to the results</a>
@@ -342,10 +342,10 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
     </div>
     <div class="hero-art">
       <div class="plate">
-        <canvas id="heroCanvas" width="640" height="640" aria-label="A worked example in three steps: a map of house prices, the single value a global model gives for one more room, and the three zones that value really takes"></canvas>
+        <canvas id="heroCanvas" width="680" height="680" aria-label="An illustrated town in four steps: three neighbourhoods of different housing, the single value a global model gives for one more room, the smooth surface a continuous method gives, and the three regimes with their own values and sharp borders"></canvas>
         <div class="plate-cap">
-          <span><b id="heroStep">1 / 3</b> <span id="heroPhase">Median house price</span></span>
-          <span id="heroRead">what is one more room worth?</span>
+          <span><b id="heroStep">1 / 4</b> <span id="heroPhase">Three neighbourhoods</span></span>
+          <span id="heroRead">villas · apartment blocks · farms</span>
         </div>
       </div>
     </div>
@@ -355,10 +355,11 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
 <!-- ───────────────────────── 01 the problem ───────────────────────── -->
 <section id="why"><div class="wrap">
   <div class="eyebrow reveal"><s>01</s> The problem</div>
-  <h2 class="reveal">The mechanism has a geography. A global model flattens it.</h2>
-  <p class="lede reveal" style="margin-top:10px">Same structure as the rooms above, now with the
+  <h2 class="reveal">The mechanism has a geography, and the geography has borders</h2>
+  <p class="lede reveal" style="margin-top:10px">Same structure as the town above, now with the
   statistics beside it. Read these three maps left to right. The first is the thing that actually varies:
-  the local effect of X₁ on Y, which here takes three values over three zones.
+  the local effect of X₁ on Y, which takes three values over three zones and is <em>piecewise constant</em>
+  — flat inside a zone, discontinuous at its edge.
   The second is what a single global regression puts in its place — one number, everywhere. The third is
   what that costs, and the point is that the cost is <em>not</em> spread evenly: it reassembles the map
   you started from.</p>
@@ -538,10 +539,12 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: 
   </div>
 
   <h3 class="reveal" style="margin-top:44px;font-family:var(--font-display);font-size:clamp(1.15rem,1.9vw,1.4rem)">Four ways to model spatial heterogeneity — and the cell nobody had filled</h3>
-  <p class="lede reveal" style="margin-top:8px">Existing methods sort along two questions: is the local
-  relationship between X and Y assumed <em>linear</em> or allowed to be <em>nonlinear</em>, and is
-  heterogeneity represented as a <em>continuous surface</em> or as <em>discrete regimes</em>? Three of the
-  four combinations were well covered. The fourth is what this paper is about.</p>
+  <p class="lede reveal" style="margin-top:8px">This is the axis the opening panel was about. Methods
+  sort along two questions: is the local relationship between X and Y assumed <em>linear</em> or allowed to
+  be <em>nonlinear</em>, and is heterogeneity represented as a <em>continuous surface</em> or as
+  <em>discrete regimes</em>? The continuous column is crowded — GWR, MGWR and attribution maps all live
+  there — and the discrete column, where a method has to commit to a boundary, is not. Of its two cells
+  only the linear one was occupied. The fourth is what this paper is about.</p>
 
   <div class="quad-frame reveal" style="margin-top:20px">
     <div class="quad-y">continuous → discrete</div>
@@ -952,151 +955,217 @@ function boxBlur(v, N, r) {
   }
   return out;
 }
-/* ---------- hero: a worked example in three beats ---------- */
+/* ---------- hero: one town, four ways of answering the same question ---------- */
 (function heroArt() {
   const cv = document.getElementById("heroCanvas");
   const stepEl = document.getElementById("heroStep"),
         phaseEl = document.getElementById("heroPhase"),
         readEl = document.getElementById("heroRead");
-  const N = 64, K = 3;
-  const VALUE = [95, 31, -12];                      // $k added by one more room, by zone
-  const ZONE = ["near the water", "the suburbs", "the rural fringe"];
+  const W = cv.width, H = cv.height, N = 68, S = W / N;
+  const VALUE = [95, 31, -12];                       // $k added by one more room, by neighbourhood
   const g = makeRng(20260402);
-  const reg = regimeGrid("arbitrary", N, K, g.rnd);
 
-  /* a plausible price surface: a coastal gradient, a zone premium, some noise */
-  const price = new Float64Array(N * N);
-  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-    const k = reg[i * N + j];
-    price[i * N + j] = 1.15 * (1 - j / N) + 0.55 * (1 - i / N)
-                     + 0.30 * (k === 0 ? 1 : k === 1 ? 0.45 : 0) + g.gauss() * 0.11;
-  }
-  const psort = Array.from(price).sort((a, b) => a - b);
-  const plo = psort[Math.floor(psort.length * 0.02)], phi = psort[Math.floor(psort.length * 0.98)];
+  /* the town: water on the left, then villas, apartments, farms, with wavy borders */
+  const coast = y => 0.085 * W + 0.030 * W * Math.sin(y / H * 5.6 + 0.4);
+  const edge1 = y => 0.400 * W + 0.055 * W * Math.sin(y / H * 4.2 + 1.1);
+  const edge2 = y => 0.705 * W + 0.048 * W * Math.sin(y / H * 3.4 + 2.3);
+  const zoneAt = (x, y) => x < coast(y) ? -1 : x < edge1(y) ? 0 : x < edge2(y) ? 1 : 2;
+
+  const reg = new Int8Array(N * N);                  // −1 is water
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++)
+    reg[i * N + j] = zoneAt((j + .5) * S, (i + .5) * S);
+
+  /* the smooth surface a continuous method would return: the same field, blurred until the edges go */
+  const sharp = new Float64Array(N * N);
+  for (let i = 0; i < N * N; i++) sharp[i] = reg[i] < 0 ? 0 : VALUE[reg[i]];
+  let smooth = sharp;
+  for (let pass = 0; pass < 3; pass++) smooth = boxBlur(Array.from(smooth), N, 7);
 
   const area = [0, 0, 0];
-  for (let i = 0; i < reg.length; i++) area[reg[i]]++;
-  const BAR = Math.round(VALUE.reduce((s2, v, k) => s2 + v * area[k], 0) / reg.length);
-
-  /* label anchors: the deepest interior cell of each zone, so the text sits inside its own patch */
-  const anchor = (() => {
-    const best = Array.from({ length: K }, () => ({ d: -1, i: 0, j: 0 }));
-    for (let i = 2; i < N - 2; i++) for (let j = 2; j < N - 2; j++) {
-      const k = reg[i * N + j];
-      let d = 0;
-      while (d < 9) {
-        const r = d + 1;
-        let ok = true;
-        for (let a = -r; a <= r && ok; a++) for (let b = -r; b <= r && ok; b++) {
-          const p2 = i + a, q = j + b;
-          if (p2 < 0 || q < 0 || p2 >= N || q >= N || reg[p2 * N + q] !== k) ok = false;
-        }
-        if (!ok) break;
-        d = r;
-      }
-      if (d > best[k].d) best[k] = { d, i, j };
-    }
-    return best;
-  })();
-
-  const money = v => (v < 0 ? "−$" : "+$") + Math.abs(v) + "k";
-  const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
-  /* a square-root stretch so −$12k is visibly a different colour from +$31k */
+  for (let i = 0; i < reg.length; i++) if (reg[i] >= 0) area[reg[i]]++;
+  const land = area[0] + area[1] + area[2];
+  const BAR = Math.round(VALUE.reduce((t, v, k) => t + v * area[k], 0) / land);
+  const money = v => (v < 0 ? "−$" : "+$") + Math.abs(Math.round(v)) + "k";
   const warp = v => Math.sign(v) * Math.sqrt(Math.abs(v) / 100) * 100;
   const ledeEl = document.getElementById("ledeBar");
   if (ledeEl) ledeEl.textContent = money(BAR);
 
-  function lattice(ctx, S) {
-    ctx.strokeStyle = "rgba(23,25,29,.055)"; ctx.lineWidth = 1; ctx.beginPath();
-    for (let k = 0; k <= N; k += 4) {
-      ctx.moveTo(k * S, 0); ctx.lineTo(k * S, cv.height);
-      ctx.moveTo(0, k * S); ctx.lineTo(cv.width, k * S);
+  /* ---- the illustration, drawn once into an offscreen canvas ---- */
+  const art = document.createElement("canvas");
+  art.width = W; art.height = H;
+  (function paintTown() {
+    const c = art.getContext("2d");
+    c.fillStyle = "#f7f4ee"; c.fillRect(0, 0, W, H);
+    // sea
+    c.beginPath(); c.moveTo(0, 0);
+    for (let y = 0; y <= H; y += 6) c.lineTo(coast(y), y);
+    c.lineTo(0, H); c.closePath();
+    c.fillStyle = "#dce9f2"; c.fill();
+    c.strokeStyle = "#b9cfdf"; c.lineWidth = 1.4;
+    for (let k = 0; k < 26; k++) {                   // a few wave ticks
+      const y = 18 + k * (H / 26), x = coast(y) * (0.22 + 0.55 * g.rnd());
+      c.beginPath(); c.moveTo(x - 9, y); c.quadraticCurveTo(x, y - 4, x + 9, y); c.stroke();
     }
-    ctx.stroke();
-  }
-  function zoneLabels(ctx, S, alpha) {
-    ctx.globalAlpha = alpha;
-    ctx.font = "500 26px 'IBM Plex Mono', monospace";
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.lineJoin = "round"; ctx.lineWidth = 6;
-    for (let k = 0; k < K; k++) {
-      const x = (anchor[k].j + .5) * S, y = (anchor[k].i + .5) * S;
-      ctx.strokeStyle = "rgba(255,255,255,.95)";
-      ctx.strokeText(money(VALUE[k]), x, y);
-      ctx.fillStyle = "rgba(23,25,29,.82)";
-      ctx.fillText(money(VALUE[k]), x, y);
+    // fields in the rural strip
+    c.strokeStyle = "#e4e0d4"; c.lineWidth = 1.2;
+    for (let y = 10; y < H; y += 16) {
+      const x0 = edge2(y) + 8;
+      if (x0 >= W - 10) continue;
+      c.beginPath(); c.moveTo(x0, y); c.lineTo(W - 6, y); c.stroke();
     }
-    ctx.globalAlpha = 1;
-  }
-  function centred(ctx, text, size, alpha) {
+
+    const ink = "#6f6a5e", pale = "#ffffff", wall = "#efeae1", roof = "#9a9488", dark = "#5d5950";
+    function villa(x, y, u) {                        // wide, low roof, a garden tree
+      c.fillStyle = wall; c.strokeStyle = ink; c.lineWidth = 1.2;
+      c.fillRect(x - 1.5 * u, y - 1.0 * u, 3 * u, 1.0 * u);
+      c.strokeRect(x - 1.5 * u, y - 1.0 * u, 3 * u, 1.0 * u);
+      c.beginPath(); c.moveTo(x - 1.8 * u, y - 1.0 * u); c.lineTo(x, y - 1.75 * u);
+      c.lineTo(x + 1.8 * u, y - 1.0 * u); c.closePath();
+      c.fillStyle = roof; c.fill(); c.stroke();
+      c.fillStyle = pale;
+      c.fillRect(x - 1.05 * u, y - .78 * u, .6 * u, .5 * u);
+      c.fillRect(x + .45 * u, y - .78 * u, .6 * u, .5 * u);
+      c.strokeStyle = ink; c.lineWidth = .9;
+      c.strokeRect(x - 1.05 * u, y - .78 * u, .6 * u, .5 * u);
+      c.strokeRect(x + .45 * u, y - .78 * u, .6 * u, .5 * u);
+      c.strokeStyle = "#8aa38a"; c.lineWidth = 1.6;  // tree
+      c.beginPath(); c.moveTo(x + 2.2 * u, y); c.lineTo(x + 2.2 * u, y - .7 * u); c.stroke();
+      c.fillStyle = "#b9cdb4";
+      c.beginPath(); c.arc(x + 2.2 * u, y - 1.05 * u, .55 * u, 0, 6.2832); c.fill();
+    }
+    function block(x, y, u) {                        // tall, flat roof, a grid of windows
+      const h = 2.6 * u, w = 1.7 * u;
+      c.fillStyle = wall; c.strokeStyle = ink; c.lineWidth = 1.2;
+      c.fillRect(x - w / 2, y - h, w, h); c.strokeRect(x - w / 2, y - h, w, h);
+      c.fillStyle = dark; c.fillRect(x - w / 2 - .12 * u, y - h - .18 * u, w + .24 * u, .18 * u);
+      c.fillStyle = pale; c.strokeStyle = ink; c.lineWidth = .8;
+      for (let r = 0; r < 4; r++) for (let q = 0; q < 2; q++) {
+        const wx = x - w / 2 + (.22 + q * .62) * u, wy = y - h + (.3 + r * .58) * u;
+        c.fillRect(wx, wy, .42 * u, .38 * u); c.strokeRect(wx, wy, .42 * u, .38 * u);
+      }
+    }
+    function farm(x, y, u) {                         // small house plus a silo
+      c.fillStyle = pale; c.strokeStyle = ink; c.lineWidth = 1.2;
+      c.fillRect(x - .8 * u, y - .8 * u, 1.6 * u, .8 * u);
+      c.strokeRect(x - .8 * u, y - .8 * u, 1.6 * u, .8 * u);
+      c.beginPath(); c.moveTo(x - .95 * u, y - .8 * u); c.lineTo(x, y - 1.6 * u);
+      c.lineTo(x + .95 * u, y - .8 * u); c.closePath();
+      c.fillStyle = roof; c.fill(); c.stroke();
+      c.fillStyle = wall; c.strokeStyle = ink;
+      c.fillRect(x + 1.15 * u, y - 1.25 * u, .55 * u, 1.25 * u);
+      c.strokeRect(x + 1.15 * u, y - 1.25 * u, .55 * u, 1.25 * u);
+      c.beginPath(); c.arc(x + 1.425 * u, y - 1.25 * u, .275 * u, Math.PI, 0); c.fill(); c.stroke();
+    }
+
+    const COLS = 13, CELL = W / COLS;
+    const P = [0.80, 0.96, 0.34], U = [12.5, 11.0, 10.0];
+    for (let r = 0; r < COLS; r++) for (let q = 0; q < COLS; q++) {
+      const cx = (q + .5) * CELL + (g.rnd() - .5) * CELL * .34;
+      const cy = (r + .92) * CELL + (g.rnd() - .5) * CELL * .22;
+      const z = zoneAt(cx, cy);
+      if (z < 0 || cy > H - 6) continue;
+      if (zoneAt(cx - 26, cy) !== z || zoneAt(cx + 26, cy) !== z) continue;   // keep off the borders
+      if (g.rnd() > P[z]) continue;
+      const u = U[z] * (0.88 + 0.24 * g.rnd());
+      if (z === 0) villa(cx, cy, u); else if (z === 1) block(cx, cy, u); else farm(cx, cy, u);
+    }
+  })();
+
+  /* ---- labels placed inside each neighbourhood ---- */
+  const anchorY = [0.30, 0.55, 0.78].map(f => f * H);
+  const anchorX = [
+    y => (coast(y) + edge1(y)) / 2,
+    y => (edge1(y) + edge2(y)) / 2,
+    y => (edge2(y) + W) / 2
+  ];
+  function zoneLabel(ctx, k, text, alpha, size) {
+    const y = anchorY[k], x = anchorX[k](y);
     ctx.globalAlpha = alpha;
     ctx.font = `500 ${size}px 'IBM Plex Mono', monospace`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.lineJoin = "round"; ctx.lineWidth = 7; ctx.strokeStyle = "rgba(255,255,255,.92)";
-    ctx.strokeText(text, cv.width / 2, cv.height / 2);
-    ctx.fillStyle = "rgba(23,25,29,.72)";
-    ctx.fillText(text, cv.width / 2, cv.height / 2);
+    ctx.lineJoin = "round"; ctx.lineWidth = 7; ctx.strokeStyle = "rgba(255,255,255,.95)";
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = "rgba(23,25,29,.84)"; ctx.fillText(text, x, y);
     ctx.globalAlpha = 1;
   }
+  function overlay(ctx, valueAt, alpha) {
+    ctx.globalAlpha = alpha;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const k = i * N + j;
+      if (reg[k] < 0) continue;
+      ctx.fillStyle = divCol(warp(valueAt(k)), 100);
+      ctx.fillRect(j * S, i * S, Math.ceil(S), Math.ceil(S));
+    }
+    ctx.globalAlpha = 1;
+  }
+  function borders(ctx, alpha) {
+    ctx.globalAlpha = alpha; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 3.4;
+    [edge1, edge2].forEach(f => {
+      ctx.beginPath();
+      for (let y = 0; y <= H; y += 5) y ? ctx.lineTo(f(y), y) : ctx.moveTo(f(y), y);
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 
-  /* beat 1 price map · beat 2 one flat value · beat 3 the three zones */
+  /* beat 1 the town · 2 one number · 3 a smooth surface · 4 regimes */
   function draw(beat, u) {
-    const ctx = cv.getContext("2d"), S = cv.width / N;
-    const e = ease(u);
-    if (beat === 1) {                                     // price, fading toward the flat value
-      paintGrid(cv, N, i => {
-        const t = Math.max(0, Math.min(1, (price[i] - plo) / (phi - plo)));
-        return e === 0 ? seqCol(t) : mixHex(seqColHex(t), divColHex(warp(BAR), 100), e);
-      });
-      lattice(ctx, S);
-      if (e > .25) centred(ctx, money(BAR) + " / room", 40, (e - .25) / .75);
-    } else if (beat === 2) {                              // flat, opening into zones
-      paintGrid(cv, N, i => divCol(warp(BAR + (VALUE[reg[i]] - BAR) * e), 100));
-      lattice(ctx, S);
-      if (e < .35) centred(ctx, money(BAR) + " / room", 40, 1 - e / .35);
-      if (e > .02) paintBorders(cv, N, reg, 1.8, `rgba(255,255,255,${e})`);
-      if (e > .45) zoneLabels(ctx, S, (e - .45) / .55);
-    } else {                                              // zones, fading back to price
-      paintGrid(cv, N, i => {
-        const t = Math.max(0, Math.min(1, (price[i] - plo) / (phi - plo)));
-        return mixHex(divColHex(warp(VALUE[reg[i]]), 100), seqColHex(t), e);
-      });
-      lattice(ctx, S);
-      if (e < .6) paintBorders(cv, N, reg, 1.8, `rgba(255,255,255,${1 - e / .6})`);
-      if (e < .5) zoneLabels(ctx, S, 1 - e / .5);
-    }
-  }
-
-  let shown = -1;
-  function caption(beat) {
-    if (beat === shown) return;
-    shown = beat;
-    stepEl.textContent = `${beat} / 3`;
+    const ctx = cv.getContext("2d"), e = ease(u);
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(art, 0, 0);
+    const A = 0.62;                                   // the houses stay readable under every overlay
     if (beat === 1) {
-      phaseEl.textContent = "Median house price";
-      readEl.textContent = "what is one more room worth?";
+      if (e > 0) overlay(ctx, () => BAR, A * e);
+      if (e > .4) ctx.save(), ctx.globalAlpha = (e - .4) / .6,
+        zoneLabel(ctx, 1, money(BAR) + " / room", 1, 30), ctx.restore();
     } else if (beat === 2) {
-      phaseEl.textContent = "One model for the whole region";
-      readEl.textContent = `${money(BAR)} per room, everywhere`;
+      overlay(ctx, k => BAR + (smooth[k] - BAR) * e, A);
+      if (e < .4) zoneLabel(ctx, 1, money(BAR) + " / room", 1 - e / .4, 30);
+      if (e > .5) for (let k = 0; k < 3; k++)
+        zoneLabel(ctx, k, "~" + money(smooth[Math.round(anchorY[k] / S) * N +
+          Math.round(anchorX[k](anchorY[k]) / S)]), (e - .5) / .5, 22);
+    } else if (beat === 3) {
+      overlay(ctx, k => smooth[k] + (VALUE[reg[k]] - smooth[k]) * e, A);
+      borders(ctx, e);
+      for (let k = 0; k < 3; k++) {
+        const sm = smooth[Math.round(anchorY[k] / S) * N + Math.round(anchorX[k](anchorY[k]) / S)];
+        zoneLabel(ctx, k, e < .5 ? "~" + money(sm) : money(VALUE[k]), 1, 22);
+      }
     } else {
-      phaseEl.textContent = "Three zones, three answers";
-      readEl.textContent = `${money(VALUE[0])} · ${money(VALUE[1])} · ${money(VALUE[2])}`;
+      overlay(ctx, k => VALUE[reg[k]], A * (1 - e));
+      borders(ctx, 1 - e);
+      for (let k = 0; k < 3; k++) zoneLabel(ctx, k, money(VALUE[k]), 1 - e, 22);
     }
   }
 
-  if (REDUCE) { draw(2, 1); caption(3); return; }
-  const HOLD = [2600, 2600, 3200], MOVE = [900, 1000, 900];
+  const COPY = [
+    ["Three neighbourhoods", "villas · apartment blocks · farms"],
+    ["One model for the whole town", money(BAR) + " per room, everywhere"],
+    ["A smooth surface", "the number drifts, the border is gone"],
+    ["Spatial regimes", money(VALUE[0]) + " · " + money(VALUE[1]) + " · " + money(VALUE[2])]
+  ];
+  let shown = -1;
+  function caption(b) {
+    if (b === shown) return;
+    shown = b;
+    stepEl.textContent = `${b} / 4`;
+    phaseEl.textContent = COPY[b - 1][0];
+    readEl.textContent = COPY[b - 1][1];
+  }
+
+  if (REDUCE) { draw(3, 1); caption(4); return; }
+  const HOLD = [2800, 2400, 2400, 3400], MOVE = [900, 1000, 1000, 900];
   const total = HOLD.reduce((a, b) => a + b, 0) + MOVE.reduce((a, b) => a + b, 0);
   let t0 = null;
   function loop(now) {
     if (t0 === null) t0 = now;
     let u = (now - t0) % total;
-    for (let b = 1; b <= 3; b++) {
+    for (let b = 1; b <= 4; b++) {
       if (u < HOLD[b - 1]) { caption(b); draw(b, 0); break; }
       u -= HOLD[b - 1];
-      if (u < MOVE[b - 1]) { const f = u / MOVE[b - 1]; caption(f > .5 ? (b % 3) + 1 : b); draw(b, f); break; }
+      if (u < MOVE[b - 1]) { const f = u / MOVE[b - 1]; caption(f > .5 ? (b % 4) + 1 : b); draw(b, f); break; }
       u -= MOVE[b - 1];
-      if (b === 3) { caption(1); draw(1, 0); }
     }
     requestAnimationFrame(loop);
   }
