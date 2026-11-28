@@ -612,7 +612,8 @@ nav {
 
 .topic-spatial { background: #e8f5ee; color: #1a6b3d; }
 .topic-trustworthy { background: #f0e8f9; color: #6b3fa0; }
-.topic-transferable { background: #fef3e2; color: #92500a; }
+.topic-discovery { background: #fef3e2; color: #92500a; }
+.topic-applications { background: #eef0f3; color: #4a5563; }
 
 .pub-filters.type-filters {
   margin-bottom: 0.5rem;

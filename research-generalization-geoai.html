@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transferable &amp; Scalable GeoAI — Peng Luo</title>
+  <title>AI for Geospatial Discovery — Peng Luo</title>
   <link rel="stylesheet" href="css/style.css?v=20261120b" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/research-generalization-geoai.html" />
-  <meta name="description" content="LLM-driven geospatial model discovery, cross-domain transfer, and scalable urban analytics, including GeoEvolve and graph-based community detection." />
+  <meta name="description" content="LLM agents that propose, test, and refine geospatial models and algorithms, including GeoEvolve and SEGA (self-evolving geospatial algorithms)." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Peng Luo" />
-  <meta property="og:title" content="Transferable &amp; Scalable GeoAI — Peng Luo" />
-  <meta property="og:description" content="LLM-driven geospatial model discovery, cross-domain transfer, and scalable urban analytics, including GeoEvolve and graph-based community detection." />
+  <meta property="og:title" content="AI for Geospatial Discovery — Peng Luo" />
+  <meta property="og:description" content="LLM agents that propose, test, and refine geospatial models and algorithms, including GeoEvolve and SEGA (self-evolving geospatial algorithms)." />
   <meta property="og:url" content="https://peng-luo.com/research-generalization-geoai.html" />
   <meta property="og:image" content="https://peng-luo.com/assets/photo.jpg" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Transferable &amp; Scalable GeoAI — Peng Luo" />
-  <meta name="twitter:description" content="LLM-driven geospatial model discovery, cross-domain transfer, and scalable urban analytics, including GeoEvolve and graph-based community detection." />
+  <meta name="twitter:title" content="AI for Geospatial Discovery — Peng Luo" />
+  <meta name="twitter:description" content="LLM agents that propose, test, and refine geospatial models and algorithms, including GeoEvolve and SEGA (self-evolving geospatial algorithms)." />
   <meta name="twitter:image" content="https://peng-luo.com/assets/photo.jpg" />
 
 </head>
@@ -31,9 +31,9 @@
       <li class="nav-dropdown">
           <a href="research.html" class="active">Research &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="research-spatial-explicit.html">Spatial Explicit Modeling</a>
             <a href="research-trustworthy-geoai.html">Trustworthy GeoAI</a>
-            <a href="research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a>
+            <a href="research-spatial-explicit.html">Spatial Process Modeling</a>
+            <a href="research-generalization-geoai.html">AI for Geospatial Discovery</a>
           </div>
         </li>
       <li><a href="publications.html">Publications</a></li>
@@ -50,13 +50,13 @@
 
   <div class="page-header">
     <p class="back-link"><a href="research.html">&larr; All Research</a></p>
-    <h1>Transferable &amp; Scalable GeoAI</h1>
-    <div class="proj-tag">LLMs &middot; Generalization &middot; Urban Computing</div>
+    <h1>AI for Geospatial Discovery</h1>
+    <div class="proj-tag">LLM Agents &middot; Automated Model Discovery &middot; GeoAI Foundations</div>
   </div>
 
   <!-- Teaser -->
   <div class="section">
-    <div class="proj-image-hero"><img src="assets/research/transferable-geoai.png" alt="Scalable GeoAI framework"></div>
+    <div class="proj-image-hero"><img src="assets/atlas/sega.jpg" alt="An evolved algorithm progressively recovering spatial regimes from noisy data"></div>
   </div>
 
   <!-- Overview -->
@@ -64,10 +64,10 @@
     <div class="section-label">Overview</div>
     <div class="proj-body">
       <p>
-        How can geospatial models transfer across regions, scales, and sensor modalities without extensive retraining? This research line tackles the generalization challenge in GeoAI through LLM-driven model discovery, graph-based community detection, and scalable urban analytics.
+        Most geospatial methods are still designed by hand: a researcher proposes a model, tests it, and revises it. This research line asks whether AI can take part in that loop, using large language model agents that propose, implement, test, and refine geospatial models and algorithms, guided by geographic knowledge and evaluated against real spatial data.
       </p>
       <p>
-        GeoEvolve uses multi-agent large language models to automate geospatial model development &mdash; enabling AI to self-evolve spatial models. Complementary work on overlapping community structure in urban mobility reveals how spatial communities explain movement patterns at scale. These methods have been applied to shared micromobility, logistics optimization, and urban land-use mapping.
+        GeoEvolve uses multi-agent large language models to automate geospatial model discovery. SEGA (Self-Evolving Geospatial Algorithms) applies an LLM-driven framework to spatial regime discovery, letting algorithms evolve and be checked against spatial benchmarks. Related work examines the mathematical foundations and open challenges of GeoAI, and treats buildings as text for universal building attribute regression.
       </p>
     </div>
   </div>
@@ -77,10 +77,10 @@
     <div class="section-label">Key Contributions</div>
     <div class="proj-body">
       <ul>
-        <li>Label propagation for detecting overlapping communities in shared e-micromobility (CEUS 2025)</li>
-        <li>Graph-based deep spatial regression for uncovering spatial process heterogeneity (ISPRS JPRS 2026)</li>
-        <li>GIMI: geographically generalizable image-to-image search engine (ICLR 2024 workshop)</li>
-        <li>Scalable urban logistics optimization with hybrid sparrow search algorithm</li>
+        <li>SEGA: self-evolving geospatial algorithms, with a case study on spatial regime discovery</li>
+        <li>GeoEvolve: automating geospatial model discovery via multi-agent large language models (arXiv 2025)</li>
+        <li>Mathematical foundations and challenges for GeoAI (book chapter, IOS Press 2026)</li>
+        <li>Buildings as Text: a universal regression paradigm for building attribute prediction (EGU 2026)</li>
       </ul>
     </div>
   </div>
@@ -91,6 +91,7 @@
     <div class="proj-body">
       <ul>
         <li><strong>GeoEvolve</strong> &mdash; LLM-based automatic spatial model development</li>
+        <li><strong>SEGA</strong> &mdash; code for self-evolving geospatial algorithms (<a href="https://github.com/pengtum/GASE" target="_blank">GitHub</a>)</li>
       </ul>
     </div>
   </div>
@@ -99,9 +100,9 @@
   <div class="section">
     <div class="section-label">Selected Publications</div>
 
-    <div class="pub-item" data-type="journal" data-topic="spatial transferable">
+    <div class="pub-item" data-type="journal" data-topic="spatial discovery">
       <div class="pub-title">Toward Self-Evolving Geospatial Algorithms: An LLM-Driven Framework with a Case Study on Spatial Regime Discovery</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
+      <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Process Modeling</span><span class="pub-topic-label topic-discovery">AI for Geospatial Discovery</span></div>
       <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*, L. Meng</div>
       <div class="pub-venue">Annals of the American Association of Geographers, in press, 2026</div>
       <div class="pub-links">
@@ -111,47 +112,38 @@
       </div>
     </div>
 
-    <div class="pub-item" data-type="journal" data-topic="transferable">
-      <div class="pub-title">Modeling shared e-micromobility as a label propagation process for detecting overlapping communities</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
-      <div class="pub-authors"><span class="me">P. Luo</span>, C. Song, H. Li, D. Zhu, S. Hu, F. Duarte</div>
-      <div class="pub-venue">Computers, Environment and Urban Systems, 122, 102336, 2025</div>
+    <div class="pub-item" data-type="preprint" data-topic="discovery">
+      <div class="pub-title">GeoEvolve: Automating Geospatial Model Discovery via Multi-Agent Large Language Models</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-discovery">AI for Geospatial Discovery</span></div>
+      <div class="pub-authors"><span class="me">P. Luo</span>#, X. Lou, Y. Zheng, Z. Zheng, S. Ermon</div>
+      <div class="pub-venue">arXiv preprint arXiv:2509.21593, 2025</div>
       <div class="pub-links">
-        <a class="pub-link" href="https://doi.org/10.1016/j.compenvurbsys.2025.102336" target="_blank">DOI</a>
+        <a class="pub-link arxiv" href="https://arxiv.org/abs/2509.21593" target="_blank">arXiv</a>
       </div>
     </div>
 
-    <div class="pub-item" data-type="journal" data-topic="spatial transferable">
-      <div class="pub-title">Uncovering spatial process heterogeneity from graph-based deep spatial regression</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
-      <div class="pub-authors">D. Zhu, S. Wang, <span class="me">P. Luo</span></div>
-      <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing, 232, 509–523, 2026</div>
+    <div class="pub-item" data-type="book" data-topic="spatial discovery">
+      <div class="pub-title">Mathematical Foundations and Challenges for GeoAI</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Process Modeling</span><span class="pub-topic-label topic-discovery">AI for Geospatial Discovery</span></div>
+      <div class="pub-authors">Z. Wang, <span class="me">P. Luo</span>, G. Mai</div>
+      <div class="pub-venue">Geography According to Foundation Models (Frontiers in Artificial Intelligence and Applications, Vol. 422), IOS Press, 51–74, 2026</div>
       <div class="pub-links">
-        <a class="pub-link" href="https://doi.org/10.1016/j.isprsjprs.2025.12.008" target="_blank">DOI</a>
+        <a class="pub-link" href="https://doi.org/10.3233/faia260469" target="_blank">DOI</a>
       </div>
     </div>
 
-    <div class="pub-item" data-type="conference" data-topic="transferable">
-      <div class="pub-title">GIMI: A Geographical Generalizable Image-to-Image Search Engine with Location-explicit Contrastive Embedding</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
-      <div class="pub-authors">H. Li, J. Wang, B. Teuscher, <span class="me">P. Luo</span>, M. Werner, G. Mai, D. Hong</div>
-      <div class="pub-venue">ICLR 2024 Workshop on Machine Learning for Remote Sensing (ML4RS), 2024</div>
+    <div class="pub-item" data-type="conference" data-topic="discovery">
+      <div class="pub-title">Buildings as Text: A Universal Regression Paradigm for Building Attribute Prediction</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-discovery">AI for Geospatial Discovery</span></div>
+      <div class="pub-authors">C.-C. Wang, <span class="me">P. Luo</span>*</div>
+      <div class="pub-venue">EGU General Assembly 2026, EGU26-8402, 2026</div>
       <div class="pub-links">
-        <a class="pub-link" href="https://iclr.cc/virtual/2024/21987" target="_blank">Workshop</a>
+        <a class="pub-link" href="https://doi.org/10.5194/egusphere-egu26-8402" target="_blank">DOI</a>
       </div>
     </div>
 
-    <div class="pub-item" data-type="conference" data-topic="transferable">
-      <div class="pub-title">Sensing overlapping geospatial communities from human movements using graph affiliation generation models</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-transferable">Transferable GeoAI</span></div>
-      <div class="pub-authors"><span class="me">P. Luo</span>, D. Zhu</div>
-      <div class="pub-venue">Proceedings of the 5th ACM SIGSPATIAL International Workshop on AI for Geographic Knowledge Discovery, 1–9, 2022</div>
-      <div class="pub-links">
-        <a class="pub-link" href="https://doi.org/10.1145/3557918.3565862" target="_blank">DOI</a>
-      </div>
-    </div>
 
-    <p style="margin-top:1.5rem; font-size:14px;"><a href="publications.html?topic=transferable">View all Transferable GeoAI publications &rarr;</a></p>
+    <p style="margin-top:1.5rem; font-size:14px;"><a href="publications.html?topic=discovery">View all AI for Geospatial Discovery publications &rarr;</a></p>
   </div>
 
 </div>

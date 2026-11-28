@@ -8,16 +8,16 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/research.html" />
-  <meta name="description" content="Research by Peng Luo at the intersection of GeoAI, spatial data science, and spatial statistics: explainable, uncertainty-aware, and reproducible spatial analysis." />
+  <meta name="description" content="Research by Peng Luo on trustworthy GeoAI, spatial process modeling, and AI for geospatial discovery." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Peng Luo" />
   <meta property="og:title" content="Research — Peng Luo" />
-  <meta property="og:description" content="Research by Peng Luo at the intersection of GeoAI, spatial data science, and spatial statistics: explainable, uncertainty-aware, and reproducible spatial analysis." />
+  <meta property="og:description" content="Research by Peng Luo on trustworthy GeoAI, spatial process modeling, and AI for geospatial discovery." />
   <meta property="og:url" content="https://peng-luo.com/research.html" />
   <meta property="og:image" content="https://peng-luo.com/assets/photo.jpg" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Research — Peng Luo" />
-  <meta name="twitter:description" content="Research by Peng Luo at the intersection of GeoAI, spatial data science, and spatial statistics: explainable, uncertainty-aware, and reproducible spatial analysis." />
+  <meta name="twitter:description" content="Research by Peng Luo on trustworthy GeoAI, spatial process modeling, and AI for geospatial discovery." />
   <meta name="twitter:image" content="https://peng-luo.com/assets/photo.jpg" />
 
 </head>
@@ -31,9 +31,9 @@
       <li class="nav-dropdown">
           <a href="research.html" class="active">Research &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="research-spatial-explicit.html">Spatial Explicit Modeling</a>
             <a href="research-trustworthy-geoai.html">Trustworthy GeoAI</a>
-            <a href="research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a>
+            <a href="research-spatial-explicit.html">Spatial Process Modeling</a>
+            <a href="research-generalization-geoai.html">AI for Geospatial Discovery</a>
           </div>
         </li>
       <li><a href="publications.html">Publications</a></li>
@@ -50,46 +50,54 @@
 
   <div class="page-header">
     <h1>Research</h1>
-    <p>My research develops methods at the intersection of GeoAI, spatial data science, and spatial statistics &mdash; with a focus on explainable, uncertainty-aware, and reproducible spatial analysis, and recent work on LLM-driven geospatial model discovery.</p>
+    <p>My research asks three questions about spatial data and GeoAI: how far we can trust what a model tells us, what processes lie behind the patterns we see, and whether AI can help us discover better geospatial methods.</p>
   </div>
 
   <!-- Project 1 -->
   <div class="section">
     <div class="section-label">Current Projects</div>
 
-    <div class="project-item" id="spatial-explicit">
-      <div>
-        <div class="proj-tag">Spatial Modeling · Spatial Statistics</div>
-        <div class="proj-title"><a href="research-spatial-explicit.html">Spatial Explicit Modeling</a></div>
-        <p class="proj-desc">
-          Developing spatial models that explicitly encode geographic structure &mdash; spatial heterogeneity, dependence, and interaction &mdash; into prediction and association analysis. Key methods include generalized spatial heterogeneity models, focal-feature regression kriging, and spatially stratified frameworks.
-        </p>
-      </div>
-      <div class="proj-image"><img src="assets/research/spatial-explicit.png" alt="Spatial explicit modeling framework"></div>
-    </div>
-
     <div class="project-item" id="trustworthy-geoai">
       <div>
-        <div class="proj-tag">Explainable AI · Uncertainty</div>
-        <div class="proj-title"><a href="research-trustworthy-geoai.html">Trustworthy GeoAI &amp; Uncertainty Quantification</a></div>
+        <div class="proj-tag">Uncertainty Quantification · Explainability · Visual Analytics</div>
+        <div class="proj-title"><a href="research-trustworthy-geoai.html">Trustworthy GeoAI: Trust across the Spatial Analysis Chain</a></div>
         <p class="proj-desc">
-          Building reliable, interpretable, and uncertainty-aware geospatial AI. Core contributions include GeoConformal prediction for model-agnostic spatial UQ, GeoXCP for uncertainty quantification of spatial explanations, and visual analytics frameworks for understanding predictability in spatial data.
+          Carrying trust through the whole chain of spatial analysis, from the data and the model to its outputs and how they are communicated to the public. Core work includes GeoConformal prediction (GeoCP) for model-agnostic spatial uncertainty, GeoXCP for uncertainty in spatial explanations, GeoSIMCP for nonstationary processes, WBCP for risk under covariate shift, and visual analytics that show how reliable each prediction is, and where.
         </p>
       </div>
       <div class="proj-image"><img src="assets/research/trustworthy-geoai.png" alt="Trustworthy GeoAI: uncertainty-aware modeling"></div>
     </div>
 
-    <div class="project-item" id="generalization-geoai">
+    <div class="project-item" id="spatial-explicit">
       <div>
-        <div class="proj-tag">LLMs · Generalization · Urban Computing</div>
-        <div class="proj-title"><a href="research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a></div>
+        <div class="proj-tag">Spatial Heterogeneity · Interaction · Regimes</div>
+        <div class="proj-title"><a href="research-spatial-explicit.html">Spatial Process Modeling</a></div>
         <p class="proj-desc">
-          LLM-driven geospatial model discovery, cross-domain transfer, and scalable urban analytics. Flagship work includes GeoEvolve (multi-agent LLMs for automated spatial model development) and graph-based methods for uncovering overlapping community structure in urban mobility.
+          Telling pattern from noise by recovering the processes behind spatial data: how geographical variables interact (GOZH, Robust GOZH, LESH, GPI), where spatial regimes shift (RegimeBench), how spatial structure shapes predictability, and how to predict accurately from small samples (GHM, MSAM).
         </p>
       </div>
-      <div class="proj-image"><img src="assets/research/transferable-geoai.png" alt="Scalable GeoAI framework"></div>
+      <div class="proj-image"><img src="assets/research/spatial-explicit.png" alt="Spatial process modeling framework"></div>
     </div>
 
+    <div class="project-item" id="generalization-geoai">
+      <div>
+        <div class="proj-tag">LLM Agents · Automated Model Discovery</div>
+        <div class="proj-title"><a href="research-generalization-geoai.html">AI for Geospatial Discovery</a></div>
+        <p class="proj-desc">
+          Large language model agents that propose, test, and refine geospatial models and algorithms. Flagship work includes GeoEvolve (multi-agent LLMs for geospatial model discovery) and SEGA (self-evolving geospatial algorithms, with a case study on spatial regime discovery).
+        </p>
+      </div>
+      <div class="proj-image"><img src="assets/atlas/sega.jpg" alt="An evolved algorithm progressively recovering spatial regimes from noisy data"></div>
+    </div>
+
+  </div>
+
+  <!-- Applications -->
+  <div class="section">
+    <div class="section-label">Applications</div>
+    <p style="font-size:14px; color:var(--text-muted); line-height:1.8;">
+      With collaborators, these methods are applied to land use, population health, human mobility, urban systems, and remote sensing. See <a href="publications.html?topic=applications">application papers</a> on the publications page.
+    </p>
   </div>
 
   <!-- Past work -->

@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trustworthy GeoAI &amp; Uncertainty Quantification — Peng Luo</title>
+  <title>Trustworthy GeoAI: Trust across the Spatial Analysis Chain — Peng Luo</title>
   <link rel="stylesheet" href="css/style.css?v=20261120b" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="assets/favicon.svg" />
   <link rel="canonical" href="https://peng-luo.com/research-trustworthy-geoai.html" />
-  <meta name="description" content="Reliable, interpretable, and uncertainty-aware geospatial AI: GeoConformal prediction, GeoXCP, and visual analytics for spatial predictability." />
+  <meta name="description" content="Carrying trust through the whole chain of spatial analysis, from data and models to outputs and how they are communicated: GeoCP, GeoXCP, GeoSIMCP, WBCP, and uncertainty-aware visual analytics." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Peng Luo" />
-  <meta property="og:title" content="Trustworthy GeoAI &amp; Uncertainty Quantification — Peng Luo" />
-  <meta property="og:description" content="Reliable, interpretable, and uncertainty-aware geospatial AI: GeoConformal prediction, GeoXCP, and visual analytics for spatial predictability." />
+  <meta property="og:title" content="Trustworthy GeoAI: Trust across the Spatial Analysis Chain — Peng Luo" />
+  <meta property="og:description" content="Carrying trust through the whole chain of spatial analysis, from data and models to outputs and how they are communicated: GeoCP, GeoXCP, GeoSIMCP, WBCP, and uncertainty-aware visual analytics." />
   <meta property="og:url" content="https://peng-luo.com/research-trustworthy-geoai.html" />
   <meta property="og:image" content="https://peng-luo.com/assets/photo.jpg" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Trustworthy GeoAI &amp; Uncertainty Quantification — Peng Luo" />
-  <meta name="twitter:description" content="Reliable, interpretable, and uncertainty-aware geospatial AI: GeoConformal prediction, GeoXCP, and visual analytics for spatial predictability." />
+  <meta name="twitter:title" content="Trustworthy GeoAI: Trust across the Spatial Analysis Chain — Peng Luo" />
+  <meta name="twitter:description" content="Carrying trust through the whole chain of spatial analysis, from data and models to outputs and how they are communicated: GeoCP, GeoXCP, GeoSIMCP, WBCP, and uncertainty-aware visual analytics." />
   <meta name="twitter:image" content="https://peng-luo.com/assets/photo.jpg" />
 
 </head>
@@ -31,9 +31,9 @@
       <li class="nav-dropdown">
           <a href="research.html" class="active">Research &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="research-spatial-explicit.html">Spatial Explicit Modeling</a>
             <a href="research-trustworthy-geoai.html">Trustworthy GeoAI</a>
-            <a href="research-generalization-geoai.html">Transferable &amp; Scalable GeoAI</a>
+            <a href="research-spatial-explicit.html">Spatial Process Modeling</a>
+            <a href="research-generalization-geoai.html">AI for Geospatial Discovery</a>
           </div>
         </li>
       <li><a href="publications.html">Publications</a></li>
@@ -50,8 +50,8 @@
 
   <div class="page-header">
     <p class="back-link"><a href="research.html">&larr; All Research</a></p>
-    <h1>Trustworthy GeoAI &amp; Uncertainty Quantification</h1>
-    <div class="proj-tag">Explainable AI &middot; Uncertainty &middot; Visual Analytics</div>
+    <h1>Trustworthy GeoAI: Trust across the Spatial Analysis Chain</h1>
+    <div class="proj-tag">Uncertainty Quantification &middot; Explainability &middot; Visual Analytics</div>
   </div>
 
   <!-- Teaser -->
@@ -64,10 +64,10 @@
     <div class="section-label">Overview</div>
     <div class="proj-body">
       <p>
-        As GeoAI models grow in complexity, understanding when and why they fail becomes critical. This research line develops model-agnostic frameworks for quantifying uncertainty and ensuring interpretability in geospatial predictions.
+        No GeoAI model is perfect. Its predictions are uncertain, its explanations can be unstable, and both vary across space. This research line asks how trust can carry through the whole chain of spatial analysis: from the data and the model, to its outputs, to how those outputs are communicated to decision-makers and the public.
       </p>
       <p>
-        GeoConformal prediction provides distribution-free, spatially calibrated prediction intervals for any spatial model. GeoXCP extends uncertainty quantification to the explanations produced by explainable AI methods. Complementary work uses visual analytics to help users understand predictability and uncertainty in population distributions and other spatial phenomena.
+        For model outputs, GeoConformal prediction (GeoCP) gives distribution-free, spatially calibrated prediction intervals for any spatial model; GeoXCP extends uncertainty quantification to the explanations produced by explainable AI; GeoSIMCP handles nonstationary spatial processes; and Weighted Bayesian Conformal Prediction (WBCP) gives the exact Bayesian posterior over deployed risk under covariate shift. For communication, visual analytics and cartographic design make uncertainty and bias visible, so that a map shows not only what a model predicts but how far to trust it.
       </p>
     </div>
   </div>
@@ -77,12 +77,14 @@
     <div class="section-label">Key Contributions</div>
     <div class="proj-body">
       <ul>
-        <li>GeoConformal prediction: model-agnostic spatial UQ framework (Annals of the AAG 2025)</li>
-        <li>GeoXCP: uncertainty quantification for spatial explainable AI (IJGIS 2026)</li>
+        <li>GeoConformal prediction (GeoCP): model-agnostic uncertainty quantification for spatial prediction (Annals of the AAG 2025)</li>
+        <li>GeoXCP: uncertainty quantification of spatial explanations in explainable AI (IJGIS 2026)</li>
+        <li>GeoSIMCP: quantifying uncertainty in spatial prediction for nonstationary spatial processes (Annals of the AAG 2026)</li>
+        <li>WBCP: weighted Bayesian conformal prediction under covariate shift (arXiv 2026)</li>
+        <li>Geocomplexity explains spatial errors (IJGIS 2023)</li>
         <li>Visual analytics for understanding predictability and uncertainty in population distributions (IJGIS 2025, No.1 most read)</li>
-        <li>Quantifying uncertainty in spatial prediction for nonstationary processes (Annals of the AAG 2026)</li>
-        <li>Ethical spatial analysis: revealing endogenous bias through visual analytics</li>
-        <li>Ontological and explainable framework for decoding AI risks from news data</li>
+        <li>The Cartographer as Auditor: from invisible uncertainty to reliable spatial knowledge (CaGIS 2026 vision paper)</li>
+        <li>Ethical spatial analysis: revealing endogenous bias through visual analytics (JGSA 2026)</li>
       </ul>
     </div>
   </div>
@@ -148,9 +150,9 @@
   <div class="section">
     <div class="section-label">Selected Publications</div>
 
-    <div class="pub-item" data-type="journal" data-topic="spatial trustworthy">
+    <div class="pub-item" data-type="journal" data-topic="trustworthy spatial">
       <div class="pub-title">Quantifying Uncertainty in Spatial Prediction for Nonstationary Spatial Processes</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-spatial">Spatial Explicit</span><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
+      <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span><span class="pub-topic-label topic-spatial">Spatial Process Modeling</span></div>
       <div class="pub-authors"><span class="me">P. Luo</span>*</div>
       <div class="pub-venue">Annals of the American Association of Geographers, 116(8), 2012–2036, 2026</div>
       <div class="pub-links">
@@ -178,6 +180,27 @@
       </div>
     </div>
 
+    <div class="pub-item" data-type="preprint" data-topic="trustworthy">
+      <div class="pub-title">Weighted Bayesian Conformal Prediction</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
+      <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*</div>
+      <div class="pub-venue">arXiv preprint arXiv:2604.06464, 2026</div>
+      <div class="pub-links">
+        <a class="pub-link arxiv" href="https://arxiv.org/abs/2604.06464" target="_blank">arXiv</a>
+        <a class="pub-link project" href="wbcp/">Project page</a>
+      </div>
+    </div>
+
+    <div class="pub-item" data-type="journal" data-topic="trustworthy spatial">
+      <div class="pub-title">Geocomplexity explains spatial errors</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span><span class="pub-topic-label topic-spatial">Spatial Process Modeling</span></div>
+      <div class="pub-authors">Z. Zhang, Y. Song, <span class="me">P. Luo</span>, P. Wu</div>
+      <div class="pub-venue">International Journal of Geographical Information Science, 37(7), 1449–1469, 2023</div>
+      <div class="pub-links">
+        <a class="pub-link" href="https://doi.org/10.1080/13658816.2023.2203212" target="_blank">DOI</a>
+      </div>
+    </div>
+
     <div class="pub-item" data-type="journal" data-topic="trustworthy">
       <div class="pub-title">Understanding of the predictability and uncertainty in population distributions empowered by visual analytics</div>
       <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
@@ -185,6 +208,16 @@
       <div class="pub-venue">International Journal of Geographical Information Science, 39(3), 675–705, 2025</div>
       <div class="pub-links">
         <a class="pub-link" href="https://doi.org/10.1080/13658816.2024.2427870" target="_blank">DOI</a>
+      </div>
+    </div>
+
+    <div class="pub-item" data-type="conference" data-topic="trustworthy">
+      <div class="pub-title">The Cartographer as Auditor: From Invisible Uncertainty to Reliable Spatial Knowledge</div>
+      <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
+      <div class="pub-authors"><span class="me">P. Luo</span>*, X. Lou</div>
+      <div class="pub-venue">CaGIS 2026 Conference (Vision Paper), St. Louis, MO, 2026</div>
+      <div class="pub-links">
+        <a class="pub-link pdf" href="https://cartogis.org/docs/conferences/CaGIS_2026/abstracts/vision/Luo_and_Lou_vision_abstract_CaGIS_2026.pdf" target="_blank">PDF</a>
       </div>
     </div>
 
@@ -198,15 +231,6 @@
       </div>
     </div>
 
-    <div class="pub-item" data-type="conference" data-topic="trustworthy">
-      <div class="pub-title">Towards the Uncertainty-aware Geospatial Artificial Intelligence</div>
-      <div class="pub-topics"><span class="pub-topic-label topic-trustworthy">Trustworthy GeoAI</span></div>
-      <div class="pub-authors">X. Lou, <span class="me">P. Luo</span>*</div>
-      <div class="pub-venue">Proceedings of the 8th ACM SIGSPATIAL International Workshop on AI for Geographic Knowledge Discovery, 76–80, 2025</div>
-      <div class="pub-links">
-        <a class="pub-link" href="https://doi.org/10.1145/3764912.3770821" target="_blank">DOI</a>
-      </div>
-    </div>
 
     <p style="margin-top:1.5rem; font-size:14px;"><a href="publications.html?topic=trustworthy">View all Trustworthy GeoAI publications &rarr;</a></p>
   </div>
